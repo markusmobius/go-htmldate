@@ -1,4 +1,4 @@
-package main
+package htmldate
 
 import (
 	"bytes"
@@ -7,6 +7,7 @@ import (
 
 	"github.com/gogs/chardet"
 	"github.com/pingcap/parser/charset"
+	"github.com/sirupsen/logrus"
 	"golang.org/x/net/html"
 	"golang.org/x/text/encoding/unicode"
 	"golang.org/x/text/runes"
@@ -48,4 +49,22 @@ func parseHTMLDocument(r io.Reader) (*html.Node, error) {
 	r = transform.NewReader(r, pageEncoding.NewDecoder())
 	r = normalizeTextEncoding(r)
 	return html.Parse(r)
+}
+
+func logInfo(opts Options, format string, args ...interface{}) {
+	if opts.EnableLog {
+		logrus.Infof(format, args...)
+	}
+}
+
+func logError(opts Options, format string, args ...interface{}) {
+	if opts.EnableLog {
+		logrus.Errorf(format, args...)
+	}
+}
+
+func logWarn(opts Options, format string, args ...interface{}) {
+	if opts.EnableLog {
+		logrus.Warnf(format, args...)
+	}
 }
