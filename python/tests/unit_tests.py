@@ -347,18 +347,6 @@ def test_approximate_date():
     assert find_date(load_mock_page('http://www.hundeverein-kreisunna.de/termine.html')) == '2017-03-29' # probably newer
 
 
-def test_date_validator():
-    '''test internal date validation'''
-    assert date_validator('2016-01-01', OUTPUTFORMAT) is True
-    assert date_validator('1998-08-08', OUTPUTFORMAT) is True
-    assert date_validator('2001-12-31', OUTPUTFORMAT) is True
-    assert date_validator('1992-07-30', OUTPUTFORMAT) is False
-    assert date_validator('1901-13-98', OUTPUTFORMAT) is False
-    assert date_validator('202-01', OUTPUTFORMAT) is False
-    assert date_validator('1922', '%Y') is False
-    assert date_validator('2004', '%Y') is True
-
-
 def test_convert_date():
     '''test date conversion'''
     assert convert_date('2016-11-18', '%Y-%m-%d', '%d %B %Y') == '18 November 2016'
@@ -373,29 +361,6 @@ def test_output_format_validator():
     assert output_format_validator(123) is False
     # problem with some Python versions: AssertionError: assert True is False
     # assert output_format_validator('X%') is False
-
-
-def test_try_ymd_date():
-    '''test date extraction via external package'''
-    find_date.extensive_search = False
-    assert try_ymd_date('Fri, Sept 1, 2017', OUTPUTFORMAT, False, MIN_DATE, LATEST_POSSIBLE) is None
-    find_date.extensive_search = True
-    assert try_ymd_date('Friday, September 01, 2017', OUTPUTFORMAT, True, MIN_DATE, LATEST_POSSIBLE) == '2017-09-01'
-    assert try_ymd_date('Fr, 1 Sep 2017 16:27:51 MESZ', OUTPUTFORMAT, True, MIN_DATE, LATEST_POSSIBLE) == '2017-09-01'
-    assert try_ymd_date('Freitag, 01. September 2017', OUTPUTFORMAT, True, MIN_DATE, LATEST_POSSIBLE) == '2017-09-01'
-    assert try_ymd_date('Am 1. September 2017 um 15:36 Uhr schrieb', OUTPUTFORMAT, True, MIN_DATE, LATEST_POSSIBLE) == '2017-09-01'
-    assert try_ymd_date('Fri - September 1 - 2017', OUTPUTFORMAT, True, MIN_DATE, LATEST_POSSIBLE) == '2017-09-01'
-    assert try_ymd_date('1.9.2017', OUTPUTFORMAT, True, MIN_DATE, LATEST_POSSIBLE) == '2017-09-01'
-    assert try_ymd_date('1/9/17', OUTPUTFORMAT, True, MIN_DATE, LATEST_POSSIBLE) == '2017-01-09' # assuming MDY format
-    assert try_ymd_date('201709011234', OUTPUTFORMAT, True, MIN_DATE, LATEST_POSSIBLE) == '2017-09-01'
-    # other output format
-    assert try_ymd_date('1.9.2017', '%d %B %Y', True, MIN_DATE, LATEST_POSSIBLE) == '01 September 2017'
-    # wrong
-    assert try_ymd_date('201', OUTPUTFORMAT, True, MIN_DATE, LATEST_POSSIBLE) is None
-    assert try_ymd_date('14:35:10', OUTPUTFORMAT, True, MIN_DATE, LATEST_POSSIBLE) is None
-    assert try_ymd_date('12:00 h', OUTPUTFORMAT, True, MIN_DATE, LATEST_POSSIBLE) is None
-    # date range
-    assert try_ymd_date('2005-2006', OUTPUTFORMAT, True, MIN_DATE, LATEST_POSSIBLE) is None
 
 
 # def test_header():
@@ -437,17 +402,6 @@ def test_regex_parse():
     assert regex_parse('Salı, Mart 26, 2019') is not None
     assert regex_parse('3/14/2016') is not None
     assert regex_parse('36/14/2016') is None
-    assert custom_parse('12122004', OUTPUTFORMAT, False, MIN_DATE, LATEST_POSSIBLE) is None
-    assert custom_parse('20041212', OUTPUTFORMAT, False, MIN_DATE, LATEST_POSSIBLE) is not None
-    assert custom_parse('20041212', OUTPUTFORMAT, True, MIN_DATE, LATEST_POSSIBLE) is not None
-    assert custom_parse('1212-20-04', OUTPUTFORMAT, False, MIN_DATE, LATEST_POSSIBLE) is None
-    assert custom_parse('1212-20-04', OUTPUTFORMAT, True, MIN_DATE, LATEST_POSSIBLE) is None
-    assert custom_parse('2004-12-12', OUTPUTFORMAT, False, MIN_DATE, LATEST_POSSIBLE) is not None
-    assert custom_parse('2004-12-12', OUTPUTFORMAT, True, MIN_DATE, LATEST_POSSIBLE) is not None
-    assert custom_parse('33.20.2004', OUTPUTFORMAT, True, MIN_DATE, LATEST_POSSIBLE) is None
-    assert custom_parse('12.12.2004', OUTPUTFORMAT, True, MIN_DATE, LATEST_POSSIBLE) is not None
-    assert custom_parse('2019 28 meh', OUTPUTFORMAT, False, MIN_DATE, LATEST_POSSIBLE) is None
-    assert custom_parse('2019 28 meh', OUTPUTFORMAT, True, MIN_DATE, LATEST_POSSIBLE) is None
     #for Nones caused by newlines and duplicates
     assert regex_parse("January 1st, 1998") is not None
     assert regex_parse("February 1st, 1998") is not None
@@ -743,9 +697,7 @@ if __name__ == '__main__':
 
     # function-level
     test_input()
-    test_date_validator()
     test_search_pattern()
-    test_try_ymd_date()
     test_convert_date()
     test_compare_reference()
     test_candidate_selection()

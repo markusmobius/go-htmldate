@@ -4,12 +4,12 @@ import (
 	"bytes"
 	"io"
 	"io/ioutil"
+	"unicode"
 
 	"github.com/gogs/chardet"
 	"github.com/pingcap/parser/charset"
-	"github.com/sirupsen/logrus"
 	"golang.org/x/net/html"
-	"golang.org/x/text/encoding/unicode"
+	xunicode "golang.org/x/text/encoding/unicode"
 	"golang.org/x/text/runes"
 	"golang.org/x/text/transform"
 	"golang.org/x/text/unicode/norm"
@@ -41,7 +41,7 @@ func parseHTMLDocument(r io.Reader) (*html.Node, error) {
 
 	pageEncoding, _ := charset.Lookup(res.Charset)
 	if pageEncoding == nil {
-		pageEncoding = unicode.UTF8
+		pageEncoding = xunicode.UTF8
 	}
 
 	// Parse HTML using the page encoding
@@ -51,20 +51,26 @@ func parseHTMLDocument(r io.Reader) (*html.Node, error) {
 	return html.Parse(r)
 }
 
-func logInfo(opts Options, format string, args ...interface{}) {
-	if opts.EnableLog {
-		logrus.Infof(format, args...)
+func isDigit(s string) bool {
+	for _, r := range s {
+		if !unicode.IsDigit(r) {
+			return false
+		}
 	}
+
+	return true
 }
 
-func logError(opts Options, format string, args ...interface{}) {
-	if opts.EnableLog {
-		logrus.Errorf(format, args...)
-	}
+func inMap(key string, mapString map[string]struct{}) bool {
+	_, exist := mapString[key]
+	return exist
 }
 
-func logWarn(opts Options, format string, args ...interface{}) {
-	if opts.EnableLog {
-		logrus.Warnf(format, args...)
+func strIn(s string, args ...string) bool {
+	for _, arg := range args {
+		if s == arg {
+			return true
+		}
 	}
+	return false
 }

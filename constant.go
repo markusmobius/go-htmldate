@@ -1,6 +1,16 @@
 package htmldate
 
-import "regexp"
+import (
+	"regexp"
+	"time"
+)
+
+var (
+	timeZero          = time.Time{}
+	defaultDateFormat = "2006-1-2"
+	defaultMinDate    = time.Date(1995, 1, 1, 0, 0, 0, 0, time.UTC)
+	defaultMaxDate    = time.Now()
+)
 
 var (
 	rxMdyPattern = regexp.MustCompile(`(?i)` +
@@ -41,7 +51,7 @@ var (
 	rxJsonPatternPublished = regexp.MustCompile(`(?i)"datePublished":\s*"([0-9]{4}-[0-9]{2}-[0-9]{2})`)
 	rxTimestampPattern     = regexp.MustCompile(`(?i)([0-9]{4}-[0-9]{2}-[0-9]{2}|[0-9]{2}\.[0-9]{2}\.[0-9]{4}).[0-9]{2}:[0-9]{2}:[0-9]{2}`)
 	rxTextDatePattern      = regexp.MustCompile(`(?i)[.:,_/ -]|^[0-9]+$`)
-	rxNoTextDatePattern    = regexp.MustCompile(`(?i)[0-9]{3,}\D+[0-9]{3,}|[0-9]{2}:[0-9]{2}(:| )|\D*[0-9]{4}\D*$`)
+	rxNoTextDatePattern    = regexp.MustCompile(`(?i)^(?:[0-9]{3,}\D+[0-9]{3,}|[0-9]{2}:[0-9]{2}(:| )|\D*[0-9]{4}\D*$)`)
 
 	rxEnPattern = regexp.MustCompile(`(?i)(?:[Dd]ate[^0-9"]{,20}|updated|published) *?(?:in)? *?:? *?([0-9]{1,4})[./]([0-9]{1,2})[./]([0-9]{2,4})`)
 	rxDePattern = regexp.MustCompile(`(?i)(?:Datum|Stand): ?([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{2,4})`)
@@ -85,4 +95,31 @@ var monthNumber = map[string]int{
 	"Oktober": 10, "October": 10, "Oct": 10, "Ekim": 10, "Eki": 10,
 	"November": 11, "Nov": 11, "Kasım": 11, "Kas": 11,
 	"Dezember": 12, "December": 12, "Dec": 12, "Aralık": 12, "Ara": 12,
+}
+
+var dateAttributes = sliceToMap(
+	"article.created", "article_date_original",
+	"article.published", "created", "cxenseparse:recs:publishtime",
+	"date", "date_published", "dc.date", "dc.date.created",
+	"dc.date.issued", "dcterms.date", "gentime",
+	"originalpublicationdate", "parsely-pub-date",
+	"pubdate", "publishdate", "publish_date",
+	"published-date", "publication_date", "sailthru.date",
+	"timestamp",
+	"article:published_time", "bt:pubdate", "datecreated",
+	"dateposted", "datepublished", "dc:created", "dc:date",
+	"og:article:published_time", "og:published_time",
+	"sailthru.date", "rnews:datepublished")
+
+var propertyModified = sliceToMap(
+	"article:modified_time", "datemodified", "modified_time",
+	"og:article:modified_time", "og:updated_time",
+	"release_date", "updated_time")
+
+func sliceToMap(strings ...string) map[string]struct{} {
+	result := make(map[string]struct{})
+	for _, s := range strings {
+		result[s] = struct{}{}
+	}
+	return result
 }
