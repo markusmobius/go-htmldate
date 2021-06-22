@@ -75,6 +75,18 @@ func FromDocument(doc *html.Node, opts Options) (time.Time, error) {
 		}
 	}
 
+	// Try from head elements
+	headerResult := examineHeader(doc, opts)
+	if !headerResult.IsZero() {
+		return headerResult, nil
+	}
+
+	// Try to use JSON data
+	jsonResult := jsonSearch(doc, opts)
+	if !jsonResult.IsZero() {
+		return jsonResult, nil
+	}
+
 	return timeZero, nil
 }
 

@@ -1,11 +1,15 @@
 package htmldate
 
 import (
+	"regexp"
 	"strconv"
+	"strings"
 	"time"
 	"unicode"
 
 	"github.com/araddon/dateparse"
+	"github.com/go-shiori/dom"
+	"golang.org/x/net/html"
 )
 
 // extractUrlDate extract the date out of an URL string complying
@@ -86,4 +90,39 @@ func fastParse(s string, opts Options) time.Time {
 	}
 
 	return dt
+}
+
+// jsonSearch looks for JSON time patterns in JSON sections of the document.
+func jsonSearch(doc *html.Node, opts Options) time.Time {
+	// Determine pattern
+	var rxJson *regexp.Regexp
+	if opts.UseOriginalDate {
+		rxJson = rxJsonPatternPublished
+	} else {
+		rxJson = rxJsonPatternModified
+	}
+
+	// Look throughout the HTML tree
+	ldJsonScripts := dom.QuerySelectorAll(doc, `script[type="application/ld+json"]`)
+	settingsJsonScripts := dom.QuerySelectorAll(doc, `script[type="application/settings+json"]`)
+	scriptNodes := append(ldJsonScripts, settingsJsonScripts...)
+
+	for _, elem := range scriptNodes {
+		// Get the json text inside the script
+		jsonText := dom.TextContent(elem)
+		jsonText = strings.TrimSpace(jsonText)
+		if jsonText == "" || !strings.Contains(jsonText, `"date`) {
+			continue
+		}
+
+		parts := rxJson.FindStringSubmatch(jsonText)
+		if len(parts) == 2 {
+			dt, err := time.Parse("2006-1-2", parts[1])
+			if err == nil && validateDate(dt, opts) {
+				return dt
+			}
+		}
+	}
+
+	return timeZero
 }
