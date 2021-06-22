@@ -30,7 +30,7 @@ func discardUnwanted(doc *html.Node) []*html.Node {
 func extractUrlDate(url string, opts Options) time.Time {
 	// Extract date component using regex
 	parts := rxCompleteUrl.FindStringSubmatch(url)
-	if len(parts) == 0 {
+	if len(parts) != 4 {
 		return timeZero
 	}
 
@@ -39,12 +39,42 @@ func extractUrlDate(url string, opts Options) time.Time {
 	month, _ := strconv.Atoi(parts[2])
 	day, _ := strconv.Atoi(parts[3])
 
+	if month > 12 {
+		return timeZero
+	}
+
 	date := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
 	if !validateDate(date, opts) {
 		return timeZero
 	}
 
 	log.Info().Msgf("found date in url: %s", parts[0])
+	return date
+}
+
+// extractPartialUrlDate extract the date out of an URL string complying
+// with the Y-M format.
+func extractPartialUrlDate(url string, opts Options) time.Time {
+	// Extract date component using regex
+	parts := rxPartialUrl.FindStringSubmatch(url)
+	if len(parts) != 3 {
+		return timeZero
+	}
+
+	// Create date from the extracted parts
+	year, _ := strconv.Atoi(parts[1])
+	month, _ := strconv.Atoi(parts[2])
+
+	if month > 12 {
+		return timeZero
+	}
+
+	date := time.Date(year, time.Month(month), 1, 0, 0, 0, 0, time.UTC)
+	if !validateDate(date, opts) {
+		return timeZero
+	}
+
+	log.Info().Msgf("found partial date in url: %s", parts[0])
 	return date
 }
 
@@ -110,6 +140,11 @@ func fastParse(s string, opts Options) time.Time {
 		day, _ := strconv.Atoi(parts[1])
 		month, _ := strconv.Atoi(parts[2])
 		year, _ := strconv.Atoi(parts[3])
+
+		// Append year if necessary
+		if year < 100 {
+			year = 2000 + year
+		}
 
 		// If month is more than 12, swap it with the day
 		if month > 12 && day <= 12 {

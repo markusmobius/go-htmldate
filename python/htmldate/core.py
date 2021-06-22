@@ -239,18 +239,6 @@ def search_page(htmlstring, outputformat, original_date, min_date, max_date):
 
 
 def find_date(htmlobject, extensive_search=True, original_date=False, outputformat='%Y-%m-%d', url=None, verbose=False, min_date=None, max_date=None):
-    # title
-    for title_elem in cleaned_html.iterfind('.//title|.//h1'):
-        attempt = try_ymd_date(title_elem.text_content(), outputformat, extensive_search, min_date, max_date)
-        if attempt is not None:
-            return attempt
-
-    # last try: URL 2
-    if url is not None:
-        dateresult = extract_partial_url_date(url, outputformat)
-        if dateresult is not None:
-            return dateresult
-
     # try image elements
     img_result = img_search(
         tree, outputformat, min_date, max_date

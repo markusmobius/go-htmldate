@@ -147,6 +147,23 @@ func FromDocument(doc *html.Node, opts Options) (time.Time, error) {
 		return textResult, nil
 	}
 
+	// Try title elements
+	for _, titleElem := range dom.GetAllNodesWithTag(doc, "title", "h1") {
+		textContent := normalizeSpaces(dom.TextContent(titleElem))
+		attempt := tryYmdDate(textContent, opts)
+		if !attempt.IsZero() {
+			return attempt, nil
+		}
+	}
+
+	// Retry partial URL
+	if opts.URL != "" {
+		dateResult := extractPartialUrlDate(opts.URL, opts)
+		if !dateResult.IsZero() {
+			return dateResult, nil
+		}
+	}
+
 	return timeZero, nil
 }
 

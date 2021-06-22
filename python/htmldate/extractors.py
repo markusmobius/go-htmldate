@@ -52,24 +52,6 @@ from .validators import convert_date, date_validator
 
 LOGGER = logging.getLogger(__name__)
 
-
-def extract_partial_url_date(testurl, outputformat):
-    """Extract an approximate date out of an URL string in Y-M format"""
-    match = PARTIAL_URL.search(testurl)
-    if match:
-        dateresult = match.group(0) + '/01'
-        LOGGER.debug('found partial date in URL: %s', dateresult)
-        try:
-            dateobject = datetime.datetime(int(match.group(1)),
-                                           int(match.group(2)),
-                                           1)
-            if date_validator(dateobject, outputformat) is True:
-                return dateobject.strftime(outputformat)
-        except ValueError as err:
-            LOGGER.debug('conversion error: %s %s', dateresult, err)
-    return None
-
-
 def regex_parse(string):
     """Full-text parse using a series of regular expressions"""
     dateobject = None

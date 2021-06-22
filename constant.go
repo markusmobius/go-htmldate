@@ -19,8 +19,8 @@ const (
 var (
 	rxLastNonDigits = regexp.MustCompile(`\D+$`)
 
-	rxYmdPattern = regexp.MustCompile(`(?i)(\d{4})(?:[\-/.])?(\d{1,2})(?:[\-/.])?(\d{1,2})`)
-	rxDmyPattern = regexp.MustCompile(`(?i)(\d{1,2})(?:[\-/.])(\d{1,2})(?:[\-/.])(\d{4})`)
+	rxYmdPattern = regexp.MustCompile(`(?:\D|^)(\d{4})(?:[\-/.])?(\d{1,2})(?:[\-/.])?(\d{1,2})(?:\D|$)`)
+	rxDmyPattern = regexp.MustCompile(`(?:\D|^)(\d{1,2})(?:[\-/.])(\d{1,2})(?:[\-/.])(\d{2,4})(?:\D|$)`)
 
 	rxLongMdyPattern = regexp.MustCompile(`(?i)` +
 		`(January|February|March|April|May|June|July|` +
