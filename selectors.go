@@ -7,7 +7,20 @@ import (
 	"golang.org/x/net/html"
 )
 
-func dateSelector(n *html.Node) bool {
+type selectorRule func(*html.Node) bool
+
+func findElementsWithRule(doc *html.Node, rule selectorRule) []*html.Node {
+	var elements []*html.Node
+	for _, elem := range dom.GetElementsByTagName(doc, "*") {
+		if rule(elem) {
+			elements = append(elements, elem)
+		}
+	}
+
+	return elements
+}
+
+func dateSelectorRule(n *html.Node) bool {
 	id := strings.ToLower(dom.GetAttribute(n, "id"))
 	class := strings.ToLower(dom.GetAttribute(n, "class"))
 	itemProp := strings.ToLower(dom.GetAttribute(n, "itemprop"))
@@ -83,7 +96,7 @@ func dateSelector(n *html.Node) bool {
 	return true
 }
 
-func additionalSelector(n *html.Node) bool {
+func additionalSelectorRule(n *html.Node) bool {
 	class := strings.ToLower(dom.GetAttribute(n, "class"))
 
 	switch {
@@ -95,7 +108,7 @@ func additionalSelector(n *html.Node) bool {
 	}
 }
 
-func discardSelector(n *html.Node) bool {
+func discardSelectorRule(n *html.Node) bool {
 	id := strings.ToLower(dom.GetAttribute(n, "id"))
 	class := strings.ToLower(dom.GetAttribute(n, "class"))
 	tagName := dom.TagName(n)

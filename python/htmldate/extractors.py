@@ -52,15 +52,6 @@ from .validators import convert_date, date_validator
 
 LOGGER = logging.getLogger(__name__)
 
-def discard_unwanted(tree):
-    '''Delete unwanted sections of an HTML document and return them as a list'''
-    my_discarded = []
-    for expr in DISCARD_EXPRESSIONS:
-        for subtree in tree.xpath(expr):
-            my_discarded.append(subtree)
-            subtree.getparent().remove(subtree)
-    return tree, my_discarded
-
 
 def extract_partial_url_date(testurl, outputformat):
     """Extract an approximate date out of an URL string in Y-M format"""

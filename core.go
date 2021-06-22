@@ -94,6 +94,37 @@ func FromDocument(doc *html.Node, opts Options) (time.Time, error) {
 		return abbrResult, nil
 	}
 
+	// Use selectors + text content
+	// First try in pruned document
+	discarded := discardUnwanted(doc)
+	dateElements := findElementsWithRule(doc, dateSelectorRule)
+	dateResult := examineDateElements(dateElements, opts)
+	if !dateResult.IsZero() {
+		return dateResult, nil
+	}
+
+	// Search in the discarded elements (currently only footer)
+	for _, subTree := range discarded {
+		dateElements := findElementsWithRule(subTree, dateSelectorRule)
+		dateResult := examineDateElements(dateElements, opts)
+		if !dateResult.IsZero() {
+			return dateResult, nil
+		}
+	}
+
+	// Supply more expressions.
+	// Unfortunately, extensive search is not working right now since it
+	// requires `scrapinghub/dateparser`, but I keep this code here to make
+	// it similar with the original htmldate, so if in future dateparser is
+	// ported to Go, there are not many to change. TODO: NEED-DATEPARSER.
+	if opts.UseExtensiveSearch {
+		dateElements := findElementsWithRule(doc, additionalSelectorRule)
+		dateResult := examineDateElements(dateElements, opts)
+		if !dateResult.IsZero() {
+			return dateResult, nil
+		}
+	}
+
 	return timeZero, nil
 }
 
@@ -288,7 +319,8 @@ func examineAbbrElements(doc *html.Node, opts Options) time.Time {
 	}
 
 	// Try rescue in abbr content
-	dateResult := examineDateElements(doc, "abbr", opts)
+	abbrElements := dom.GetElementsByTagName(doc, "abbr")
+	dateResult := examineDateElements(abbrElements, opts)
 	if !dateResult.IsZero() {
 		return dateResult
 	}
@@ -296,11 +328,9 @@ func examineAbbrElements(doc *html.Node, opts Options) time.Time {
 	return timeZero
 }
 
-// examineDateElements scans elements with matching selector and check if their content
+// examineDateElements scans the specified elements and check if their content
 // contains an eligible date.
-func examineDateElements(doc *html.Node, selectors string, opts Options) time.Time {
-	elements := dom.QuerySelectorAll(doc, selectors)
-
+func examineDateElements(elements []*html.Node, opts Options) time.Time {
 	// Make sure elements exist and less than `maxPossibleCandidates`
 	if nElements := len(elements); nElements == 0 || nElements >= maxPossibleCandidates {
 		return timeZero

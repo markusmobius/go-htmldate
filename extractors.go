@@ -11,6 +11,20 @@ import (
 	"golang.org/x/net/html"
 )
 
+// discardUnwanted removes unwanted sections of an HTML document and
+// return the discarded elements as a list.
+func discardUnwanted(doc *html.Node) []*html.Node {
+	var discardedElements []*html.Node
+	for _, elem := range findElementsWithRule(doc, discardSelectorRule) {
+		if elem.Parent != nil {
+			elem.Parent.RemoveChild(elem)
+			discardedElements = append(discardedElements, elem)
+		}
+	}
+
+	return discardedElements
+}
+
 // extractUrlDate extract the date out of an URL string complying
 // with the Y-M-D format.
 func extractUrlDate(url string, opts Options) time.Time {
