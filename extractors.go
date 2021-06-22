@@ -181,6 +181,22 @@ func timestampSearch(htmlString string, opts Options) time.Time {
 	return timeZero
 }
 
+// idiosyncrasiesSearch looks for author-written dates throughout the web page.
+func idiosyncrasiesSearch(htmlString string, opts Options) time.Time {
+	// Do it in order of DE-EN-TR
+	result := extractIdiosyncrasy(rxDePattern, htmlString, opts)
+
+	if result.IsZero() {
+		result = extractIdiosyncrasy(rxEnPattern, htmlString, opts)
+	}
+
+	if result.IsZero() {
+		result = extractIdiosyncrasy(rxTrPattern, htmlString, opts)
+	}
+
+	return result
+}
+
 // extractIdiosyncrasy looks for a precise pattern throughout the web page.
 func extractIdiosyncrasy(rxIdiosyncrasy *regexp.Regexp, htmlString string, opts Options) time.Time {
 	var candidate time.Time
@@ -203,9 +219,27 @@ func extractIdiosyncrasy(rxIdiosyncrasy *regexp.Regexp, htmlString string, opts 
 		month, _ := strconv.Atoi(parts[groups[2]])
 		day, _ := strconv.Atoi(parts[groups[3]])
 		candidate = time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
-	} else if tmp := parts[groups[3]]; tmp == "2" || tmp == "4" {
+	} else if tmp := len(parts[groups[3]]); tmp == 2 || tmp == 4 {
+		year, _ := strconv.Atoi(parts[groups[3]])
+		month, _ := strconv.Atoi(parts[groups[2]])
+		day, _ := strconv.Atoi(parts[groups[1]])
+
 		// Switch to MM/DD/YY if necessary
+		if month > 12 {
+			day, month = month, day
+		}
+
+		// Append year if necessary
+		if year < 100 {
+			year = 2000 + year
+		}
+
+		candidate = time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
 	}
 
-	return candidate
+	if validateDate(candidate, opts) {
+		return candidate
+	}
+
+	return timeZero
 }

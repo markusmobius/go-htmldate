@@ -131,7 +131,7 @@ func FromDocument(doc *html.Node, opts Options) (time.Time, error) {
 		return timeResult, nil
 	}
 
-	// Finished with elements, try string search
+	// Try string search
 	cleanDocument(doc)
 	htmlString := dom.OuterHTML(doc)
 
@@ -139,6 +139,12 @@ func FromDocument(doc *html.Node, opts Options) (time.Time, error) {
 	timestampResult := timestampSearch(htmlString, opts)
 	if !timestampResult.IsZero() {
 		return timestampResult, nil
+	}
+
+	// Precise patterns and idiosyncrasies
+	textResult := idiosyncrasiesSearch(htmlString, opts)
+	if !textResult.IsZero() {
+		return textResult, nil
 	}
 
 	return timeZero, nil
