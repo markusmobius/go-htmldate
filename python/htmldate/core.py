@@ -92,55 +92,6 @@ def search_pattern(htmlstring, pattern, catch, yearpat, original_date, min_date,
     return select_candidate(candidates, catch, yearpat, original_date, min_date, max_date)
 
 
-def examine_time_elements(tree, outputformat, extensive_search, original_date, min_date, max_date):
-    '''Scan the page for time elements and check if their content contains an eligible date'''
-    elements = tree.findall('.//time')
-    if elements is not None and len(elements) < MAX_POSSIBLE_CANDIDATES:
-        # scan all the tags and look for the newest one
-        reference = 0
-        for elem in elements:
-            shortcut_flag = False
-            # go for datetime
-            if 'datetime' in elem.attrib and len(elem.get('datetime')) > 6:
-                # shortcut: time pubdate
-                if 'pubdate' in elem.attrib and elem.get('pubdate') == 'pubdate':
-                    if original_date is True:
-                        shortcut_flag = True
-                    LOGGER.debug('time pubdate found: %s', elem.get('datetime'))
-                # first choice: entry-date + datetime attribute
-                elif 'class' in elem.attrib:
-                    if elem.get('class').startswith('entry-date') or elem.get('class').startswith('entry-time'):
-                        # shortcut
-                        if original_date is True:
-                            shortcut_flag = True
-                        LOGGER.debug('time/datetime found: %s', elem.get('datetime'))
-                    # updated time
-                    elif elem.get('class') == 'updated' and original_date is False:
-                        LOGGER.debug('updated time/datetime found: %s', elem.get('datetime'))
-                # datetime attribute
-                else:
-                    LOGGER.debug('time/datetime found: %s', elem.get('datetime'))
-                # analyze attribute
-                if shortcut_flag is True:
-                    attempt = try_ymd_date(elem.get('datetime'), outputformat, extensive_search, min_date, max_date)
-                    if attempt is not None:
-                        return attempt
-                else:
-                    reference = compare_reference(reference, elem.get('datetime'), outputformat, extensive_search, original_date, min_date, max_date)
-                    if reference > 0:
-                        break
-            # bare text in element
-            elif elem.text is not None and len(elem.text) > 6:
-                LOGGER.debug('time/datetime found: %s', elem.text)
-                reference = compare_reference(reference, elem.text, outputformat, extensive_search, original_date, min_date, max_date)
-            # else...
-        # return
-        converted = check_extracted_reference(reference, outputformat, min_date, max_date)
-        if converted is not None:
-            return converted
-    return None
-
-
 def normalize_match(match):
     '''Normalize string output by adding "0" if necessary.'''
     if len(match.group(1)) == 1:
@@ -288,13 +239,6 @@ def search_page(htmlstring, outputformat, original_date, min_date, max_date):
 
 
 def find_date(htmlobject, extensive_search=True, original_date=False, outputformat='%Y-%m-%d', url=None, verbose=False, min_date=None, max_date=None):
-    # try time elements
-    time_result = examine_time_elements(
-        tree, outputformat, extensive_search, original_date, min_date, max_date
-    )
-    if time_result is not None:
-        return time_result
-
     # clean before string search
     try:
         cleaned_html = HTML_CLEANER.clean_html(tree)

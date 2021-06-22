@@ -88,7 +88,7 @@ func FromDocument(doc *html.Node, opts Options) (time.Time, error) {
 		return jsonResult, nil
 	}
 
-	// Try abbr elements
+	// Try <abbr> elements
 	abbrResult := examineAbbrElements(doc, opts)
 	if !abbrResult.IsZero() {
 		return abbrResult, nil
@@ -98,7 +98,7 @@ func FromDocument(doc *html.Node, opts Options) (time.Time, error) {
 	// First try in pruned document
 	discarded := discardUnwanted(doc)
 	dateElements := findElementsWithRule(doc, dateSelectorRule)
-	dateResult := examineDateElements(dateElements, opts)
+	dateResult := examineOtherElements(dateElements, opts)
 	if !dateResult.IsZero() {
 		return dateResult, nil
 	}
@@ -106,7 +106,7 @@ func FromDocument(doc *html.Node, opts Options) (time.Time, error) {
 	// Search in the discarded elements (currently only footer)
 	for _, subTree := range discarded {
 		dateElements := findElementsWithRule(subTree, dateSelectorRule)
-		dateResult := examineDateElements(dateElements, opts)
+		dateResult := examineOtherElements(dateElements, opts)
 		if !dateResult.IsZero() {
 			return dateResult, nil
 		}
@@ -119,10 +119,16 @@ func FromDocument(doc *html.Node, opts Options) (time.Time, error) {
 	// ported to Go, there are not many to change. TODO: NEED-DATEPARSER.
 	if opts.UseExtensiveSearch {
 		dateElements := findElementsWithRule(doc, additionalSelectorRule)
-		dateResult := examineDateElements(dateElements, opts)
+		dateResult := examineOtherElements(dateElements, opts)
 		if !dateResult.IsZero() {
 			return dateResult, nil
 		}
+	}
+
+	// Try <time> elements
+	timeResult := examineTimeElements(doc, opts)
+	if !timeResult.IsZero() {
+		return timeResult, nil
 	}
 
 	return timeZero, nil
@@ -240,7 +246,7 @@ func examineHeader(doc *html.Node, opts Options) time.Time {
 	return headerDate
 }
 
-// examineAbbrElements scans the page for abbr elements and check if their content
+// examineAbbrElements scans the page for <abbr> elements and check if their content
 // contains an eligible date.
 func examineAbbrElements(doc *html.Node, opts Options) time.Time {
 	elements := dom.GetElementsByTagName(doc, "abbr")
@@ -281,7 +287,7 @@ func examineAbbrElements(doc *html.Node, opts Options) time.Time {
 		// Handle class
 		if class != "" {
 			if strIn(class, "published", "date-published", "time-published") {
-				text := strings.TrimSpace(etreeText(elem))
+				text := normalizeSpaces(etreeText(elem))
 				title := strings.TrimSpace(dom.GetAttribute(elem, "title"))
 
 				// Other attributes
@@ -303,7 +309,7 @@ func examineAbbrElements(doc *html.Node, opts Options) time.Time {
 				}
 
 				// Dates, not times of the day
-				if text != "" && len(text) > 10 {
+				if len(text) > 10 {
 					tryText := strings.TrimPrefix(text, "am ")
 					log.Debug().Msgf("abbr published found: %s", tryText)
 					reference = compareReference(reference, tryText, opts)
@@ -320,7 +326,7 @@ func examineAbbrElements(doc *html.Node, opts Options) time.Time {
 
 	// Try rescue in abbr content
 	abbrElements := dom.GetElementsByTagName(doc, "abbr")
-	dateResult := examineDateElements(abbrElements, opts)
+	dateResult := examineOtherElements(abbrElements, opts)
 	if !dateResult.IsZero() {
 		return dateResult
 	}
@@ -328,9 +334,70 @@ func examineAbbrElements(doc *html.Node, opts Options) time.Time {
 	return timeZero
 }
 
-// examineDateElements scans the specified elements and check if their content
+// examineTimeElements scans the page for <time> elements and check if their content
 // contains an eligible date.
-func examineDateElements(elements []*html.Node, opts Options) time.Time {
+func examineTimeElements(doc *html.Node, opts Options) time.Time {
+	elements := dom.GetElementsByTagName(doc, "time")
+
+	// Make sure elements exist and less than `maxPossibleCandidates`
+	if nElements := len(elements); nElements == 0 || nElements >= maxPossibleCandidates {
+		return timeZero
+	}
+
+	// Scan all the tags and look for the newest one
+	var reference int64
+	for _, elem := range elements {
+		var shortcutFlag bool
+		text := normalizeSpaces(etreeText(elem))
+		class := strings.TrimSpace(dom.GetAttribute(elem, "class"))
+		dateTime := strings.TrimSpace(dom.GetAttribute(elem, "datetime"))
+		pubDate := strings.TrimSpace(dom.GetAttribute(elem, "pubdate"))
+
+		if len(dateTime) > 6 { // Go for datetime attribute
+			if strings.ToLower(pubDate) == "pubdate" { // Shortcut: time pubdate
+				log.Debug().Msgf("time pubdate found: %s", dateTime)
+				if opts.UseOriginalDate {
+					shortcutFlag = true
+				}
+			} else if class != "" { // First choice: entry-date + datetime attribute
+				if strings.HasPrefix(class, "entry-date") || strings.HasPrefix(class, "entry-time") {
+					log.Debug().Msgf("time/datetime found: %s", dateTime)
+					if opts.UseOriginalDate {
+						shortcutFlag = true
+					}
+				} else if class == "updated" && !opts.UseOriginalDate {
+					log.Debug().Msgf("updated time/datetime found: %s", dateTime)
+				}
+			} else { // Datetime attribute
+				log.Debug().Msgf("time/datetime found: %s", dateTime)
+			}
+
+			// Analyze attribute
+			if shortcutFlag {
+				attempt := tryYmdDate(dateTime, opts)
+				if !attempt.IsZero() {
+					return attempt
+				}
+			} else {
+				reference = compareReference(reference, dateTime, opts)
+				if reference > 0 {
+					break
+				}
+			}
+		} else if len(text) > 6 { // Bare text in element
+			log.Debug().Msgf("time/datetime found in text: %s", text)
+			reference = compareReference(reference, text, opts)
+		}
+	}
+
+	// Return
+	converted := checkExtractedReference(reference, opts)
+	return converted
+}
+
+// examineOtherElements scans the specified elements and check if their content
+// contains an eligible date.
+func examineOtherElements(elements []*html.Node, opts Options) time.Time {
 	// Make sure elements exist and less than `maxPossibleCandidates`
 	if nElements := len(elements); nElements == 0 || nElements >= maxPossibleCandidates {
 		return timeZero
@@ -343,7 +410,7 @@ func examineDateElements(elements []*html.Node, opts Options) time.Time {
 		textContent := normalizeSpaces(dom.TextContent(elem))
 
 		// Simple length heuristics
-		if textContent != "" && len(textContent) > 6 {
+		if len(textContent) > 6 {
 			// Shorten and try the beginning of the string.
 			toExamine := strLimit(textContent, 48)
 
