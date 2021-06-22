@@ -87,7 +87,7 @@ func tryYmdDate(s string, opts Options) time.Time {
 // In the original Python library, this function is named `custom_parse`, but I
 // renamed it to `fastParse` because I think it's more suitable to its purpose.
 func fastParse(s string, opts Options) time.Time {
-	dt, err := dateparse.ParseAny(s, dateparse.PreferMonthFirst(false))
+	dt, err := dateparse.ParseAny(s)
 	if err != nil {
 		log.Error().Msgf("failed to parse \"%s\": %v", s, err)
 	}
@@ -123,12 +123,22 @@ func jsonSearch(doc *html.Node, opts Options) time.Time {
 		}
 
 		parts := rxJson.FindStringSubmatch(jsonText)
-		if len(parts) == 2 {
-			dt, err := time.Parse("2006-1-2", parts[1])
+		if len(parts) != 0 {
+			dt, err := time.Parse("2006-01-02", parts[1])
 			if err == nil && validateDate(dt, opts) {
 				return dt
 			}
 		}
+	}
+
+	return timeZero
+}
+
+// timestampSearch looks for timestamps throughout the html string.
+func timestampSearch(htmlString string, opts Options) time.Time {
+	parts := rxTimestampPattern.FindStringSubmatch(htmlString)
+	if len(parts) != 0 {
+		return fastParse(parts[1], opts)
 	}
 
 	return timeZero

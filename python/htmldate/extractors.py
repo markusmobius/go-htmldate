@@ -133,24 +133,6 @@ def regex_parse_multilingual(string):
     return dateobject
 
 
-def external_date_parser(string, outputformat):
-    """Use dateutil parser or dateparser module according to system settings"""
-    LOGGER.debug('send to external parser: %s', string)
-    try:
-        # dateparser installed or not
-        #if EXTERNAL_PARSER is not None:
-        target = EXTERNAL_PARSER.get_date_data(string)['date_obj']
-        #else:
-        #    target = FULL_PARSE(string, **DEFAULT_PARSER_PARAMS)
-    # 2 types of errors possible
-    except (OverflowError, ValueError):
-        target = None
-    # issue with data type
-    if target is not None:
-        return datetime.date.strftime(target, outputformat)
-    return None
-
-
 def img_search(tree, outputformat, min_date, max_date):
     '''Skim through image elements'''
     element = tree.find('.//meta[@property="og:image"]')
@@ -158,15 +140,6 @@ def img_search(tree, outputformat, min_date, max_date):
         result = extract_url_date(element.get('content'), outputformat)
         if result is not None and date_validator(result, outputformat, earliest=min_date, latest=max_date) is True:
             return result
-    return None
-
-
-def timestamp_search(htmlstring, outputformat, min_date, max_date):
-    '''Look for timestamps throughout the web page'''
-    tstamp_match = TIMESTAMP_PATTERN.search(htmlstring)
-    if tstamp_match and date_validator(tstamp_match.group(1), '%Y-%m-%d', earliest=min_date, latest=max_date):
-        LOGGER.debug('time regex found: %s', tstamp_match.group(0))
-        return convert_date(tstamp_match.group(1), '%Y-%m-%d', outputformat)
     return None
 
 

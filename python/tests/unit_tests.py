@@ -501,12 +501,6 @@ def test_regex_parse():
     assert regex_parse("1 Ara 1998") is not None
 
 
-def test_external_date_parser():
-    '''test external date parser'''
-    assert external_date_parser('Wednesday, January 1st 2020', OUTPUTFORMAT) == '2020-01-01'
-    assert external_date_parser('Random text with 2020', OUTPUTFORMAT) is None
-
-
 def test_url():
     '''test url parameter'''
     assert find_date('<html><body><p>Aaa, bbb.</p></body></html>', url='http://example.com/category/2016/07/12/key-words') == '2016-07-12'
@@ -655,7 +649,6 @@ if __name__ == '__main__':
     test_convert_date()
     test_candidate_selection()
     test_regex_parse()
-    test_external_date_parser()
     # test_header()
 
     # module-level

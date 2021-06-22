@@ -135,7 +135,12 @@ func FromDocument(doc *html.Node, opts Options) (time.Time, error) {
 	cleanDocument(doc)
 	htmlString := dom.OuterHTML(doc)
 
-	func(interface{}) {}(htmlString)
+	// String search using regex timestamp
+	timestampResult := timestampSearch(htmlString, opts)
+	if !timestampResult.IsZero() {
+		return timestampResult, nil
+	}
+
 	return timeZero, nil
 }
 

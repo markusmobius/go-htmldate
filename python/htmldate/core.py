@@ -239,11 +239,6 @@ def search_page(htmlstring, outputformat, original_date, min_date, max_date):
 
 
 def find_date(htmlobject, extensive_search=True, original_date=False, outputformat='%Y-%m-%d', url=None, verbose=False, min_date=None, max_date=None):
-    # date regex timestamp rescue
-    timestamp_result = timestamp_search(htmlstring, outputformat, min_date, max_date)
-    if timestamp_result is not None:
-        return timestamp_result
-
     # precise patterns and idiosyncrasies
     text_result = idiosyncrasies_search(htmlstring, outputformat, min_date, max_date)
     if text_result is not None:
