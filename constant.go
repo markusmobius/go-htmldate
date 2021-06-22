@@ -19,7 +19,10 @@ const (
 var (
 	rxLastNonDigits = regexp.MustCompile(`\D+$`)
 
-	rxMdyPattern = regexp.MustCompile(`(?i)` +
+	rxYmdPattern = regexp.MustCompile(`(?i)(\d{4})(?:[\-/.])?(\d{1,2})(?:[\-/.])?(\d{1,2})`)
+	rxDmyPattern = regexp.MustCompile(`(?i)(\d{1,2})(?:[\-/.])(\d{1,2})(?:[\-/.])(\d{4})`)
+
+	rxLongMdyPattern = regexp.MustCompile(`(?i)` +
 		`(January|February|March|April|May|June|July|` +
 		`August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|` +
 		`Oct|Nov|Dec|Januar|Jänner|Februar|Feber|März|Mai|Juni|Juli|Oktober|Dezember|` +
@@ -27,7 +30,7 @@ var (
 		`Oca|Şub|Mar|Nis|Haz|Tem|Ağu|Eyl|Eki|Kas|Ara) ` +
 		`([0-9]{1,2})(st|nd|rd|th)?,? ([0-9]{4})`)
 
-	rxDmyPattern = regexp.MustCompile(`(?i)` +
+	rxLongDmyPattern = regexp.MustCompile(`(?i)` +
 		`([0-9]{1,2})(st|nd|rd|th)? (of )?(January|` +
 		`February|March|April|May|June|July|August|September|October|November|December|` +
 		`Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Oct|Nov|Dec|Januar|Jänner|Februar|Feber|März|` +
@@ -35,7 +38,6 @@ var (
 		`Ağustos|Eylül|Ekim|Kasım|Aralık|Oca|Şub|Mar|Nis|Haz|Tem|Ağu|Eyl|Eki|Kas|Ara),? ` +
 		`([0-9]{4})`)
 
-	rxYmdPattern      = regexp.MustCompile(`(?i)([0-9]{4})-([0-9]{2})-([0-9]{2})`)
 	rxDateStubPattern = regexp.MustCompile(`(?i)([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{2,4})`)
 	rxEnglishDate     = regexp.MustCompile(`(?i)([0-9]{1,2})/([0-9]{1,2})/([0-9]{2,4})`)
 	rxCompleteUrl     = regexp.MustCompile(`(?i)([0-9]{4})[/-]([0-9]{1,2})[/-]([0-9]{1,2})`)

@@ -87,16 +87,53 @@ func tryYmdDate(s string, opts Options) time.Time {
 // In the original Python library, this function is named `custom_parse`, but I
 // renamed it to `fastParse` because I think it's more suitable to its purpose.
 func fastParse(s string, opts Options) time.Time {
-	dt, err := dateparse.ParseAny(s)
-	if err != nil {
-		log.Error().Msgf("failed to parse \"%s\": %v", s, err)
+	// Use regex first
+	// First try Y-M-D pattern since it's the one used in ISO-8601
+	parts := rxYmdPattern.FindStringSubmatch(s)
+	if len(parts) == 4 {
+		year, _ := strconv.Atoi(parts[1])
+		month, _ := strconv.Atoi(parts[2])
+		day, _ := strconv.Atoi(parts[3])
+
+		// Make sure month is at most 12, because if not then it's not YMD
+		if month <= 12 {
+			dt := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
+			if validateDate(dt, opts) {
+				return dt
+			}
+		}
 	}
 
-	if !validateDate(dt, opts) {
-		return timeZero
+	// Next try the D-M-Y pattern since it's the most common date format in the world
+	parts = rxDmyPattern.FindStringSubmatch(s)
+	if len(parts) == 4 {
+		day, _ := strconv.Atoi(parts[1])
+		month, _ := strconv.Atoi(parts[2])
+		year, _ := strconv.Atoi(parts[3])
+
+		// If month is more than 12, swap it with the day
+		if month > 12 && day <= 12 {
+			day, month = month, day
+		}
+
+		// Make sure month is at most 12, because if not then it's one of the bizzare date
+		// format, so just leave it to dateparse.
+		if month <= 12 {
+			dt := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
+			if validateDate(dt, opts) {
+				return dt
+			}
+		}
 	}
 
-	return dt
+	// Finally, just try using dateparse
+	dt, err := dateparse.ParseAny(s, dateparse.PreferMonthFirst(false))
+	if err == nil && validateDate(dt, opts) {
+		return dt
+	}
+
+	log.Error().Msgf("failed to parse \"%s\"", s)
+	return timeZero
 }
 
 // jsonSearch looks for JSON time patterns in JSON sections of the document.
@@ -142,4 +179,33 @@ func timestampSearch(htmlString string, opts Options) time.Time {
 	}
 
 	return timeZero
+}
+
+// extractIdiosyncrasy looks for a precise pattern throughout the web page.
+func extractIdiosyncrasy(rxIdiosyncrasy *regexp.Regexp, htmlString string, opts Options) time.Time {
+	var candidate time.Time
+	parts := rxIdiosyncrasy.FindStringSubmatch(htmlString)
+	if len(parts) == 0 {
+		return timeZero
+	}
+
+	var groups []int
+	if len(parts) >= 4 && parts[3] != "" {
+		groups = []int{0, 1, 2, 3}
+	} else if len(parts) >= 7 && parts[6] != "" {
+		groups = []int{0, 4, 5, 6}
+	} else {
+		return timeZero
+	}
+
+	if len(parts[1]) == 4 {
+		year, _ := strconv.Atoi(parts[groups[1]])
+		month, _ := strconv.Atoi(parts[groups[2]])
+		day, _ := strconv.Atoi(parts[groups[3]])
+		candidate = time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
+	} else if tmp := parts[groups[3]]; tmp == "2" || tmp == "4" {
+		// Switch to MM/DD/YY if necessary
+	}
+
+	return candidate
 }

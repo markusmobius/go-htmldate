@@ -44,7 +44,11 @@ func Test_tryYmdDate(t *testing.T) {
 }
 
 func Test_fastParse(t *testing.T) {
-	opts := Options{}
+	opts := Options{
+		MinDate: defaultMinDate,
+		MaxDate: defaultMaxDate,
+	}
+
 	format := func(t time.Time) string {
 		return t.Format("2006-01-02")
 	}
@@ -64,8 +68,8 @@ func Test_fastParse(t *testing.T) {
 	dt = fastParse("33.20.2004", opts)
 	assert.True(t, dt.IsZero())
 
-	dt = fastParse("12.12.2004", opts)
-	assert.Equal(t, "2004-12-12", format(dt))
+	dt = fastParse("12.01.2004", opts)
+	assert.Equal(t, "2004-01-12", format(dt))
 
 	dt = fastParse("2019 28 meh", opts)
 	assert.True(t, dt.IsZero())
