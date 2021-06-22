@@ -7,6 +7,7 @@ import (
 	"strings"
 	"unicode"
 
+	"github.com/go-shiori/dom"
 	"github.com/gogs/chardet"
 	"github.com/pingcap/parser/charset"
 	"golang.org/x/net/html"
@@ -15,6 +16,54 @@ import (
 	"golang.org/x/text/transform"
 	"golang.org/x/text/unicode/norm"
 )
+
+// cleanDocument cleans the document by discarding unwanted elements.
+func cleanDocument(doc *html.Node) {
+	// Remove comments
+	removeHtmlCommentNode(doc)
+
+	// Remove useless nodes
+	tagNames := []string{
+		// Embed elements
+		"object", "embed", "applet",
+		// Frame elements
+		"frame", "iframe",
+		// Others
+		"audio", "canvas", "datalist",
+		"figure", "label", "map", "math",
+		"picture", "rdf", "svg", "video",
+	}
+
+	for _, node := range dom.GetAllNodesWithTag(doc, tagNames...) {
+		if node.Parent != nil {
+			node.Parent.RemoveChild(node)
+		}
+	}
+}
+
+// removeHtmlCommentNode removes all `html.CommentNode` in document.
+func removeHtmlCommentNode(doc *html.Node) {
+	// Find all comment nodes
+	var finder func(*html.Node)
+	var commentNodes []*html.Node
+
+	finder = func(node *html.Node) {
+		if node.Type == html.CommentNode {
+			commentNodes = append(commentNodes, node)
+		}
+
+		for child := node.FirstChild; child != nil; child = child.NextSibling {
+			finder(child)
+		}
+	}
+
+	for child := doc.FirstChild; child != nil; child = child.NextSibling {
+		finder(child)
+	}
+
+	// Remove it
+	dom.RemoveNodes(commentNodes, nil)
+}
 
 // normalizeTextEncoding convert text encoding from NFD to NFC.
 // It also remove soft hyphen since apparently it's useless in web.

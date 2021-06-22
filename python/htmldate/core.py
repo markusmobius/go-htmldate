@@ -239,20 +239,6 @@ def search_page(htmlstring, outputformat, original_date, min_date, max_date):
 
 
 def find_date(htmlobject, extensive_search=True, original_date=False, outputformat='%Y-%m-%d', url=None, verbose=False, min_date=None, max_date=None):
-    # clean before string search
-    try:
-        cleaned_html = HTML_CLEANER.clean_html(tree)
-    # rare LXML error: no NULL bytes or control characters
-    except ValueError:
-        cleaned_html = tree
-    # robust conversion to string
-    try:
-        htmlstring = html.tostring(cleaned_html, pretty_print=False, encoding='unicode')
-    except UnicodeDecodeError:
-        htmlstring = html.tostring(cleaned_html, pretty_print=False).decode('utf-8', 'ignore')
-    # remove comments by hand as faulty in lxml?
-    # htmlstring = re.sub(r'<!--.+?-->', '', htmlstring, flags=re.DOTALL)
-
     # date regex timestamp rescue
     timestamp_result = timestamp_search(htmlstring, outputformat, min_date, max_date)
     if timestamp_result is not None:

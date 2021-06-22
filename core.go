@@ -131,6 +131,11 @@ func FromDocument(doc *html.Node, opts Options) (time.Time, error) {
 		return timeResult, nil
 	}
 
+	// Finished with elements, try string search
+	cleanDocument(doc)
+	htmlString := dom.OuterHTML(doc)
+
+	func(interface{}) {}(htmlString)
 	return timeZero, nil
 }
 
