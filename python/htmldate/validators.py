@@ -21,38 +21,6 @@ LOGGER = logging.getLogger(__name__)
 LOGGER.debug('date settings: %s %s %s', MIN_YEAR, LATEST_POSSIBLE, MAX_YEAR)
 
 
-@lru_cache(maxsize=32)
-def date_validator(date_input, outputformat, earliest=MIN_DATE, latest=LATEST_POSSIBLE):
-    """Validate a string w.r.t. the chosen outputformat and basic heuristics"""
-    # try if date can be parsed using chosen outputformat
-    if not isinstance(date_input, datetime.date):
-        # speed-up
-        try:
-            if outputformat == '%Y-%m-%d':
-                dateobject = datetime.datetime(int(date_input[:4]),
-                                               int(date_input[5:7]),
-                                               int(date_input[8:10]))
-            # default
-            else:
-                dateobject = datetime.datetime.strptime(date_input, outputformat)
-        except ValueError:
-            return False
-    else:
-        dateobject = date_input
-    # basic year validation
-    year = int(datetime.date.strftime(dateobject, '%Y'))
-    if MIN_YEAR <= year <= MAX_YEAR:
-        # not newer than today or stored variable
-        try:
-            if earliest <= dateobject.date() <= latest:
-                return True
-        except AttributeError:
-            if earliest <= dateobject <= latest:
-                return True
-    LOGGER.debug('date not valid: %s', date_input)
-    return False
-
-
 def output_format_validator(outputformat):
     """Validate the output format in the settings"""
     # test in abstracto
@@ -135,33 +103,3 @@ def convert_date(datestring, inputformat, outputformat):
     # normal
     dateobject = datetime.datetime.strptime(datestring, inputformat)
     return dateobject.strftime(outputformat)
-
-
-def get_min_date(min_date):
-    '''Validates the minimum date and/or defaults to earliest plausible date'''
-    if min_date is not None:
-        try:
-            # internal conversion from Y-M-D format
-            min_date = datetime.date(int(min_date[:4]),
-                                     int(min_date[5:7]),
-                                     int(min_date[8:10]))
-        except ValueError:
-            min_date = MIN_DATE
-    else:
-        min_date = MIN_DATE
-    return min_date
-
-
-def get_max_date(max_date):
-    '''Validates the maximum date and/or defaults to latest plausible date'''
-    if max_date is not None:
-        try:
-            # internal conversion from Y-M-D format
-            max_date = datetime.date(int(max_date[:4]),
-                                     int(max_date[5:7]),
-                                     int(max_date[8:10]))
-        except ValueError:
-            max_date = LATEST_POSSIBLE
-    else:
-        max_date = LATEST_POSSIBLE
-    return max_date

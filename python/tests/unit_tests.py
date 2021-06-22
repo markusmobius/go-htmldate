@@ -141,24 +141,6 @@ def load_mock_page(url):
 #    pass
 
 
-def test_input():
-    '''test if loaded strings/trees are handled properly'''
-    assert load_html(123) is None
-    assert load_html('<html><body>XYZ</body></html>') is not None
-    assert load_html('<'*100) is None
-    assert load_html(b'<html><body>XYZ</body></html>') is not None
-    assert load_html(b'<'*100) is None
-    assert load_html('https://httpbin.org/html') is not None
-    assert find_date(None) is None
-    # min and max date output
-    assert get_min_date('2020-02-20') == datetime.date(2020, 2, 20)
-    assert get_min_date(None) == datetime.date(1995, 1, 1)
-    assert get_min_date('3030-30-50') == datetime.date(1995, 1, 1)
-    assert get_max_date('2020-02-20') == datetime.date(2020, 2, 20)
-    assert get_max_date(None) == datetime.date.today()
-    assert get_max_date('3030-30-50') == datetime.date.today()
-
-
 def test_no_date():
     '''these pages should not return any date'''
     assert find_date(load_mock_page('https://www.intel.com/content/www/us/en/legal/terms-of-use.html')) is None
@@ -631,25 +613,6 @@ def test_cli():
     assert examine('<html><body>2016-07-12</body></html>', extensive_bool=True, maxdate='2017-41-41') == '2016-07-12'
 
 
-def test_download():
-    '''test page download'''
-    assert examine(' ', False) is None
-    assert examine('0'*int(10e7), False) is None
-    assert fetch_url('https://httpbin.org/status/404') is None
-    url = 'https://httpbin.org/status/200'
-    teststring = fetch_url(url)
-    assert teststring is None
-    assert examine(teststring) is None
-    url = 'https://httpbin.org/links/2/2'
-    teststring = fetch_url(url)
-    assert teststring is not None
-    assert examine(teststring) is None
-    url = 'https://httpbin.org/html'
-    teststring = fetch_url(url)
-    assert teststring is not None
-    assert examine(teststring, False) is None
-
-
 def test_readme_examples():
     '''Test README example for consistency'''
     with pytest.raises(ValueError):
@@ -688,10 +651,8 @@ if __name__ == '__main__':
     test_readme_examples()
 
     # function-level
-    test_input()
     test_search_pattern()
     test_convert_date()
-    test_compare_reference()
     test_candidate_selection()
     test_regex_parse()
     test_external_date_parser()
@@ -713,6 +674,3 @@ if __name__ == '__main__':
     # cli
     test_parser()
     test_cli()
-
-    # loading functions
-    test_download()
