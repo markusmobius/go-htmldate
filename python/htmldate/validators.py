@@ -103,18 +103,6 @@ def plausible_year_filter(htmlstring, pattern, yearpat, tocomplete=False):
     return occurrences
 
 
-def compare_values(reference, attempt, outputformat, original_date):
-    """Compare the date expression to a reference"""
-    timestamp = time.mktime(datetime.datetime.strptime(attempt, outputformat).timetuple())
-    if original_date is True:
-        if reference == 0 or timestamp < reference:
-            reference = timestamp
-    else:
-        if timestamp > reference:
-            reference = timestamp
-    return reference
-
-
 @lru_cache(maxsize=32)
 def filter_ymd_candidate(bestmatch, pattern, original_date, copyear, outputformat, min_date, max_date):
     """Filter free text candidates in the YMD format"""
@@ -147,16 +135,6 @@ def convert_date(datestring, inputformat, outputformat):
     # normal
     dateobject = datetime.datetime.strptime(datestring, inputformat)
     return dateobject.strftime(outputformat)
-
-
-def check_extracted_reference(reference, outputformat, min_date, max_date):
-    '''Test if the extracted reference date can be returned'''
-    if reference > 0:
-        dateobject = datetime.datetime.fromtimestamp(reference)
-        converted = dateobject.strftime(outputformat)
-        if date_validator(converted, outputformat, earliest=min_date, latest=max_date) is True:
-            return converted
-    return None
 
 
 def get_min_date(min_date):

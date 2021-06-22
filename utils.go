@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"io"
 	"io/ioutil"
+	"strings"
 	"unicode"
 
 	"github.com/gogs/chardet"
@@ -51,6 +52,7 @@ func parseHTMLDocument(r io.Reader) (*html.Node, error) {
 	return html.Parse(r)
 }
 
+// isDigit check if string only consisted of digit number.
 func isDigit(s string) bool {
 	for _, r := range s {
 		if !unicode.IsDigit(r) {
@@ -61,11 +63,43 @@ func isDigit(s string) bool {
 	return true
 }
 
+// getDigitCount returns count of digit number in the specified string.
+func getDigitCount(s string) int {
+	var nDigit int
+	for _, r := range s {
+		if unicode.IsDigit(r) {
+			nDigit++
+		}
+	}
+	return nDigit
+}
+
+// etreeText returns texts before first subelement. If there was no text,
+// this function will returns an empty string.
+func etreeText(element *html.Node) string {
+	if element == nil {
+		return ""
+	}
+
+	buffer := bytes.NewBuffer(nil)
+	for child := element.FirstChild; child != nil; child = child.NextSibling {
+		if child.Type == html.ElementNode {
+			break
+		} else if child.Type == html.TextNode {
+			buffer.WriteString(child.Data)
+		}
+	}
+
+	return buffer.String()
+}
+
+// inMap check if keys exist in map.
 func inMap(key string, mapString map[string]struct{}) bool {
 	_, exist := mapString[key]
 	return exist
 }
 
+// strIn check if string exists in slice.
 func strIn(s string, args ...string) bool {
 	for _, arg := range args {
 		if s == arg {
@@ -73,4 +107,20 @@ func strIn(s string, args ...string) bool {
 		}
 	}
 	return false
+}
+
+// strLimit cut a string until the specified limit.
+func strLimit(s string, limit int) string {
+	if len(s) > limit {
+		s = s[:limit]
+	}
+
+	return s
+}
+
+// normalizeSpaces converts all whitespaces to normal spaces, remove multiple adjacent
+// whitespaces and trim the string.
+func normalizeSpaces(s string) string {
+	s = strings.Join(strings.Fields(s), " ")
+	return strings.TrimSpace(s)
 }

@@ -5,7 +5,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"unicode"
 
 	"github.com/araddon/dateparse"
 	"github.com/go-shiori/dom"
@@ -44,13 +43,7 @@ func tryYmdDate(s string, opts Options) time.Time {
 	}
 
 	// Count how many digit number in this string
-	var nDigit int
-	for _, r := range s {
-		if unicode.IsDigit(r) {
-			nDigit++
-		}
-	}
-
+	nDigit := getDigitCount(s)
 	if nDigit < 4 || nDigit > 18 {
 		return timeZero
 	}

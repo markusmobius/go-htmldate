@@ -6,13 +6,19 @@ import (
 )
 
 var (
-	timeZero          = time.Time{}
-	defaultDateFormat = "2006-1-2"
-	defaultMinDate    = time.Date(1995, 1, 1, 0, 0, 0, 0, time.UTC)
-	defaultMaxDate    = time.Now()
+	timeZero       = time.Time{}
+	defaultMinDate = time.Date(1995, 1, 1, 0, 0, 0, 0, time.UTC)
+	defaultMaxDate = time.Now()
+)
+
+const (
+	maxPossibleCandidates = 100
+	defaultDateFormat     = "2006-1-2"
 )
 
 var (
+	rxLastNonDigits = regexp.MustCompile(`\D+$`)
+
 	rxMdyPattern = regexp.MustCompile(`(?i)` +
 		`(January|February|March|April|May|June|July|` +
 		`August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|` +

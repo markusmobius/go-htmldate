@@ -21,3 +21,30 @@ func validateDate(date time.Time, opts Options) bool {
 
 	return true
 }
+
+// compareValues compares the date expression to a reference.
+func compareValues(reference int64, attempt time.Time, opts Options) int64 {
+	timestamp := attempt.Unix()
+	if opts.UseOriginalDate {
+		if reference == 0 || timestamp < reference {
+			reference = timestamp
+		}
+	} else {
+		if timestamp > reference {
+			reference = timestamp
+		}
+	}
+
+	return reference
+}
+
+// checkExtractedReference tests if the extracted reference date can be returned.
+func checkExtractedReference(reference int64, opts Options) time.Time {
+	if reference > 0 {
+		dt := time.Unix(reference, 0)
+		if validateDate(dt, opts) {
+			return dt
+		}
+	}
+	return timeZero
+}

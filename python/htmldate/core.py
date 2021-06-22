@@ -41,46 +41,6 @@ def logstring(element):
     '''Format the element to be logged to a string.'''
     return html.tostring(element, pretty_print=False, encoding='unicode').strip()
 
-@lru_cache(maxsize=32)
-def examine_date_elements(tree, expression, outputformat, extensive_search, min_date, max_date):
-    """Check HTML elements one by one for date expressions"""
-    try:
-        elements = tree.xpath(expression)
-    except etree.XPathEvalError as err:
-        LOGGER.error('lxml expression %s throws an error: %s', expression, err)
-        return None
-    if not elements or len(elements) > MAX_POSSIBLE_CANDIDATES:
-        return None
-    # loop through the elements to analyze
-    attempt = None
-    for elem in elements:
-        # trim
-        textcontent = re.sub(r'[\n\r\s\t]+', ' ', elem.text_content(), re.MULTILINE).strip()
-        # simple length heuristics
-        if textcontent is not None and len(textcontent) > 6:
-            # shorten and try the beginning of the string
-            # trim non-digits at the end of the string
-            toexamine = re.sub(r'\D+$', '', textcontent[:48])
-            # more than 4 digits required # list(filter(str.isdigit, toexamine))
-            #if len([c for c in toexamine if c.isdigit()]) < 4:
-            #    continue
-            LOGGER.debug('analyzing (HTML): %s', html.tostring(
-                elem, pretty_print=False, encoding='unicode').translate(
-                    {ord(c): None for c in '\n\t\r'}
-                ).strip()[:100])
-            attempt = try_ymd_date(toexamine, outputformat, extensive_search, min_date, max_date)
-            if attempt is not None:
-                break
-        # try link title (Blogspot)
-        title_attr = elem.get('title')
-        if title_attr is not None and len(title_attr) > 0:
-            toexamine = re.sub(r'\D+$', '', title_attr[:48])
-            attempt = try_ymd_date(toexamine, outputformat, extensive_search, min_date, max_date)
-            if attempt is not None:
-                break
-    # catchall
-    return attempt
-
 
 def select_candidate(occurrences, catch, yearpat, original_date, min_date, max_date):
     """Select a candidate among the most frequent matches"""
@@ -130,84 +90,6 @@ def search_pattern(htmlstring, pattern, catch, yearpat, original_date, min_date,
     """Chained candidate filtering and selection"""
     candidates = plausible_year_filter(htmlstring, pattern, yearpat)
     return select_candidate(candidates, catch, yearpat, original_date, min_date, max_date)
-
-
-def try_expression(expression, outputformat, extensive_search, min_date, max_date):
-    '''Check if the text string could be a valid date expression'''
-    # trim
-    textcontent = re.sub(r'[\n\r\s\t]+', ' ', expression, re.MULTILINE).strip()
-    # simple length heuristics list(filter(str.isdigit, textcontent))
-    if not textcontent or len([c for c in textcontent if c.isdigit()]) < 4:
-        return None
-    # try the beginning of the string
-    return try_ymd_date(textcontent[:48], outputformat, extensive_search, min_date, max_date)
-
-
-@lru_cache(maxsize=32)
-def compare_reference(reference, expression, outputformat, extensive_search, original_date, min_date, max_date):
-    '''Compare candidate to current date reference (includes date validation and older/newer test)'''
-    attempt = try_expression(expression, outputformat, extensive_search, min_date, max_date)
-    if attempt is not None:
-        new_reference = compare_values(reference, attempt, outputformat, original_date)
-    else:
-        new_reference = reference
-    return new_reference
-
-
-def examine_abbr_elements(tree, outputformat, extensive_search, original_date, min_date, max_date):
-    '''Scan the page for abbr elements and check if their content contains an eligible date'''
-    elements = tree.findall('.//abbr')
-    if elements is not None and len(elements) < MAX_POSSIBLE_CANDIDATES:
-        reference = 0
-        for elem in elements:
-            # data-utime (mostly Facebook)
-            if 'data-utime' in elem.attrib:
-                try:
-                    candidate = int(elem.get('data-utime'))
-                except ValueError:
-                    continue
-                LOGGER.debug('data-utime found: %s', candidate)
-                # look for original date
-                if original_date is True:
-                    if reference == 0:
-                        reference = candidate
-                    elif candidate < reference:
-                        reference = candidate
-                # look for newest (i.e. largest time delta)
-                else:
-                    if candidate > reference:
-                        reference = candidate
-            # class
-            if 'class' in elem.attrib:
-                if elem.get('class') in ('published', 'date-published', 'time published'):
-                    # other attributes
-                    if 'title' in elem.attrib:
-                        trytext = elem.get('title')
-                        LOGGER.debug('abbr published-title found: %s', trytext)
-                        # shortcut
-                        if original_date is True:
-                            attempt = try_ymd_date(trytext, outputformat, extensive_search, min_date, max_date)
-                            if attempt is not None:
-                                return attempt
-                        else:
-                            reference = compare_reference(reference, trytext, outputformat, extensive_search, original_date, min_date, max_date)
-                            # faster execution
-                            if reference > 0:
-                                break
-                    # dates, not times of the day
-                    if elem.text and len(elem.text) > 10:
-                        trytext = re.sub(r'^am ', '', elem.text)
-                        LOGGER.debug('abbr published found: %s', trytext)
-                        reference = compare_reference(reference, trytext, outputformat, extensive_search, original_date, min_date, max_date)
-        # convert and return
-        converted = check_extracted_reference(reference, outputformat, min_date, max_date)
-        if converted is not None:
-            return converted
-        # try rescue in abbr content
-        dateresult = examine_date_elements(tree, './/abbr', outputformat, extensive_search, min_date, max_date)
-        if dateresult is not None:
-            return dateresult
-    return None
 
 
 def examine_time_elements(tree, outputformat, extensive_search, original_date, min_date, max_date):
@@ -406,13 +288,6 @@ def search_page(htmlstring, outputformat, original_date, min_date, max_date):
 
 
 def find_date(htmlobject, extensive_search=True, original_date=False, outputformat='%Y-%m-%d', url=None, verbose=False, min_date=None, max_date=None):
-    # try abbr elements
-    abbr_result = examine_abbr_elements(
-        tree, outputformat, extensive_search, original_date, min_date, max_date
-    )
-    if abbr_result is not None:
-        return abbr_result
-
     # expressions + text_content
     # first try in pruned tree
     search_tree, discarded = discard_unwanted(deepcopy(tree))

@@ -367,14 +367,6 @@ def test_output_format_validator():
 #    assert examine_header(tree, OUTPUTFORMAT, PARSER)
 
 
-def test_compare_reference(extensive_search=False, original_date=False, min_date=MIN_DATE, max_date=LATEST_POSSIBLE):
-    '''test comparison function'''
-    assert compare_reference(0, 'AAAA', OUTPUTFORMAT, extensive_search, original_date, min_date, max_date) == 0
-    assert compare_reference(1517500000, '2018-33-01', OUTPUTFORMAT, extensive_search, original_date, min_date, max_date) == 1517500000
-    assert 1517400000 < compare_reference(0, '2018-02-01', OUTPUTFORMAT, extensive_search, original_date, min_date, max_date) < 1517500000
-    assert compare_reference(1517500000, '2018-02-01', OUTPUTFORMAT, extensive_search, original_date, min_date, max_date) == 1517500000
-
-
 def test_candidate_selection(original_date=False, min_date=MIN_DATE, max_date=LATEST_POSSIBLE):
     '''test the algorithm for several candidates'''
     catch = re.compile(r'([0-9]{4})-([0-9]{2})-([0-9]{2})')

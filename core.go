@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -85,6 +86,12 @@ func FromDocument(doc *html.Node, opts Options) (time.Time, error) {
 	jsonResult := jsonSearch(doc, opts)
 	if !jsonResult.IsZero() {
 		return jsonResult, nil
+	}
+
+	// Try abbr elements
+	abbrResult := examineAbbrElements(doc, opts)
+	if !abbrResult.IsZero() {
+		return abbrResult, nil
 	}
 
 	return timeZero, nil
@@ -200,4 +207,168 @@ func examineHeader(doc *html.Node, opts Options) time.Time {
 	}
 
 	return headerDate
+}
+
+// examineAbbrElements scans the page for abbr elements and check if their content
+// contains an eligible date.
+func examineAbbrElements(doc *html.Node, opts Options) time.Time {
+	elements := dom.GetElementsByTagName(doc, "abbr")
+
+	// Make sure elements exist and less than `maxPossibleCandidates`
+	if nElements := len(elements); nElements == 0 || nElements >= maxPossibleCandidates {
+		return timeZero
+	}
+
+	var reference int64
+	for _, elem := range elements {
+		class := strings.TrimSpace(dom.GetAttribute(elem, "class"))
+		dataUtime := strings.TrimSpace(dom.GetAttribute(elem, "data-utime"))
+
+		// Handle data-utime (mostly Facebook)
+		if dataUtime != "" {
+			candidate, err := strconv.ParseInt(dataUtime, 10, 64)
+			if err != nil {
+				continue
+			}
+			log.Debug().Msgf("data-utime found: %d", candidate)
+
+			if opts.UseOriginalDate {
+				// Look for original date
+				if reference == 0 {
+					reference = candidate
+				} else if candidate < reference {
+					reference = candidate
+				}
+			} else {
+				// Look for newest (i.e. largest time delta)
+				if candidate > reference {
+					reference = candidate
+				}
+			}
+		}
+
+		// Handle class
+		if class != "" {
+			if strIn(class, "published", "date-published", "time-published") {
+				text := strings.TrimSpace(etreeText(elem))
+				title := strings.TrimSpace(dom.GetAttribute(elem, "title"))
+
+				// Other attributes
+				if title != "" {
+					tryText := title
+					log.Debug().Msgf("abbr published-title found: %s", tryText)
+
+					if opts.UseOriginalDate {
+						attempt := tryYmdDate(tryText, opts)
+						if !attempt.IsZero() {
+							return attempt
+						}
+					} else {
+						reference = compareReference(reference, tryText, opts)
+						if reference > 0 {
+							break
+						}
+					}
+				}
+
+				// Dates, not times of the day
+				if text != "" && len(text) > 10 {
+					tryText := strings.TrimPrefix(text, "am ")
+					log.Debug().Msgf("abbr published found: %s", tryText)
+					reference = compareReference(reference, tryText, opts)
+				}
+			}
+		}
+	}
+
+	// Convert and return
+	converted := checkExtractedReference(reference, opts)
+	if !converted.IsZero() {
+		return converted
+	}
+
+	// Try rescue in abbr content
+	dateResult := examineDateElements(doc, "abbr", opts)
+	if !dateResult.IsZero() {
+		return dateResult
+	}
+
+	return timeZero
+}
+
+// examineDateElements scans elements with matching selector and check if their content
+// contains an eligible date.
+func examineDateElements(doc *html.Node, selectors string, opts Options) time.Time {
+	elements := dom.QuerySelectorAll(doc, selectors)
+
+	// Make sure elements exist and less than `maxPossibleCandidates`
+	if nElements := len(elements); nElements == 0 || nElements >= maxPossibleCandidates {
+		return timeZero
+	}
+
+	// Loop through the elements to analyze
+	var attempt time.Time
+	for _, elem := range elements {
+		// Trim text content
+		textContent := normalizeSpaces(dom.TextContent(elem))
+
+		// Simple length heuristics
+		if textContent != "" && len(textContent) > 6 {
+			// Shorten and try the beginning of the string.
+			toExamine := strLimit(textContent, 48)
+
+			// Trim non-digits at the end of the string.
+			toExamine = rxLastNonDigits.ReplaceAllString(toExamine, "")
+
+			// Log the examined element
+			elemHTML := dom.OuterHTML(elem)
+			if len(elemHTML) > 100 {
+				elemHTML = elemHTML[:100]
+			}
+			log.Debug().Msgf("analyzing HTML: %s", elemHTML)
+
+			// Attempt to extract date
+			attempt = tryYmdDate(toExamine, opts)
+			if !attempt.IsZero() {
+				return attempt
+			}
+		}
+
+		// Try link title (Blogspot)
+		titleAttr := strings.TrimSpace(dom.GetAttribute(elem, "title"))
+		if titleAttr != "" {
+			toExamine := strLimit(titleAttr, 48)
+			toExamine = rxLastNonDigits.ReplaceAllString(toExamine, "")
+			attempt = tryYmdDate(toExamine, opts)
+			if !attempt.IsZero() {
+				return attempt
+			}
+		}
+	}
+
+	return timeZero
+}
+
+// compareReference compares candidate to current date reference
+// (includes date validation and older/newer test)
+func compareReference(reference int64, expression string, opts Options) int64 {
+	attempt := tryExpression(expression, opts)
+	if !attempt.IsZero() {
+		return compareValues(reference, attempt, opts)
+	} else {
+		return reference
+	}
+}
+
+// tryExpression checks if the text string could be a valid date expression.
+func tryExpression(expression string, opts Options) time.Time {
+	// Trim expression
+	expression = normalizeSpaces(expression)
+	if expression == "" || getDigitCount(expression) < 4 {
+		return timeZero
+	}
+
+	// Try the beginning of the string
+	expression = strLimit(expression, 48)
+	return tryYmdDate(expression, opts)
 }
