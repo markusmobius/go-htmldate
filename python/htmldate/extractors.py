@@ -114,13 +114,3 @@ def regex_parse_multilingual(string):
     LOGGER.debug('English text parse: %s', dateobject)
     return dateobject
 
-
-def img_search(tree, outputformat, min_date, max_date):
-    '''Skim through image elements'''
-    element = tree.find('.//meta[@property="og:image"]')
-    if element is not None and 'content' in element.attrib:
-        result = extract_url_date(element.get('content'), outputformat)
-        if result is not None and date_validator(result, outputformat, earliest=min_date, latest=max_date) is True:
-            return result
-    return None
-

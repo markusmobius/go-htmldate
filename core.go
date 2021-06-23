@@ -164,6 +164,37 @@ func FromDocument(doc *html.Node, opts Options) (time.Time, error) {
 		}
 	}
 
+	// Try meta images
+	imgResult := metaImgSearch(doc, opts)
+	if !imgResult.IsZero() {
+		return imgResult, nil
+	}
+
+	// Last resort: do extensive search.
+	// Like before, unfortunately extensive search is not working right now since it
+	// requires `scrapinghub/dateparser`, but I keep this code here so if in future
+	// dateparser is ported to Go, there are not many to change. TODO: NEED-DATEPARSER.
+	if opts.UseExtensiveSearch {
+		log.Debug().Msg("extensive search started")
+
+		// Process div and p elements
+		// TODO: check all and decide according to original_date
+		var reference int64
+		for _, elem := range dom.GetAllNodesWithTag(doc, "div", "p") {
+			for _, child := range dom.ChildNodes(elem) {
+				if child.Type == html.TextNode {
+					reference = compareReference(reference, child.Data, opts)
+				}
+			}
+		}
+
+		// Return
+		converted := checkExtractedReference(reference, opts)
+		if !converted.IsZero() {
+			return converted, nil
+		}
+	}
+
 	return timeZero, nil
 }
 

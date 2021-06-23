@@ -232,6 +232,21 @@ func idiosyncrasiesSearch(htmlString string, opts Options) time.Time {
 	return result
 }
 
+// metaImgSearch looks for url in <meta> image elements.
+func metaImgSearch(doc *html.Node, opts Options) time.Time {
+	for _, elem := range dom.QuerySelectorAll(doc, `meta[property="image"]`) {
+		content := strings.TrimSpace(dom.GetAttribute(elem, "content"))
+		if content != "" {
+			result := extractUrlDate(content, opts)
+			if validateDate(result, opts) {
+				return result
+			}
+		}
+	}
+
+	return timeZero
+}
+
 // extractIdiosyncrasy looks for a precise pattern throughout the web page.
 func extractIdiosyncrasy(rxIdiosyncrasy *regexp.Regexp, htmlString string, opts Options) time.Time {
 	var candidate time.Time

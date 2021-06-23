@@ -239,26 +239,8 @@ def search_page(htmlstring, outputformat, original_date, min_date, max_date):
 
 
 def find_date(htmlobject, extensive_search=True, original_date=False, outputformat='%Y-%m-%d', url=None, verbose=False, min_date=None, max_date=None):
-    # try image elements
-    img_result = img_search(
-        tree, outputformat, min_date, max_date
-        )
-    if img_result is not None:
-        return img_result
-
     # last resort
-    if extensive_search is True:
-        LOGGER.debug('extensive search started')
-        # div and p elements?
-        # TODO: check all and decide according to original_date
-        reference = 0
-        for textpart in [t for t in cleaned_html.xpath('.//div/text()|.//p/text()') if 0 < len(t) < 80]:
-            reference = compare_reference(reference, textpart, outputformat, extensive_search, original_date, min_date, max_date)
-        # return
-        converted = check_extracted_reference(reference, outputformat, min_date, max_date)
-        if converted is not None:
-            return converted
-        # search page HTML
+    if extensive_search is True:        # search page HTML
         return search_page(htmlstring, outputformat, original_date, min_date, max_date)
 
     return None
