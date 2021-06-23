@@ -38,40 +38,6 @@ def output_format_validator(outputformat):
 
 
 @lru_cache(maxsize=32)
-def plausible_year_filter(htmlstring, pattern, yearpat, tocomplete=False):
-    """Filter the date patterns to find plausible years only"""
-    # slow!
-    allmatches = pattern.findall(htmlstring)
-    occurrences = Counter(allmatches)
-    toremove = set()
-    # LOGGER.debug('occurrences: %s', occurrences)
-    for item in occurrences.keys():
-        # scrap implausible dates
-        try:
-            if tocomplete is False:
-                potential_year = int(yearpat.search(item).group(1))
-            else:
-                lastdigits = yearpat.search(item).group(1)
-                if lastdigits[0] == '9':
-                    potential_year = int('19' + lastdigits)
-                else:
-                    potential_year = int('20' + lastdigits)
-        except AttributeError:
-            LOGGER.debug('not a year pattern: %s', item)
-            toremove.add(item)
-        else:
-            if potential_year < MIN_YEAR or potential_year > MAX_YEAR:
-                LOGGER.debug('no potential year: %s', item)
-                toremove.add(item)
-            # occurrences.remove(item)
-            # continue
-    # preventing dictionary changed size during iteration error
-    for item in toremove:
-        del occurrences[item]
-    return occurrences
-
-
-@lru_cache(maxsize=32)
 def filter_ymd_candidate(bestmatch, pattern, original_date, copyear, outputformat, min_date, max_date):
     """Filter free text candidates in the YMD format"""
     if bestmatch is not None:
