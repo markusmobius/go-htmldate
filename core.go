@@ -536,6 +536,12 @@ func tryExpression(expression string, opts Options) time.Time {
 	return tryYmdDate(expression, opts)
 }
 
+// searchPattern runs chained candidate filtering and selection.
+func searchPattern(htmlString string, pattern, catchPattern, yearPattern *regexp.Regexp, opts Options) []string {
+	candidates := plausibleYearFilter(htmlString, pattern, yearPattern, false, opts)
+	return selectCandidate(candidates, catchPattern, yearPattern, opts)
+}
+
 // selectCandidate selects a candidate among the most frequent matches.
 func selectCandidate(candidates []yearCandidate, catchPattern, yearPattern *regexp.Regexp, opts Options) []string {
 	// Prepare variables

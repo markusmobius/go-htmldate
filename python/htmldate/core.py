@@ -42,12 +42,6 @@ def logstring(element):
     return html.tostring(element, pretty_print=False, encoding='unicode').strip()
 
 
-def search_pattern(htmlstring, pattern, catch, yearpat, original_date, min_date, max_date):
-    """Chained candidate filtering and selection"""
-    candidates = plausible_year_filter(htmlstring, pattern, yearpat)
-    return select_candidate(candidates, catch, yearpat, original_date, min_date, max_date)
-
-
 def normalize_match(match):
     '''Normalize string output by adding "0" if necessary.'''
     if len(match.group(1)) == 1:
