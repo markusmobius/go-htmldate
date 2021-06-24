@@ -115,11 +115,7 @@ func FromDocument(doc *html.Node, opts Options) (time.Time, error) {
 	}
 
 	// Supply more expressions.
-	// Unfortunately, extensive search is not working right now since it
-	// requires `scrapinghub/dateparser`, but I keep this code here to make
-	// it similar with the original htmldate, so if in future dateparser is
-	// ported to Go, there are not many to change. TODO: NEED-DATEPARSER.
-	if opts.UseExtensiveSearch {
+	if !opts.SkipExtensiveSearch {
 		dateElements := findElementsWithRule(doc, additionalSelectorRule)
 		dateResult := examineOtherElements(dateElements, opts)
 		if !dateResult.IsZero() {
@@ -173,10 +169,7 @@ func FromDocument(doc *html.Node, opts Options) (time.Time, error) {
 	}
 
 	// Last resort: do extensive search.
-	// Like before, unfortunately extensive search is not working right now since it
-	// requires `scrapinghub/dateparser`, but I keep this code here so if in future
-	// dateparser is ported to Go, there are not many to change. TODO: NEED-DATEPARSER.
-	if opts.UseExtensiveSearch {
+	if !opts.SkipExtensiveSearch {
 		log.Debug().Msg("extensive search started")
 
 		// Process div and p elements

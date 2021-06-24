@@ -62,7 +62,7 @@ func extractFromString(s string, customOpts ...Options) time.Time {
 
 func mergeOpts(opt1, opt2 Options) Options {
 	opt1.UseOriginalDate = opt1.UseOriginalDate || opt2.UseOriginalDate
-	opt1.UseExtensiveSearch = opt1.UseExtensiveSearch || opt2.UseExtensiveSearch
+	opt1.SkipExtensiveSearch = opt1.SkipExtensiveSearch || opt2.SkipExtensiveSearch
 
 	if opt2.DateFormat != "" {
 		opt1.DateFormat = opt2.DateFormat

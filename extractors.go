@@ -103,7 +103,7 @@ func tryYmdDate(s string, opts Options) time.Time {
 		return parseResult
 	}
 
-	if opts.UseExtensiveSearch {
+	if !opts.SkipExtensiveSearch {
 		// TODO: NEED-DATEPARSER
 		// In original library they can run extensive (but slow) date parsing using
 		// `scrapinghub/dateparser` which can parse date from almost any string in
