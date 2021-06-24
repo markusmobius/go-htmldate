@@ -118,7 +118,17 @@ func tryYmdDate(s string, opts Options) time.Time {
 // renamed it to `fastParse` because I think it's more suitable to its purpose.
 func fastParse(s string, opts Options) time.Time {
 	// Use regex first
-	// First try Y-M-D pattern since it's the one used in ISO-8601
+	// 1. Try YYYYMMDD first
+	match := rxYmdNoSepPattern.FindString(s)
+	if match != "" {
+		dt, err := time.Parse("20060102", match)
+		if err == nil && validateDate(dt, opts) {
+			log.Debug().Msgf("fast parse found Y-M-D without separator: %s", match)
+			return dt
+		}
+	}
+
+	// 2. Try Y-M-D pattern since it's the one used in ISO-8601
 	parts := rxYmdPattern.FindStringSubmatch(s)
 	if len(parts) == 4 {
 		year, _ := strconv.Atoi(parts[1])
@@ -129,12 +139,13 @@ func fastParse(s string, opts Options) time.Time {
 		if month <= 12 {
 			dt := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
 			if validateDate(dt, opts) {
+				log.Debug().Msgf("fast parse found Y-M-D date: %s", parts[0])
 				return dt
 			}
 		}
 	}
 
-	// Next try the D-M-Y pattern since it's the most common date format in the world
+	// 3. Try the D-M-Y pattern since it's the most common date format in the world
 	parts = rxDmyPattern.FindStringSubmatch(s)
 	if len(parts) == 4 {
 		day, _ := strconv.Atoi(parts[1])
@@ -143,7 +154,11 @@ func fastParse(s string, opts Options) time.Time {
 
 		// Append year if necessary
 		if year < 100 {
-			year = 2000 + year
+			if year >= 90 {
+				year += 1900
+			} else {
+				year += 2000
+			}
 		}
 
 		// If month is more than 12, swap it with the day
@@ -151,19 +166,50 @@ func fastParse(s string, opts Options) time.Time {
 			day, month = month, day
 		}
 
-		// Make sure month is at most 12, because if not then it's one of the bizzare date
-		// format, so just leave it to dateparse.
+		// Make sure month is at most 12, because if not then it's not D-M-Y
 		if month <= 12 {
 			dt := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
 			if validateDate(dt, opts) {
+				log.Debug().Msgf("fast parse found D-M-Y date: %s", parts[0])
 				return dt
 			}
 		}
 	}
 
+	// 4. Try the Y-M and M-Y pattern
+	parts = rxYmPattern.FindStringSubmatch(s)
+	if len(parts) == 0 {
+		parts = rxMyPattern.FindStringSubmatch(s)
+	}
+
+	if len(parts) == 3 {
+		year, _ := strconv.Atoi(parts[1])
+		month, _ := strconv.Atoi(parts[2])
+		if len(parts[2]) == 4 {
+			year, month = month, year
+		}
+
+		// Make sure month is at most 12, because if not then it's not D-M-Y
+		if month <= 12 {
+			dt := time.Date(year, time.Month(month), 1, 0, 0, 0, 0, time.UTC)
+			if validateDate(dt, opts) {
+				log.Debug().Msgf("fast parse found Y-M date: %s", parts[0])
+				return dt
+			}
+		}
+	}
+
+	// 5. Try the other regex pattern
+	dt := regexParse(s, opts)
+	if validateDate(dt, opts) {
+		log.Debug().Msgf("fast parse found regex date: %s", s)
+		return dt
+	}
+
 	// Finally, just try using dateparse
 	dt, err := dateparse.ParseAny(s, dateparse.PreferMonthFirst(false))
 	if err == nil && validateDate(dt, opts) {
+		log.Debug().Msgf("fast parse found date using dateparse: %s", s)
 		return dt
 	}
 
@@ -292,4 +338,79 @@ func extractIdiosyncrasy(rxIdiosyncrasy *regexp.Regexp, htmlString string, opts 
 	}
 
 	return timeZero
+}
+
+// regexParse is full-text parse using a series of regular expressions.
+func regexParse(s string, opts Options) time.Time {
+	dt := regexParseDe(s)
+	if dt.IsZero() {
+		dt = regexParseMultilingual(s)
+	}
+
+	return dt
+}
+
+// regexParseDe tries full-text parse for German date elements.
+func regexParseDe(s string) time.Time {
+	parts := rxGermanTextSearch.FindStringSubmatch(s)
+	if len(parts) == 0 {
+		return timeZero
+	}
+
+	year, _ := strconv.Atoi(parts[3])
+	day, _ := strconv.Atoi(parts[1])
+	month, exist := monthNumber[parts[2]]
+	if !exist {
+		return timeZero
+	}
+
+	dt := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
+	return dt
+}
+
+// regexParseMultilingual tries full-text parse for English date elements.
+func regexParseMultilingual(s string) time.Time {
+	var exist bool
+	var parts []string
+	var year, month, day int
+
+	// In original code they handle Month-Day-Year here.
+	// However, since it already handled by fastParser I don't repeat it here again.
+
+	// MMMM D YYYY pattern
+	parts = rxLongMdyPattern.FindStringSubmatch(s)
+	if len(parts) >= 4 {
+		month, exist = monthNumber[parts[1]]
+		if exist {
+			year, _ = strconv.Atoi(parts[3])
+			day, _ = strconv.Atoi(parts[2])
+			goto regex_finish
+		}
+	}
+
+	// D MMMM YYYY pattern
+	parts = rxLongDmyPattern.FindStringSubmatch(s)
+	if len(parts) >= 4 {
+		month, exist = monthNumber[parts[2]]
+		if exist {
+			year, _ = strconv.Atoi(parts[3])
+			day, _ = strconv.Atoi(parts[1])
+			goto regex_finish
+		}
+	}
+
+regex_finish:
+	if month == 0 || month > 12 {
+		return timeZero
+	}
+
+	if year < 100 {
+		if year >= 90 {
+			year += 1900
+		} else {
+			year += 2000
+		}
+	}
+
+	return time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
 }

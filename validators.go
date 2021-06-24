@@ -107,9 +107,9 @@ func plausibleYearFilter(htmlString string, pattern, yearPattern *regexp.Regexp,
 		} else {
 			if yearVal < 100 {
 				if yearVal >= 90 {
-					yearVal = 1900 + yearVal
+					yearVal += 1900
 				} else {
-					yearVal = 2000 + yearVal
+					yearVal += 2000
 				}
 			}
 		}
@@ -161,4 +161,42 @@ func filterYmdCandidate(bestMatch []string, pattern *regexp.Regexp, copYear int,
 	// }
 
 	return timeZero
+}
+
+func createCandidates(items ...string) []yearCandidate {
+	uniqueItems := []string{}
+	mapItemCount := make(map[string]int)
+	for _, item := range items {
+		if _, exist := mapItemCount[item]; !exist {
+			uniqueItems = append(uniqueItems, item)
+		}
+		mapItemCount[item]++
+	}
+
+	var candidates []yearCandidate
+	for _, item := range uniqueItems {
+		candidates = append(candidates, yearCandidate{
+			Pattern:    item,
+			Occurences: mapItemCount[item],
+		})
+	}
+
+	return candidates
+}
+
+func normalizeCandidates(candidates []yearCandidate, opts Options) []yearCandidate {
+	normalizedItems := []string{}
+	for _, item := range candidates {
+		dt := fastParse(item.Pattern, opts)
+		if dt.IsZero() {
+			continue
+		}
+
+		strDt := dt.Format("2006-01-02")
+		for i := 0; i < item.Occurences; i++ {
+			normalizedItems = append(normalizedItems, strDt)
+		}
+	}
+
+	return createCandidates(normalizedItems...)
 }

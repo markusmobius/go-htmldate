@@ -94,27 +94,6 @@ func Test_selectCandidate(t *testing.T) {
 	rxCatch := regexp.MustCompile(`([0-9]{4})-([0-9]{2})-([0-9]{2})`)
 	opts := Options{MinDate: defaultMinDate, MaxDate: defaultMaxDate}
 
-	createCandidates := func(items ...string) []yearCandidate {
-		uniqueItems := []string{}
-		mapItemCount := make(map[string]int)
-		for _, item := range items {
-			if _, exist := mapItemCount[item]; !exist {
-				uniqueItems = append(uniqueItems, item)
-			}
-			mapItemCount[item]++
-		}
-
-		var candidates []yearCandidate
-		for _, item := range uniqueItems {
-			candidates = append(candidates, yearCandidate{
-				Pattern:    item,
-				Occurences: mapItemCount[item],
-			})
-		}
-
-		return candidates
-	}
-
 	// Candidate exist
 	candidates := createCandidates("2016-12-23", "2016-12-23", "2016-12-23",
 		"2016-12-23", "2017-08-11", "2016-07-12", "2017-11-28")

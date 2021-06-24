@@ -195,6 +195,9 @@ func FromDocument(doc *html.Node, opts Options) (time.Time, error) {
 		if !converted.IsZero() {
 			return converted, nil
 		}
+
+		// Search page HTML
+		return searchPage(htmlString, opts), nil
 	}
 
 	return timeZero, nil
@@ -505,6 +508,114 @@ func examineOtherElements(elements []*html.Node, opts Options) time.Time {
 			attempt = tryYmdDate(toExamine, opts)
 			if !attempt.IsZero() {
 				return attempt
+			}
+		}
+	}
+
+	return timeZero
+}
+
+// searchPage opportunistically search the HTML text for common text patterns.
+func searchPage(htmlString string, opts Options) time.Time {
+	// Copyright symbol
+	log.Debug().Msg("looking for copyright/footer information")
+
+	var copYear int
+	bestMatch := searchPattern(htmlString, rxCopyrightPattern, rxYearPattern, rxYearPattern, opts)
+	if len(bestMatch) > 0 {
+		log.Debug().Msgf("copyright detected: %s", bestMatch[0])
+		bestMatchVal, err := strconv.Atoi(bestMatch[0])
+		if err == nil && bestMatchVal >= opts.MinDate.Year() && bestMatchVal <= opts.MaxDate.Year() {
+			log.Debug().Msgf("copyright year/footer pattern found: %d", bestMatchVal)
+			copYear = bestMatchVal
+		}
+	}
+
+	// 3 components
+	log.Debug().Msg("3 components")
+
+	// Target URL characteristics
+	bestMatch = searchPattern(htmlString, rxThreePattern, rxThreeCatch, rxYearPattern, opts)
+	result := filterYmdCandidate(bestMatch, rxThreePattern, copYear, opts)
+	if !result.IsZero() {
+		return result
+	}
+
+	// More loosely structured date
+	bestMatch = searchPattern(htmlString, rxThreeLoosePattern, rxThreeLooseCatch, rxYearPattern, opts)
+	result = filterYmdCandidate(bestMatch, rxThreeLoosePattern, copYear, opts)
+	if !result.IsZero() {
+		return result
+	}
+
+	// Handle YYYY-MM-DD/DD-MM-YYYY, normalize candidates first
+	candidates := plausibleYearFilter(htmlString, rxSelectYmdPattern, rxSelectYmdYear, false, opts)
+	candidates = normalizeCandidates(candidates, opts)
+
+	bestMatch = selectCandidate(candidates, rxYmdPattern, rxYmdYear, opts)
+	result = filterYmdCandidate(bestMatch, rxSelectYmdPattern, copYear, opts)
+	if !result.IsZero() {
+		return result
+	}
+
+	// Valid dates string
+	bestMatch = searchPattern(htmlString, rxDateStringsPattern, rxDateStringsCatch, rxYearPattern, opts)
+	result = filterYmdCandidate(bestMatch, rxDateStringsPattern, copYear, opts)
+	if !result.IsZero() {
+		return result
+	}
+
+	// Handle DD?/MM?/YYYY, normalize candidates first
+	candidates = plausibleYearFilter(htmlString, rxSlashesPattern, rxSlashesYear, true, opts)
+	candidates = normalizeCandidates(candidates, opts)
+
+	bestMatch = selectCandidate(candidates, rxYmdPattern, rxYmdYear, opts)
+	result = filterYmdCandidate(bestMatch, rxSlashesPattern, copYear, opts)
+	if !result.IsZero() {
+		return result
+	}
+
+	// 2 components
+	log.Debug().Msg("switching to 2 components")
+
+	// First option
+	bestMatch = searchPattern(htmlString, rxYyyyMmPattern, rxYyyyMmCatch, rxYearPattern, opts)
+	if len(bestMatch) >= 3 {
+		str := fmt.Sprintf("%s-%s-1", bestMatch[1], bestMatch[2])
+		dt, err := time.Parse("2006-1-2", str)
+		if err == nil && validateDate(dt, opts) {
+			if copYear == 0 || dt.Year() >= copYear {
+				log.Debug().Msgf("date found for pattern \"%s\": %s", rxYyyyMmPattern.String(), str)
+				return dt
+			}
+		}
+	}
+
+	// Second option
+	candidates = plausibleYearFilter(htmlString, rxMmYyyyPattern, rxMmYyyyYear, false, opts)
+	candidates = normalizeCandidates(candidates, opts)
+
+	bestMatch = selectCandidate(candidates, rxYmdPattern, rxYmdYear, opts)
+	result = filterYmdCandidate(bestMatch, rxMmYyyyPattern, copYear, opts)
+	if !result.IsZero() {
+		return result
+	}
+
+	// Catch all
+	if copYear != 0 {
+		log.Debug().Msg("using copyright year as default")
+		return time.Date(copYear, 1, 1, 0, 0, 0, 0, time.UTC)
+	}
+
+	// 1 component, last try
+	bestMatch = searchPattern(htmlString, rxSimplePattern, rxYearPattern, rxYearPattern, opts)
+	if len(bestMatch) >= 2 {
+		str := fmt.Sprintf("%s-1-1", bestMatch[1])
+		dt, err := time.Parse("2006-1-2", str)
+		if err == nil && validateDate(dt, opts) {
+			if copYear == 0 || dt.Year() >= copYear {
+				log.Debug().Msgf("date found for pattern \"%s\": %s", rxSimplePattern.String(), str)
+				return dt
 			}
 		}
 	}

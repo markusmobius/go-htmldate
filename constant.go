@@ -19,23 +19,28 @@ const (
 var (
 	rxLastNonDigits = regexp.MustCompile(`\D+$`)
 
-	rxYmdPattern = regexp.MustCompile(`(?:\D|^)(\d{4})(?:[\-/.])?(\d{1,2})(?:[\-/.])?(\d{1,2})(?:\D|$)`)
-	rxDmyPattern = regexp.MustCompile(`(?:\D|^)(\d{1,2})(?:[\-/.])(\d{1,2})(?:[\-/.])(\d{2,4})(?:\D|$)`)
+	rxYmdNoSepPattern = regexp.MustCompile(`(?:\D|^)(\d{8})(?:\D|$)`)
+	rxYmdPattern      = regexp.MustCompile(`(?:\D|^)(\d{4})[\-/.](\d{1,2})[\-/.](\d{1,2})(?:\D|$)`)
+	rxDmyPattern      = regexp.MustCompile(`(?:\D|^)(\d{1,2})[\-/.](\d{1,2})[\-/.](\d{2,4})(?:\D|$)`)
+	rxYmPattern       = regexp.MustCompile(`(?:\D|^)(\d{4})[\-/.](\d{1,2})(?:\D|$)`)
+	rxMyPattern       = regexp.MustCompile(`(?:\D|^)(\d{1,2})[\-/.](\d{4})(?:\D|$)`)
 
-	rxLongMdyPattern = regexp.MustCompile(`(?i)` +
-		`(January|February|March|April|May|June|July|` +
-		`August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|` +
-		`Oct|Nov|Dec|Januar|Jänner|Februar|Feber|März|Mai|Juni|Juli|Oktober|Dezember|` +
+	rxLongMdyPattern = regexp.MustCompile(`(` +
+		`January|February|March|April|May|June|July|August|September|October|November|December|` +
+		`Januari|Februari|Maret|Mei|Juni|Juli|Agustus|Oktober|Desember|` +
+		`Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Oct|Nov|Dec|` +
+		`Januar|Jänner|Februar|Feber|März|Mai|Dezember|` +
 		`Ocak|Şubat|Mart|Nisan|Mayıs|Haziran|Temmuz|Ağustos|Eylül|Ekim|Kasım|Aralık|` +
 		`Oca|Şub|Mar|Nis|Haz|Tem|Ağu|Eyl|Eki|Kas|Ara) ` +
-		`([0-9]{1,2})(st|nd|rd|th)?,? ([0-9]{4})`)
+		`([0-9]{1,2})(?:st|nd|rd|th)?,? ([0-9]{4})`)
 
-	rxLongDmyPattern = regexp.MustCompile(`(?i)` +
-		`([0-9]{1,2})(st|nd|rd|th)? (of )?(January|` +
-		`February|March|April|May|June|July|August|September|October|November|December|` +
-		`Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Oct|Nov|Dec|Januar|Jänner|Februar|Feber|März|` +
-		`Mai|Juni|Juli|Oktober|Dezember|Ocak|Şubat|Mart|Nisan|Mayıs|Haziran|Temmuz|` +
-		`Ağustos|Eylül|Ekim|Kasım|Aralık|Oca|Şub|Mar|Nis|Haz|Tem|Ağu|Eyl|Eki|Kas|Ara),? ` +
+	rxLongDmyPattern = regexp.MustCompile(`([0-9]{1,2})(?:st|nd|rd|th)? (?:of )?(` +
+		`January|February|March|April|May|June|July|August|September|October|November|December|` +
+		`Januari|Februari|Maret|Mei|Juni|Juli|Agustus|Oktober|Desember|` +
+		`Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Oct|Nov|Dec|` +
+		`Januar|Jänner|Februar|Feber|März|Mai|Dezember|` +
+		`Ocak|Şubat|Mart|Nisan|Mayıs|Haziran|Temmuz|Ağustos|Eylül|Ekim|Kasım|Aralık|` +
+		`Oca|Şub|Mar|Nis|Haz|Tem|Ağu|Eyl|Eki|Kas|Ara),? ` +
 		`([0-9]{4})`)
 
 	rxDateStubPattern = regexp.MustCompile(`(?i)([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{2,4})`)
@@ -50,6 +55,7 @@ var (
 
 	rxGeneralTextSearch = regexp.MustCompile(`(?i)` +
 		`January|February|March|April|May|June|July|` +
+		`Januari|Februari|Maret|Mei|Agustus|Desember|` +
 		`August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Oct|` +
 		`Nov|Dec|Januar|Jänner|Februar|Feber|März|Mai|Juni|Juli|Oktober|Dezember|` +
 		`Ocak|Şubat|Mart|Nisan|Mayıs|Haziran|Temmuz|Ağustos|Eylül|Ekim|Kasım|Aralık|` +
@@ -77,8 +83,8 @@ var (
 	rxSelectYmdPattern   = regexp.MustCompile(`\D([0-3]?[0-9][/.-][01]?[0-9][/.-][0-9]{4})\D`)
 	rxSelectYmdYear      = regexp.MustCompile(`(19[0-9]{2}|20[0-9]{2})\D?$`)
 	rxYmdYear            = regexp.MustCompile(`^([0-9]{4})`)
-	rxDatestringsPattern = regexp.MustCompile(`(\D19[0-9]{2}[01][0-9][0-3][0-9]\D|\D20[0-9]{2}[01][0-9][0-3][0-9]\D)`)
-	rxDatestringsCatch   = regexp.MustCompile(`([12][0-9]{3})([01][0-9])([0-3][0-9])`)
+	rxDateStringsPattern = regexp.MustCompile(`(\D19[0-9]{2}[01][0-9][0-3][0-9]\D|\D20[0-9]{2}[01][0-9][0-3][0-9]\D)`)
+	rxDateStringsCatch   = regexp.MustCompile(`([12][0-9]{3})([01][0-9])([0-3][0-9])`)
 	rxSlashesPattern     = regexp.MustCompile(`\D([0-3]?[0-9][/.][01]?[0-9][/.][0129][0-9])\D`)
 	rxSlashesYear        = regexp.MustCompile(`([0-9]{2})$`)
 	rxYyyyMmPattern      = regexp.MustCompile(`\D([12][0-9]{3}[/.-][01][0-9])\D`)
@@ -90,19 +96,18 @@ var (
 
 // English + German + Turkish months cache
 var monthNumber = map[string]int{
-	"Januar": 1, "Jänner": 1, "January": 1, "Jan": 1, "Ocak": 1, "Oca": 1,
-	"Februar": 2, "Feber": 2, "February": 2, "Feb": 2, "Şubat": 2, "Şub": 2,
-	"März": 3, "March": 3, "Mar": 3, "Mart": 3,
+	"Januar": 1, "Jänner": 1, "January": 1, "Januari": 1, "Jan": 1, "Ocak": 1, "Oca": 1,
+	"Februar": 2, "Feber": 2, "February": 2, "Februari": 2, "Feb": 2, "Şubat": 2, "Şub": 2,
+	"März": 3, "March": 3, "Maret": 3, "Mar": 3, "Mart": 3,
 	"April": 4, "Apr": 4, "Nisan": 4, "Nis": 4,
-	"Mai": 5, "May": 5, "Mayıs": 5,
-	"Juni": 6, "June": 6, "Jun": 6,
-	"Haziran": 6, "Haz": 6,
+	"Mai": 5, "May": 5, "Mei": 5, "Mayıs": 5,
+	"Juni": 6, "June": 6, "Jun": 6, "Haziran": 6, "Haz": 6,
 	"Juli": 7, "July": 7, "Jul": 7, "Temmuz": 7, "Tem": 7,
-	"August": 8, "Aug": 8, "Ağustos": 8, "Ağu": 8,
+	"August": 8, "Agustus": 8, "Aug": 8, "Ağustos": 8, "Ağu": 8,
 	"September": 9, "Sep": 9, "Eylül": 9, "Eyl": 9,
 	"Oktober": 10, "October": 10, "Oct": 10, "Ekim": 10, "Eki": 10,
 	"November": 11, "Nov": 11, "Kasım": 11, "Kas": 11,
-	"Dezember": 12, "December": 12, "Dec": 12, "Aralık": 12, "Ara": 12,
+	"Dezember": 12, "December": 12, "Desember": 12, "Dec": 12, "Aralık": 12, "Ara": 12,
 }
 
 var dateAttributes = sliceToMap(
