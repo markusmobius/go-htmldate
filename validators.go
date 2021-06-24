@@ -1,6 +1,7 @@
 package htmldate
 
 import (
+	"fmt"
 	"regexp"
 	"strconv"
 	"time"
@@ -127,4 +128,37 @@ func plausibleYearFilter(htmlString string, pattern, yearPattern *regexp.Regexp,
 	}
 
 	return validOccurences
+}
+
+// filterYmdCandidate filters free text candidates in the YMD format.
+func filterYmdCandidate(bestMatch []string, pattern *regexp.Regexp, copYear int, opts Options) time.Time {
+	if len(bestMatch) < 4 {
+		return timeZero
+	}
+
+	str := fmt.Sprintf("%s-%s-%s", bestMatch[1], bestMatch[2], bestMatch[3])
+	dt, err := time.Parse("2006-1-2", str)
+	if err != nil || !validateDate(dt, opts) {
+		return timeZero
+	}
+
+	if copYear == 0 || dt.Year() >= copYear {
+		log.Debug().Msgf("date found for pattern %s: %s", pattern.String(), str)
+		return dt
+	}
+
+	// TODO: test and improve
+	// if opts.UseOriginalDate {
+	// 	if copYear == 0 || dt.Year() <= copYear {
+	// 		log.Debug().Msgf("original date found for pattern %s: %s", pattern.String(), str)
+	// 		return dt
+	// 	}
+	// } else {
+	// 	if copYear == 0 || dt.Year() >= copYear {
+	// 		log.Debug().Msgf("date found for pattern %s: %s", pattern.String(), str)
+	// 		return dt
+	// 	}
+	// }
+
+	return timeZero
 }

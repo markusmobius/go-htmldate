@@ -37,27 +37,6 @@ def output_format_validator(outputformat):
     return True
 
 
-@lru_cache(maxsize=32)
-def filter_ymd_candidate(bestmatch, pattern, original_date, copyear, outputformat, min_date, max_date):
-    """Filter free text candidates in the YMD format"""
-    if bestmatch is not None:
-        pagedate = '-'.join([bestmatch.group(1), bestmatch.group(2), bestmatch.group(3)])
-        if date_validator(pagedate, '%Y-%m-%d', earliest=min_date, latest=max_date) is True:
-            if copyear == 0 or int(bestmatch.group(1)) >= copyear:
-                LOGGER.debug('date found for pattern "%s": %s', pattern, pagedate)
-                return convert_date(pagedate, '%Y-%m-%d', outputformat)
-            ## TODO: test and improve
-            #if original_date is True:
-            #    if copyear == 0 or int(bestmatch.group(1)) <= copyear:
-            #        LOGGER.debug('date found for pattern "%s": %s', pattern, pagedate)
-            #        return convert_date(pagedate, '%Y-%m-%d', outputformat)
-            #else:
-            #    if copyear == 0 or int(bestmatch.group(1)) >= copyear:
-            #        LOGGER.debug('date found for pattern "%s": %s', pattern, pagedate)
-            #        return convert_date(pagedate, '%Y-%m-%d', outputformat)
-    return None
-
-
 def convert_date(datestring, inputformat, outputformat):
     """Parse date and return string in desired format"""
     # speed-up (%Y-%m-%d)
