@@ -42,50 +42,6 @@ def logstring(element):
     return html.tostring(element, pretty_print=False, encoding='unicode').strip()
 
 
-def select_candidate(occurrences, catch, yearpat, original_date, min_date, max_date):
-    """Select a candidate among the most frequent matches"""
-    match = None
-    # LOGGER.debug('occurrences: %s', occurrences)
-    if len(occurrences) == 0 or len(occurrences) > MAX_POSSIBLE_CANDIDATES:
-        return None
-    if len(occurrences) == 1:
-        match = catch.search(list(occurrences.keys())[0])
-        if match:
-            return match
-    # select among most frequent
-    firstselect = occurrences.most_common(10)
-    LOGGER.debug('firstselect: %s', firstselect)
-    # sort and find probable candidates
-    if original_date is False:
-        bestones = sorted(firstselect, reverse=True)[:2]
-    else:
-        bestones = sorted(firstselect)[:2]
-    first_pattern, first_count = bestones[0][0], bestones[0][1]
-    second_pattern, second_count = bestones[1][0], bestones[1][1]
-    LOGGER.debug('bestones: %s', bestones)
-    # same number of occurrences: always take top of the pile
-    if first_count == second_count:
-        match = catch.search(first_pattern)
-    else:
-        year1 = int(yearpat.search(first_pattern).group(1))
-        year2 = int(yearpat.search(second_pattern).group(1))
-        # safety net: plausibility
-        if date_validator(str(year1), '%Y', earliest=min_date, latest=max_date) is False:
-            if date_validator(str(year2), '%Y', earliest=min_date, latest=max_date) is True:
-                # LOGGER.debug('first candidate not suitable: %s', year1)
-                match = catch.search(second_pattern)
-            else:
-                LOGGER.debug('no suitable candidate: %s %s', year1, year2)
-                return None
-        # safety net: newer date but up to 50% less frequent
-        if year2 != year1 and second_count/first_count > 0.5:
-            match = catch.search(second_pattern)
-        # not newer or hopefully not significant
-        else:
-            match = catch.search(first_pattern)
-    return match
-
-
 def search_pattern(htmlstring, pattern, catch, yearpat, original_date, min_date, max_date):
     """Chained candidate filtering and selection"""
     candidates = plausible_year_filter(htmlstring, pattern, yearpat)

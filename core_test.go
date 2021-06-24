@@ -1,6 +1,7 @@
 package htmldate
 
 import (
+	"regexp"
 	"testing"
 	"time"
 
@@ -85,4 +86,45 @@ func Test_compareReference(t *testing.T) {
 
 	res = compareReference(1517500000, "2018-02-01", opts)
 	assert.Equal(t, int64(1517500000), res)
+}
+
+func Test_selectCandidate(t *testing.T) {
+	// Initiate variables and helper function
+	rxYear := regexp.MustCompile(`^([0-9]{4})`)
+	rxCatch := regexp.MustCompile(`([0-9]{4})-([0-9]{2})-([0-9]{2})`)
+	opts := Options{MinDate: defaultMinDate, MaxDate: defaultMaxDate}
+
+	createCandidates := func(items ...string) []yearCandidate {
+		uniqueItems := []string{}
+		mapItemCount := make(map[string]int)
+		for _, item := range items {
+			if _, exist := mapItemCount[item]; !exist {
+				uniqueItems = append(uniqueItems, item)
+			}
+			mapItemCount[item]++
+		}
+
+		var candidates []yearCandidate
+		for _, item := range uniqueItems {
+			candidates = append(candidates, yearCandidate{
+				Pattern:    item,
+				Occurences: mapItemCount[item],
+			})
+		}
+
+		return candidates
+	}
+
+	// Candidate exist
+	candidates := createCandidates("2016-12-23", "2016-12-23", "2016-12-23",
+		"2016-12-23", "2017-08-11", "2016-07-12", "2017-11-28")
+	result := selectCandidate(candidates, rxCatch, rxYear, opts)
+	assert.NotEmpty(t, result)
+	assert.Equal(t, "2017-11-28", result[0])
+
+	// Candidates not exist
+	candidates = createCandidates("20208956", "20208956", "20208956",
+		"19018956", "209561", "22020895607-12", "2-28")
+	result = selectCandidate(candidates, rxCatch, rxYear, opts)
+	assert.Empty(t, result)
 }

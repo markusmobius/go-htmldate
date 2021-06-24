@@ -260,20 +260,6 @@ def test_output_format_validator():
 #    assert examine_header(tree, OUTPUTFORMAT, PARSER)
 
 
-def test_candidate_selection(original_date=False, min_date=MIN_DATE, max_date=LATEST_POSSIBLE):
-    '''test the algorithm for several candidates'''
-    catch = re.compile(r'([0-9]{4})-([0-9]{2})-([0-9]{2})')
-    yearpat = re.compile(r'^([0-9]{4})')
-    allmatches = ['2016-12-23', '2016-12-23', '2016-12-23', '2016-12-23', '2017-08-11', '2016-07-12', '2017-11-28']
-    occurrences = Counter(allmatches)
-    result = select_candidate(occurrences, catch, yearpat, original_date, min_date, max_date)
-    assert result is not None
-    allmatches = ['20208956', '20208956', '20208956', '19018956', '209561', '22020895607-12', '2-28']
-    occurrences = Counter(allmatches)
-    result = select_candidate(occurrences, catch, yearpat, original_date, min_date, max_date)
-    assert result is None
-
-
 def test_regex_parse():
     '''test date extraction using rules and regular expressions'''
     assert regex_parse('3. Dezember 2008') is not None

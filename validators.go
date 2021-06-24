@@ -6,6 +6,11 @@ import (
 	"time"
 )
 
+type yearCandidate struct {
+	Pattern    string
+	Occurences int
+}
+
 // validateDate checks if date is valid and within the possible date.
 func validateDate(date time.Time, opts Options) bool {
 	// If time is zero, it's not valid
@@ -54,25 +59,47 @@ func checkExtractedReference(reference int64, opts Options) time.Time {
 }
 
 // plausibleYearFilter filters the date patterns to find plausible years only.
-func plausibleYearFilter(htmlString string, pattern, yearPattern *regexp.Regexp, toComplete bool, opts Options) map[string]struct{} {
+// Unlike in the original, here we sort it as well by the highest frequency.
+func plausibleYearFilter(htmlString string, pattern, yearPattern *regexp.Regexp, toComplete bool, opts Options) []yearCandidate {
+	// Prepare min and max year
 	minYear := opts.MinDate.Year()
 	maxYear := opts.MaxDate.Year()
-	allMatches := pattern.FindAllString(htmlString, -1)
-	occurences := sliceToMap(allMatches...)
 
-	for item := range occurences {
-		yearParts := yearPattern.FindStringSubmatch(item)
+	// Find all matches in html string
+	uniqueMatches := []string{}
+	mapMatchCount := make(map[string]int)
 
+	for _, match := range pattern.FindAllString(htmlString, -1) {
+		if _, exist := mapMatchCount[match]; !exist {
+			uniqueMatches = append(uniqueMatches, match)
+		}
+		mapMatchCount[match]++
+	}
+
+	// Check if matched item is invalid and can be ignored
+	validOccurences := []yearCandidate{}
+	for _, match := range uniqueMatches {
+		// Check if match fulfill the year pattern as well
 		var err error
-		var yearVal int
+		yearVal := -1
+		yearParts := yearPattern.FindStringSubmatch(match)
+
 		if len(yearParts) >= 2 {
 			yearVal, err = strconv.Atoi(yearParts[1])
 			if err != nil {
-				log.Debug().Msgf("not year pattern: %s", item)
+				log.Debug().Msgf("not year pattern: %s", match)
+				delete(mapMatchCount, match)
 				continue
 			}
 		}
 
+		if yearVal == -1 {
+			log.Debug().Msgf("not year pattern: %s (nothing found)", match)
+			delete(mapMatchCount, match)
+			continue
+		}
+
+		// Make sure the year is valid
 		var potentialYear int
 		if !toComplete {
 			potentialYear = yearVal
@@ -87,10 +114,17 @@ func plausibleYearFilter(htmlString string, pattern, yearPattern *regexp.Regexp,
 		}
 
 		if potentialYear < minYear || potentialYear > maxYear {
-			log.Debug().Msgf("not potential year: %s", item)
-			delete(occurences, item)
+			log.Debug().Msgf("not potential year: %s", match)
+			delete(mapMatchCount, match)
+			continue
 		}
+
+		// Save the valid matches
+		validOccurences = append(validOccurences, yearCandidate{
+			Pattern:    match,
+			Occurences: mapMatchCount[match],
+		})
 	}
 
-	return occurences
+	return validOccurences
 }
