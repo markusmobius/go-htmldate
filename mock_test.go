@@ -80,10 +80,6 @@ func mergeOpts(opt1, opt2 Options) Options {
 	opt1.UseOriginalDate = opt1.UseOriginalDate || opt2.UseOriginalDate
 	opt1.SkipExtensiveSearch = opt1.SkipExtensiveSearch || opt2.SkipExtensiveSearch
 
-	if opt2.DateFormat != "" {
-		opt1.DateFormat = opt2.DateFormat
-	}
-
 	if opt2.URL != "" {
 		opt1.URL = opt2.URL
 	}

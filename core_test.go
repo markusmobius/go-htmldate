@@ -692,9 +692,8 @@ func Test_HtmlDate(t *testing.T) {
 
 func Test_compareReference(t *testing.T) {
 	opts := Options{
-		DateFormat: defaultDateFormat,
-		MinDate:    defaultMinDate,
-		MaxDate:    defaultMaxDate,
+		MinDate: defaultMinDate,
+		MaxDate: defaultMaxDate,
 	}
 
 	res := compareReference(0, "AAAA", opts)

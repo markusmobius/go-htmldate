@@ -31,10 +31,6 @@ func FromReader(r io.Reader, opts Options) (time.Time, error) {
 // FromDocument extract publish date from the specified html document.
 func FromDocument(doc *html.Node, opts Options) (time.Time, error) {
 	// Set default options
-	if opts.DateFormat == "" {
-		opts.DateFormat = defaultDateFormat
-	}
-
 	if opts.MinDate.IsZero() {
 		opts.MinDate = defaultMinDate
 	}

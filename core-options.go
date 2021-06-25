@@ -16,9 +16,6 @@ type Options struct {
 	// date) instead of most recent one (e.g. last modified, updated time).
 	UseOriginalDate bool
 
-	// DateFormat is the format of date that want to be returned.
-	DateFormat string
-
 	// URL is the URL for the webpage.
 	URL string
 
