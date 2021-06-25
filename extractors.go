@@ -6,7 +6,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/araddon/dateparse"
 	"github.com/go-shiori/dom"
 	"golang.org/x/net/html"
 )
@@ -196,13 +195,6 @@ func fastParse(s string, opts Options) time.Time {
 	dt := regexParse(s, opts)
 	if validateDate(dt, opts) {
 		log.Debug().Msgf("fast parse found regex date: %s", dt.Format("2006-01-02"))
-		return dt
-	}
-
-	// Finally, just try using dateparse
-	dt, err := dateparse.ParseAny(s, dateparse.PreferMonthFirst(false))
-	if err == nil && validateDate(dt, opts) {
-		log.Debug().Msgf("fast parse found date using dateparse: %s", s)
 		return dt
 	}
 
