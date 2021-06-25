@@ -1,15 +1,14 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
-	"io/ioutil"
 	"os"
 	fp "path/filepath"
 	"time"
 
 	"github.com/markusmobius/go-htmldate"
 	"github.com/rs/zerolog"
+	"golang.org/x/net/html"
 )
 
 var log = zerolog.New(zerolog.ConsoleWriter{
@@ -20,61 +19,58 @@ var log = zerolog.New(zerolog.ConsoleWriter{
 func main() {
 	var (
 		nDocument   int
-		evNothing   evaluationResult
 		evFast      evaluationResult
 		evExtensive evaluationResult
 	)
 
 	for _, entry := range comparisonData {
 		// Open file
-		fContent, err := openFile(entry.File)
+		doc, err := openFile(entry.File)
 		if err != nil {
 			log.Error().Msgf("failed to open %s: %v", entry.File, err)
 			continue
 		}
 
-		// Null hypotheses
-		ev := evaluateResult("", entry)
-		evNothing = mergeEvaluationResult(evNothing, ev)
-
 		// Fast htmldate
 		start := time.Now()
-		result, err := runHtmlDate(entry.URL, fContent, false)
+		fastResult, err := runHtmlDate(doc, false)
 		if err != nil {
-			log.Error().Msgf("fast htmldate error in %s: %v", entry.URL, err)
-		}
-
-		if result != entry.Fast && result != entry.Date {
-			log.Debug().Msgf("fast got different result in %s: %s vs %s, want %s", entry.URL, entry.Fast, result, entry.Date)
+			log.Error().Msgf("fast error in %s: %v", entry.URL, err)
 		}
 
 		duration := time.Now().Sub(start)
-		ev = evaluateResult(result, entry)
+		ev := evaluateResult(fastResult, entry)
 		evFast = mergeEvaluationResult(evFast, ev)
 		evFast.Duration += duration
 
 		// Extensive htmldate
 		start = time.Now()
-		result, err = runHtmlDate(entry.URL, fContent, true)
+		extensiveResult, err := runHtmlDate(doc, true)
 		if err != nil {
-			log.Error().Msgf("extensive htmldate error in %s: %v", entry.URL, err)
-		}
-
-		if result != entry.Extensive && result != entry.Date {
-			log.Debug().Msgf("extensive got different result in %s: %s vs %s, want %s", entry.URL, entry.Extensive, result, entry.Date)
+			log.Error().Msgf("extensive error in %s: %v", entry.URL, err)
 		}
 
 		duration = time.Now().Sub(start)
-		ev = evaluateResult(result, entry)
+		ev = evaluateResult(extensiveResult, entry)
 		evExtensive = mergeEvaluationResult(evExtensive, ev)
 		evExtensive.Duration += duration
+
+		// Log the difference with original code
+		if fastResult != entry.Fast || extensiveResult != entry.Extensive {
+			log.Debug().Msgf("%s: want \"%s\"", entry.URL, entry.Date)
+
+			if fastResult != entry.Fast {
+				log.Debug().Msgf("\tfast different with original: \"%s\" vs \"%s\"", entry.Fast, fastResult)
+			} else {
+				log.Debug().Msgf("\textensive different with original: \"%s\" vs \"%s\"", entry.Extensive, extensiveResult)
+			}
+		}
 
 		// Counter
 		nDocument++
 	}
 
 	fmt.Printf("N Documents: %d\n\n", nDocument)
-	fmt.Printf("Nothing: %s\n\n", evNothing.info())
 
 	fmt.Printf("Fast: %s\n", evFast.info())
 	fmt.Printf("\t%s\n\n", evFast.scoreInfo())
@@ -83,7 +79,7 @@ func main() {
 	fmt.Printf("\t%s\n\n", evExtensive.scoreInfo())
 }
 
-func openFile(name string) ([]byte, error) {
+func openFile(name string) (*html.Node, error) {
 	// Open file
 	var f *os.File
 	var err error
@@ -105,27 +101,17 @@ func openFile(name string) ([]byte, error) {
 		defer f.Close()
 	}
 
-	// Read file content
-	bt, err := ioutil.ReadAll(f)
-	if err != nil {
-		return nil, err
-	}
-
-	if len(bt) == 0 {
-		return nil, fmt.Errorf("file is empty")
-	}
-
-	return bt, nil
+	// Parse document
+	return parseHTMLDocument(f)
 }
 
-func runHtmlDate(url string, bt []byte, extensive bool) (string, error) {
-	r := bytes.NewReader(bt)
+func runHtmlDate(doc *html.Node, extensive bool) (string, error) {
 	opts := htmldate.Options{
 		UseOriginalDate:     true,
 		SkipExtensiveSearch: !extensive,
 	}
 
-	dt, err := htmldate.FromReader(r, opts)
+	dt, err := htmldate.FromDocument(doc, opts)
 	if err != nil {
 		return "", err
 	}
