@@ -792,3 +792,59 @@ func Test_searchPage(t *testing.T) {
 	dt = searchPage(`<html><body><p> © Company 2014-2019 </p></body></html>`, opts)
 	assert.Equal(t, "2019-01-01", format(dt))
 }
+
+func Test_searchPattern(t *testing.T) {
+	// Variables
+	opts := Options{MinDate: defaultMinDate, MaxDate: defaultMaxDate}
+
+	// First pattern, YYYY MM
+	pattern := regexp.MustCompile(`\D([0-9]{4}[/.-][0-9]{2})\D`)
+	catchPattern := regexp.MustCompile(`([0-9]{4})[/.-]([0-9]{2})`)
+	yearPattern := regexp.MustCompile(`^([12][0-9]{3})`)
+
+	str := "It happened on the 202.E.19, the day when it all began."
+	res := searchPattern(str, pattern, catchPattern, yearPattern, opts)
+	assert.Empty(t, res)
+
+	str = "The date is 2002.02.15."
+	res = searchPattern(str, pattern, catchPattern, yearPattern, opts)
+	assert.NotEmpty(t, res)
+	assert.Equal(t, "2002.02", res[0])
+
+	str = "http://www.url.net/index.html"
+	res = searchPattern(str, pattern, catchPattern, yearPattern, opts)
+	assert.Empty(t, res)
+
+	str = "http://www.url.net/2016/01/index.html"
+	res = searchPattern(str, pattern, catchPattern, yearPattern, opts)
+	assert.NotEmpty(t, res)
+	assert.Equal(t, "2016/01", res[0])
+
+	// Second pattern, MM YYYY
+	pattern = regexp.MustCompile(`\D([0-9]{2}[/.-][0-9]{4})\D`)
+	catchPattern = regexp.MustCompile(`([0-9]{2})[/.-]([0-9]{4})`)
+	yearPattern = regexp.MustCompile(`([12][0-9]{3})$`)
+
+	str = "It happened on the 202.E.19, the day when it all began."
+	res = searchPattern(str, pattern, catchPattern, yearPattern, opts)
+	assert.Empty(t, res)
+
+	str = "It happened on the 15.02.2002, the day when it all began."
+	res = searchPattern(str, pattern, catchPattern, yearPattern, opts)
+	assert.NotEmpty(t, res)
+	assert.Equal(t, "02.2002", res[0])
+
+	// Third pattern, YYYY only
+	pattern = regexp.MustCompile(`\D(2[01][0-9]{2})\D`)
+	catchPattern = regexp.MustCompile(`(2[01][0-9]{2})`)
+	yearPattern = regexp.MustCompile(`^(2[01][0-9]{2})`)
+
+	str = "It happened in the film 300."
+	res = searchPattern(str, pattern, catchPattern, yearPattern, opts)
+	assert.Empty(t, res)
+
+	str = "It happened in 2002."
+	res = searchPattern(str, pattern, catchPattern, yearPattern, opts)
+	assert.NotEmpty(t, res)
+	assert.Equal(t, "2002", res[0])
+}
