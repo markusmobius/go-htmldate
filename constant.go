@@ -12,7 +12,7 @@ var (
 )
 
 const (
-	maxPossibleCandidates = 100
+	maxPossibleCandidates = 300
 	defaultDateFormat     = "2006-1-2"
 )
 
@@ -61,7 +61,7 @@ var (
 	rxTextDatePattern      = regexp.MustCompile(`(?i)[.:,_/ -]|^[0-9]+$`)
 	rxNoTextDatePattern    = regexp.MustCompile(`(?i)^(?:[0-9]{3,}\D+[0-9]{3,}|[0-9]{2}:[0-9]{2}(:| )|\D*[0-9]{4}\D*$)`)
 
-	rxEnPattern = regexp.MustCompile(`(?i)(?:[Dd]ate[^0-9"]{,20}|updated|published) *?(?:in)? *?:? *?([0-9]{1,4})[./]([0-9]{1,2})[./]([0-9]{2,4})`)
+	rxEnPattern = regexp.MustCompile(`(?i)(?:[Dd]ate[^0-9"]{0,20}|updated|published) *?(?:in)? *?:? *?([0-9]{1,4})[./]([0-9]{1,2})[./]([0-9]{2,4})`)
 	rxDePattern = regexp.MustCompile(`(?i)(?:Datum|Stand): ?([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{2,4})`)
 	rxTrPattern = regexp.MustCompile(`(?i)` +
 		`(?:güncellen?me|yayı(?:m|n)lan?ma) *?(?:tarihi)? *?:? *?([0-9]{1,2})[./]([0-9]{1,2})[./]([0-9]{2,4})|` +

@@ -327,6 +327,7 @@ func extractIdiosyncrasy(rxIdiosyncrasy *regexp.Regexp, htmlString string, opts 
 	}
 
 	if validateDate(candidate, opts) {
+		log.Debug().Msgf("idiosyncratic pattern found: %s", parts[0])
 		return candidate
 	}
 
