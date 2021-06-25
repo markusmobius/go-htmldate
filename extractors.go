@@ -48,7 +48,7 @@ func extractUrlDate(url string, opts Options) time.Time {
 		return timeZero
 	}
 
-	log.Info().Msgf("found date in url: %s", parts[0])
+	log.Debug().Msgf("found date in url: %s", parts[0])
 	return date
 }
 
@@ -74,7 +74,7 @@ func extractPartialUrlDate(url string, opts Options) time.Time {
 		return timeZero
 	}
 
-	log.Info().Msgf("found partial date in url: %s", parts[0])
+	log.Debug().Msgf("found partial date in url: %s", parts[0])
 	return date
 }
 
@@ -176,18 +176,11 @@ func fastParse(s string, opts Options) time.Time {
 		}
 	}
 
-	// 4. Try the Y-M and M-Y pattern
+	// 4. Try the Y-M pattern
 	parts = rxYmPattern.FindStringSubmatch(s)
-	if len(parts) == 0 {
-		parts = rxMyPattern.FindStringSubmatch(s)
-	}
-
 	if len(parts) == 3 {
 		year, _ := strconv.Atoi(parts[1])
 		month, _ := strconv.Atoi(parts[2])
-		if len(parts[2]) == 4 {
-			year, month = month, year
-		}
 
 		// Make sure month is at most 12, because if not then it's not D-M-Y
 		if month <= 12 {
@@ -202,7 +195,7 @@ func fastParse(s string, opts Options) time.Time {
 	// 5. Try the other regex pattern
 	dt := regexParse(s, opts)
 	if validateDate(dt, opts) {
-		log.Debug().Msgf("fast parse found regex date: %s", s)
+		log.Debug().Msgf("fast parse found regex date: %s", dt.Format("2006-01-02"))
 		return dt
 	}
 
@@ -365,6 +358,7 @@ func regexParseDe(s string) time.Time {
 	}
 
 	dt := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
+	log.Debug().Msgf("German text found: %s", s)
 	return dt
 }
 
@@ -412,5 +406,6 @@ regex_finish:
 		}
 	}
 
+	log.Debug().Msgf("multilingual text found: %s", s)
 	return time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
 }

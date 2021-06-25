@@ -32,7 +32,7 @@ func extractMockFile(url string, customOpts ...Options) time.Time {
 	defer f.Close()
 
 	// Extract
-	opts := Options{URL: url}
+	opts := Options{}
 	if len(customOpts) > 0 {
 		opts = mergeOpts(opts, customOpts[0])
 	}
@@ -60,7 +60,23 @@ func extractFromString(s string, customOpts ...Options) time.Time {
 	return result
 }
 
+func extractFromURL(url string, customOpts ...Options) time.Time {
+	opts := Options{URL: url}
+	if len(customOpts) > 0 {
+		opts = mergeOpts(opts, customOpts[0])
+	}
+
+	r := strings.NewReader("")
+	result, err := FromReader(r, opts)
+	if err != nil {
+		logrus.Panicln(err)
+	}
+
+	return result
+}
+
 func mergeOpts(opt1, opt2 Options) Options {
+	opt1.EnableLog = opt1.EnableLog || opt2.EnableLog
 	opt1.UseOriginalDate = opt1.UseOriginalDate || opt2.UseOriginalDate
 	opt1.SkipExtensiveSearch = opt1.SkipExtensiveSearch || opt2.SkipExtensiveSearch
 

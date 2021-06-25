@@ -98,8 +98,9 @@ func FromDocument(doc *html.Node, opts Options) (time.Time, error) {
 
 	// Use selectors + text content
 	// First try in pruned document
-	discarded := discardUnwanted(doc)
-	dateElements := findElementsWithRule(doc, dateSelectorRule)
+	prunedDoc := dom.Clone(doc, true)
+	discarded := discardUnwanted(prunedDoc)
+	dateElements := findElementsWithRule(prunedDoc, dateSelectorRule)
 	dateResult := examineOtherElements(dateElements, opts)
 	if !dateResult.IsZero() {
 		return dateResult, nil
@@ -131,7 +132,14 @@ func FromDocument(doc *html.Node, opts Options) (time.Time, error) {
 
 	// Try string search
 	cleanDocument(doc)
-	htmlString := dom.OuterHTML(doc)
+
+	var htmlString string
+	htmlNode := dom.QuerySelector(doc, "html")
+	if htmlNode != nil {
+		htmlString = dom.InnerHTML(htmlNode)
+	} else {
+		htmlString = dom.InnerHTML(doc)
+	}
 
 	// String search using regex timestamp
 	timestampResult := timestampSearch(htmlString, opts)
@@ -150,6 +158,7 @@ func FromDocument(doc *html.Node, opts Options) (time.Time, error) {
 		textContent := normalizeSpaces(dom.TextContent(titleElem))
 		attempt := tryYmdDate(textContent, opts)
 		if !attempt.IsZero() {
+			log.Debug().Msgf("found date in title: %s", textContent)
 			return attempt, nil
 		}
 	}
@@ -177,8 +186,13 @@ func FromDocument(doc *html.Node, opts Options) (time.Time, error) {
 		var reference int64
 		for _, elem := range dom.GetAllNodesWithTag(doc, "div", "p") {
 			for _, child := range dom.ChildNodes(elem) {
-				if child.Type == html.TextNode {
-					reference = compareReference(reference, child.Data, opts)
+				if child.Type != html.TextNode {
+					continue
+				}
+
+				text := normalizeSpaces(child.Data)
+				if nText := len(text); nText > 0 && nText < 80 {
+					reference = compareReference(reference, text, opts)
 				}
 			}
 		}
@@ -481,9 +495,7 @@ func examineOtherElements(elements []*html.Node, opts Options) time.Time {
 
 			// Log the examined element
 			elemHTML := dom.OuterHTML(elem)
-			if len(elemHTML) > 100 {
-				elemHTML = elemHTML[:100]
-			}
+			elemHTML = strLimit(normalizeSpaces(elemHTML), 100)
 			log.Debug().Msgf("analyzing HTML: %s", elemHTML)
 
 			// Attempt to extract date
@@ -601,6 +613,7 @@ func searchPage(htmlString string, opts Options) time.Time {
 	}
 
 	// 1 component, last try
+	log.Debug().Msg("switching to one component")
 	bestMatch = searchPattern(htmlString, rxSimplePattern, rxYearPattern, rxYearPattern, opts)
 	if len(bestMatch) >= 2 {
 		str := fmt.Sprintf("%s-1-1", bestMatch[1])

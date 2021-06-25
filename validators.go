@@ -70,7 +70,12 @@ func plausibleYearFilter(htmlString string, pattern, yearPattern *regexp.Regexp,
 	uniqueMatches := []string{}
 	mapMatchCount := make(map[string]int)
 
-	for _, match := range pattern.FindAllString(htmlString, -1) {
+	for _, parts := range pattern.FindAllStringSubmatch(htmlString, -1) {
+		match := parts[0]
+		if len(parts) > 1 {
+			match = parts[1]
+		}
+
 		if _, exist := mapMatchCount[match]; !exist {
 			uniqueMatches = append(uniqueMatches, match)
 		}
@@ -115,7 +120,7 @@ func plausibleYearFilter(htmlString string, pattern, yearPattern *regexp.Regexp,
 		}
 
 		if potentialYear < minYear || potentialYear > maxYear {
-			log.Debug().Msgf("not potential year: %s", match)
+			log.Debug().Msgf("not potential year %d: %s", potentialYear, match)
 			delete(mapMatchCount, match)
 			continue
 		}
