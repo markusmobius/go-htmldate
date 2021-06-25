@@ -109,15 +109,12 @@ func plausibleYearFilter(htmlString string, pattern, yearPattern *regexp.Regexp,
 		var potentialYear int
 		if !toComplete {
 			potentialYear = yearVal
-		} else {
-			if yearVal < 100 {
-				if yearVal >= 90 {
-					yearVal += 1900
-				} else {
-					yearVal += 2000
-				}
+		} else if yearVal < 100 {
+			if yearVal >= 90 {
+				potentialYear = 1900 + yearVal
+			} else {
+				potentialYear = 2000 + yearVal
 			}
-			potentialYear = yearVal
 		}
 
 		if potentialYear < minYear || potentialYear > maxYear {
