@@ -74,25 +74,6 @@ def test_search_pattern(original_date=False, min_date=MIN_DATE, max_date=LATEST_
     assert search_pattern('It happened in 2002.', pattern, catch, yearpat, original_date, min_date, max_date) is not None
 
 
-def test_search_html(original_date=False, min_date=MIN_DATE, max_date=LATEST_POSSIBLE):
-    '''test pattern search in HTML'''
-    # file input + output format
-    assert search_page(load_mock_page('http://www.heimicke.de/chronik/zahlen-und-daten/'), '%d %B %Y', original_date, min_date, max_date) == '06 April 2019'
-    # tree input
-    assert search_page('<html><body><p>The date is 5/2010</p></body></html>', OUTPUTFORMAT, original_date, min_date, max_date) == '2010-05-01'
-    assert search_page('<html><body><p>The date is 5.5.2010</p></body></html>', OUTPUTFORMAT, original_date, min_date, max_date) == '2010-05-05'
-    assert search_page('<html><body><p>The date is 11/10/99</p></body></html>', OUTPUTFORMAT, original_date, min_date, max_date) == '1999-10-11'
-    assert search_page('<html><body><p>The date is 3/3/11</p></body></html>', OUTPUTFORMAT, original_date, min_date, max_date) == '2011-03-03'
-    assert search_page('<html><body><p>The date is 06.12.06</p></body></html>', OUTPUTFORMAT, original_date, min_date, max_date) == '2006-12-06'
-    assert search_page('<html><body><p>The timestamp is 20140915D15:23H</p></body></html>', OUTPUTFORMAT, original_date, min_date, max_date) == '2014-09-15'
-    assert search_page('<html><body><p>It could be 2015-04-30 or 2003-11-24.</p></body></html>', OUTPUTFORMAT, original_date, min_date, max_date) == '2015-04-30'
-    assert search_page('<html><body><p>It could be 03/03/2077 or 03/03/2013.</p></body></html>', OUTPUTFORMAT, original_date, min_date, max_date) == '2013-03-03'
-    assert search_page('<html><body><p>It could not be 03/03/2077 or 03/03/1988.</p></body></html>', OUTPUTFORMAT, original_date, min_date, max_date) is None
-    assert search_page('<html><body><p>© The Web Association 2013.</p></body></html>', OUTPUTFORMAT, original_date, min_date, max_date) == '2013-01-01'
-    assert search_page('<html><body><p>Next © Copyright 2018</p></body></html>', OUTPUTFORMAT, original_date, min_date, max_date) == '2018-01-01'
-    assert search_page('<html><body><p> © Company 2014-2019 </p></body></html>', OUTPUTFORMAT, original_date, min_date, max_date) == '2019-01-01'
-
-
 def test_dependencies():
     '''Test README example for consistency'''
     if EXT_PARSER is True:

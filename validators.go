@@ -117,6 +117,7 @@ func plausibleYearFilter(htmlString string, pattern, yearPattern *regexp.Regexp,
 					yearVal += 2000
 				}
 			}
+			potentialYear = yearVal
 		}
 
 		if potentialYear < minYear || potentialYear > maxYear {

@@ -17,6 +17,13 @@ import (
 
 var log zerolog.Logger
 
+func init() {
+	log = zerolog.New(zerolog.ConsoleWriter{
+		Out:        os.Stderr,
+		TimeFormat: "2006-01-02 15:04",
+	}).With().Timestamp().Logger().Level(zerolog.Disabled)
+}
+
 // FromReader extract publish date from the specified reader.
 func FromReader(r io.Reader, opts Options) (time.Time, error) {
 	// Parse html document
@@ -45,13 +52,8 @@ func FromDocument(doc *html.Node, opts Options) (time.Time, error) {
 	}
 
 	// Prepare logger
-	log = zerolog.New(zerolog.ConsoleWriter{
-		Out:        os.Stderr,
-		TimeFormat: "2006-01-02 15:04",
-	}).With().Timestamp().Logger()
-
-	if !opts.EnableLog {
-		log = log.Level(zerolog.Disabled)
+	if opts.EnableLog {
+		log = log.Level(zerolog.DebugLevel)
 	}
 
 	// If URL is not defined in options, use canonical link
@@ -516,6 +518,10 @@ func examineOtherElements(elements []*html.Node, opts Options) time.Time {
 	return timeZero
 }
 
+func SearchPage(htmlString string, opts Options) time.Time {
+	return searchPage(htmlString, opts)
+}
+
 // searchPage opportunistically search the HTML text for common text patterns.
 func searchPage(htmlString string, opts Options) time.Time {
 	// Copyright symbol
@@ -594,8 +600,25 @@ func searchPage(htmlString string, opts Options) time.Time {
 
 	// Second option
 	candidates = plausibleYearFilter(htmlString, rxMmYyyyPattern, rxMmYyyyYear, false, opts)
-	candidates = normalizeCandidates(candidates, opts)
 
+	// Revert DD-MM-YYYY patterns before sorting
+	candidatesItem := []string{}
+	for _, item := range candidates {
+		parts := rxMyPattern.FindStringSubmatch(item.Pattern)
+		if len(parts) < 3 {
+			continue
+		}
+
+		year, _ := strconv.Atoi(parts[2])
+		month, _ := strconv.Atoi(parts[1])
+		str := fmt.Sprintf("%04d-%02d-01", year, month)
+
+		for i := 0; i < item.Occurences; i++ {
+			candidatesItem = append(candidatesItem, str)
+		}
+	}
+
+	candidates = createCandidates(candidatesItem...)
 	bestMatch = selectCandidate(candidates, rxYmdPattern, rxYmdYear, opts)
 	result = filterYmdCandidate(bestMatch, rxMmYyyyPattern, copYear, opts)
 	if !result.IsZero() {

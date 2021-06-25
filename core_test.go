@@ -1,6 +1,7 @@
 package htmldate
 
 import (
+	"io/ioutil"
 	"regexp"
 	"testing"
 	"time"
@@ -728,4 +729,66 @@ func Test_selectCandidate(t *testing.T) {
 		"19018956", "209561", "22020895607-12", "2-28")
 	result = selectCandidate(candidates, rxCatch, rxYear, opts)
 	assert.Empty(t, result)
+}
+
+func Test_searchPage(t *testing.T) {
+	// Variables
+	var dt time.Time
+	opts := Options{
+		MinDate: defaultMinDate,
+		MaxDate: defaultMaxDate,
+	}
+
+	// Helper function
+	format := func(t time.Time) string {
+		if !t.IsZero() {
+			return t.Format("2006-01-02")
+		}
+		return ""
+	}
+
+	// From file
+	f := openMockFile("http://www.heimicke.de/chronik/zahlen-und-daten/")
+	defer f.Close()
+
+	bt, _ := ioutil.ReadAll(f)
+	dt = searchPage(string(bt), opts)
+	assert.Equal(t, "2019-04-06", format(dt))
+
+	// From string
+	dt = searchPage(`<html><body><p>The date is 5/2010</p></body></html>`, opts)
+	assert.Equal(t, "2010-05-01", format(dt))
+
+	dt = searchPage(`<html><body><p>The date is 5.5.2010</p></body></html>`, opts)
+	assert.Equal(t, "2010-05-05", format(dt))
+
+	dt = searchPage(`<html><body><p>The date is 11/10/99</p></body></html>`, opts)
+	assert.Equal(t, "1999-10-11", format(dt))
+
+	dt = searchPage(`<html><body><p>The date is 3/3/11</p></body></html>`, opts)
+	assert.Equal(t, "2011-03-03", format(dt))
+
+	dt = searchPage(`<html><body><p>The date is 06.12.06</p></body></html>`, opts)
+	assert.Equal(t, "2006-12-06", format(dt))
+
+	dt = searchPage(`<html><body><p>The timestamp is 20140915D15:23H</p></body></html>`, opts)
+	assert.Equal(t, "2014-09-15", format(dt))
+
+	dt = searchPage(`<html><body><p>It could be 2015-04-30 or 2003-11-24.</p></body></html>`, opts)
+	assert.Equal(t, "2015-04-30", format(dt))
+
+	dt = searchPage(`<html><body><p>It could be 03/03/2077 or 03/03/2013.</p></body></html>`, opts)
+	assert.Equal(t, "2013-03-03", format(dt))
+
+	dt = searchPage(`<html><body><p>It could not be 03/03/2077 or 03/03/1988.</p></body></html>`, opts)
+	assert.Equal(t, "", format(dt))
+
+	dt = searchPage(`<html><body><p>© The Web Association 2013.</p></body></html>`, opts)
+	assert.Equal(t, "2013-01-01", format(dt))
+
+	dt = searchPage(`<html><body><p>Next © Copyright 2018</p></body></html>`, opts)
+	assert.Equal(t, "2018-01-01", format(dt))
+
+	dt = searchPage(`<html><body><p> © Company 2014-2019 </p></body></html>`, opts)
+	assert.Equal(t, "2019-01-01", format(dt))
 }
