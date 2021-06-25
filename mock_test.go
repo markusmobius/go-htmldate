@@ -6,8 +6,6 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
-
-	"github.com/sirupsen/logrus"
 )
 
 // openMockFile is used to open HTML document from specified mock file.
@@ -19,7 +17,7 @@ func openMockFile(url string) io.ReadCloser {
 
 	f, err := os.Open(path)
 	if err != nil {
-		logrus.Panicln(err)
+		panic(err)
 	}
 
 	return f
@@ -39,7 +37,7 @@ func extractMockFile(url string, customOpts ...Options) time.Time {
 
 	result, err := FromReader(f, opts)
 	if err != nil {
-		logrus.Panicln(err)
+		panic(err)
 	}
 
 	return result
@@ -54,7 +52,7 @@ func extractFromString(s string, customOpts ...Options) time.Time {
 	r := strings.NewReader(s)
 	result, err := FromReader(r, opts)
 	if err != nil {
-		logrus.Panicln(err)
+		panic(err)
 	}
 
 	return result
@@ -69,7 +67,7 @@ func extractFromURL(url string, customOpts ...Options) time.Time {
 	r := strings.NewReader("")
 	result, err := FromReader(r, opts)
 	if err != nil {
-		logrus.Panicln(err)
+		panic(err)
 	}
 
 	return result

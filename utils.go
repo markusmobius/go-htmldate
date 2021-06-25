@@ -9,8 +9,8 @@ import (
 
 	"github.com/go-shiori/dom"
 	"github.com/gogs/chardet"
-	"github.com/pingcap/parser/charset"
 	"golang.org/x/net/html"
+	"golang.org/x/net/html/charset"
 	xunicode "golang.org/x/text/encoding/unicode"
 	"golang.org/x/text/runes"
 	"golang.org/x/text/transform"

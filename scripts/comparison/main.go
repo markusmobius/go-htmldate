@@ -9,8 +9,13 @@ import (
 	"time"
 
 	"github.com/markusmobius/go-htmldate"
-	"github.com/sirupsen/logrus"
+	"github.com/rs/zerolog"
 )
+
+var log = zerolog.New(zerolog.ConsoleWriter{
+	Out:        os.Stderr,
+	TimeFormat: "2006-01-02 15:04",
+}).With().Timestamp().Logger()
 
 func main() {
 	var (
@@ -24,7 +29,7 @@ func main() {
 		// Open file
 		fContent, err := openFile(entry.File)
 		if err != nil {
-			logrus.Errorf("failed to open %s: %v", entry.File, err)
+			log.Error().Msgf("failed to open %s: %v", entry.File, err)
 			continue
 		}
 
@@ -36,12 +41,12 @@ func main() {
 		start := time.Now()
 		result, err := runHtmlDate(entry.URL, fContent, false)
 		if err != nil {
-			logrus.Errorf("fast htmldate error in %s: %v", entry.URL, err)
+			log.Error().Msgf("fast htmldate error in %s: %v", entry.URL, err)
 		}
 
-		// if result != entry.Fast && result != entry.Date {
-		// 	logrus.Warnf("fast got different result in %s: %s vs %s, want %s", entry.URL, entry.Fast, result, entry.Date)
-		// }
+		if result != entry.Fast && result != entry.Date {
+			log.Debug().Msgf("fast got different result in %s: %s vs %s, want %s", entry.URL, entry.Fast, result, entry.Date)
+		}
 
 		duration := time.Now().Sub(start)
 		ev = evaluateResult(result, entry)
@@ -52,11 +57,11 @@ func main() {
 		start = time.Now()
 		result, err = runHtmlDate(entry.URL, fContent, true)
 		if err != nil {
-			logrus.Errorf("extensive htmldate error in %s: %v", entry.URL, err)
+			log.Error().Msgf("extensive htmldate error in %s: %v", entry.URL, err)
 		}
 
 		if result != entry.Extensive && result != entry.Date {
-			logrus.Warnf("extensive got different result in %s: %s vs %s, want %s", entry.URL, entry.Extensive, result, entry.Date)
+			log.Debug().Msgf("extensive got different result in %s: %s vs %s, want %s", entry.URL, entry.Extensive, result, entry.Date)
 		}
 
 		duration = time.Now().Sub(start)
