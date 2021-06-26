@@ -26,7 +26,7 @@ import (
 var (
 	timeZero       = time.Time{}
 	defaultMinDate = time.Date(1995, 1, 1, 0, 0, 0, 0, time.UTC)
-	defaultMaxDate = time.Now()
+	defaultMaxDate = time.Now().AddDate(1, 0, 0)
 )
 
 const (
