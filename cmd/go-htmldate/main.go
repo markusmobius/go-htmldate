@@ -59,7 +59,7 @@ func main() {
 	rootCmd := &cobra.Command{
 		Use:   "go-htmldate [flags] [source]",
 		Run:   rootCmdHandler,
-		Short: "extract publish date from a HTML file or url",
+		Short: "Extract publish date from a HTML file or url",
 		Args:  cobra.ExactArgs(1),
 	}
 
