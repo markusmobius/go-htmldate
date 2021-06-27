@@ -55,6 +55,9 @@ func FromReader(r io.Reader, opts Options) (time.Time, error) {
 
 // FromDocument extract publish date from the specified html document.
 func FromDocument(doc *html.Node, opts Options) (time.Time, error) {
+	// Clone document so the original kept untouched
+	doc = dom.Clone(doc, true)
+
 	// Set default options
 	if opts.MinDate.IsZero() {
 		opts.MinDate = defaultMinDate
