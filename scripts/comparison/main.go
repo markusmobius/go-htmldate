@@ -24,6 +24,7 @@ import (
 	fp "path/filepath"
 	"time"
 
+	"github.com/go-shiori/dom"
 	"github.com/markusmobius/go-htmldate"
 	"github.com/rs/zerolog"
 	"golang.org/x/net/html"
@@ -120,7 +121,7 @@ func openFile(name string) (*html.Node, error) {
 	}
 
 	// Parse document
-	return parseHTMLDocument(f)
+	return dom.Parse(f)
 }
 
 func runHtmlDate(doc *html.Node, extensive bool) (string, error) {

@@ -45,7 +45,7 @@ func init() {
 // FromReader extract publish date from the specified reader.
 func FromReader(r io.Reader, opts Options) (time.Time, error) {
 	// Parse html document
-	doc, err := parseHTMLDocument(r)
+	doc, err := dom.Parse(r)
 	if err != nil {
 		return timeZero, err
 	}
