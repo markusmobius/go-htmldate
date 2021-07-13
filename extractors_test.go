@@ -117,7 +117,7 @@ func Test_regexParse(t *testing.T) {
 	}
 
 	assert.Equal(t, "2008-12-03", parse("3. Dezember 2008"))
-	assert.Equal(t, "2009-01-02", parse("33. Dezember 2008"))
+	assert.Equal(t, "", parse("33. Dezember 2008"))
 	assert.Equal(t, "2008-12-03", parse("3 Aralık 2008 Çarşamba"))
 	assert.Equal(t, "2008-12-03", parse("3 Aralık 2008"))
 	assert.Equal(t, "2019-03-26", parse("Tuesday, March 26th, 2019"))

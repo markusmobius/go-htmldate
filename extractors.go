@@ -56,12 +56,8 @@ func extractUrlDate(url string, opts Options) time.Time {
 	month, _ := strconv.Atoi(parts[2])
 	day, _ := strconv.Atoi(parts[3])
 
-	if month > 12 {
-		return timeZero
-	}
-
-	date := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
-	if !validateDate(date, opts) {
+	date, valid := validateDateParts(year, month, day, opts)
+	if !valid {
 		return timeZero
 	}
 
@@ -86,8 +82,8 @@ func extractPartialUrlDate(url string, opts Options) time.Time {
 		return timeZero
 	}
 
-	date := time.Date(year, time.Month(month), 1, 0, 0, 0, 0, time.UTC)
-	if !validateDate(date, opts) {
+	date, valid := validateDateParts(year, month, 1, opts)
+	if !valid {
 		return timeZero
 	}
 
@@ -153,12 +149,10 @@ func fastParse(s string, opts Options) time.Time {
 		day, _ := strconv.Atoi(parts[3])
 
 		// Make sure month is at most 12, because if not then it's not YMD
-		if month <= 12 {
-			dt := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
-			if validateDate(dt, opts) {
-				log.Debug().Msgf("fast parse found Y-M-D date: %s", parts[0])
-				return dt
-			}
+		dt, valid := validateDateParts(year, month, day, opts)
+		if valid {
+			log.Debug().Msgf("fast parse found Y-M-D date: %s", parts[0])
+			return dt
 		}
 	}
 
@@ -184,12 +178,10 @@ func fastParse(s string, opts Options) time.Time {
 		}
 
 		// Make sure month is at most 12, because if not then it's not D-M-Y
-		if month <= 12 {
-			dt := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
-			if validateDate(dt, opts) {
-				log.Debug().Msgf("fast parse found D-M-Y date: %s", parts[0])
-				return dt
-			}
+		dt, valid := validateDateParts(year, month, day, opts)
+		if valid {
+			log.Debug().Msgf("fast parse found D-M-Y date: %s", parts[0])
+			return dt
 		}
 	}
 
@@ -200,18 +192,16 @@ func fastParse(s string, opts Options) time.Time {
 		month, _ := strconv.Atoi(parts[2])
 
 		// Make sure month is at most 12, because if not then it's not D-M-Y
-		if month <= 12 {
-			dt := time.Date(year, time.Month(month), 1, 0, 0, 0, 0, time.UTC)
-			if validateDate(dt, opts) {
-				log.Debug().Msgf("fast parse found Y-M date: %s", parts[0])
-				return dt
-			}
+		dt, valid := validateDateParts(year, month, 1, opts)
+		if valid {
+			log.Debug().Msgf("fast parse found Y-M date: %s", parts[0])
+			return dt
 		}
 	}
 
 	// 5. Try the other regex pattern
 	dt := regexParse(s, opts)
-	if validateDate(dt, opts) {
+	if !dt.IsZero() {
 		log.Debug().Msgf("fast parse found regex date: %s", dt.Format("2006-01-02"))
 		return dt
 	}
@@ -287,7 +277,7 @@ func metaImgSearch(doc *html.Node, opts Options) time.Time {
 		content := strings.TrimSpace(dom.GetAttribute(elem, "content"))
 		if content != "" {
 			result := extractUrlDate(content, opts)
-			if validateDate(result, opts) {
+			if !result.IsZero() {
 				return result
 			}
 		}
@@ -317,7 +307,7 @@ func extractIdiosyncrasy(rxIdiosyncrasy *regexp.Regexp, htmlString string, opts 
 		year, _ := strconv.Atoi(parts[groups[1]])
 		month, _ := strconv.Atoi(parts[groups[2]])
 		day, _ := strconv.Atoi(parts[groups[3]])
-		candidate = time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
+		candidate, _ = validateDateParts(year, month, day, opts)
 	} else if tmp := len(parts[groups[3]]); tmp == 2 || tmp == 4 {
 		year, _ := strconv.Atoi(parts[groups[3]])
 		month, _ := strconv.Atoi(parts[groups[2]])
@@ -330,13 +320,17 @@ func extractIdiosyncrasy(rxIdiosyncrasy *regexp.Regexp, htmlString string, opts 
 
 		// Append year if necessary
 		if year < 100 {
-			year = 2000 + year
+			if year >= 90 {
+				year += 1900
+			} else {
+				year += 2000
+			}
 		}
 
-		candidate = time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
+		candidate, _ = validateDateParts(year, month, day, opts)
 	}
 
-	if validateDate(candidate, opts) {
+	if !candidate.IsZero() {
 		log.Debug().Msgf("idiosyncratic pattern found: %s", parts[0])
 		return candidate
 	}
@@ -346,16 +340,16 @@ func extractIdiosyncrasy(rxIdiosyncrasy *regexp.Regexp, htmlString string, opts 
 
 // regexParse is full-text parse using a series of regular expressions.
 func regexParse(s string, opts Options) time.Time {
-	dt := regexParseDe(s)
+	dt := regexParseDe(s, opts)
 	if dt.IsZero() {
-		dt = regexParseMultilingual(s)
+		dt = regexParseMultilingual(s, opts)
 	}
 
 	return dt
 }
 
 // regexParseDe tries full-text parse for German date elements.
-func regexParseDe(s string) time.Time {
+func regexParseDe(s string, opts Options) time.Time {
 	parts := rxGermanTextSearch.FindStringSubmatch(s)
 	if len(parts) == 0 {
 		return timeZero
@@ -368,13 +362,17 @@ func regexParseDe(s string) time.Time {
 		return timeZero
 	}
 
-	dt := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
-	log.Debug().Msgf("German text found: %s", s)
-	return dt
+	dt, valid := validateDateParts(year, month, day, opts)
+	if valid {
+		log.Debug().Msgf("German text found: %s", s)
+		return dt
+	}
+
+	return timeZero
 }
 
 // regexParseMultilingual tries full-text parse for English date elements.
-func regexParseMultilingual(s string) time.Time {
+func regexParseMultilingual(s string, opts Options) time.Time {
 	var exist bool
 	var parts []string
 	var year, month, day int
@@ -405,10 +403,6 @@ func regexParseMultilingual(s string) time.Time {
 	}
 
 regex_finish:
-	if month == 0 || month > 12 {
-		return timeZero
-	}
-
 	if year < 100 {
 		if year >= 90 {
 			year += 1900
@@ -417,6 +411,11 @@ regex_finish:
 		}
 	}
 
-	log.Debug().Msgf("multilingual text found: %s", s)
-	return time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
+	dt, valid := validateDateParts(year, month, day, opts)
+	if valid {
+		log.Debug().Msgf("multilingual text found: %s", s)
+		return dt
+	}
+
+	return timeZero
 }

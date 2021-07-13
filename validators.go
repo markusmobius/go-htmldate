@@ -30,6 +30,47 @@ type yearCandidate struct {
 	Occurences int
 }
 
+// validateDateParts checks if date parts can be used to generate a valid date
+func validateDateParts(year, month, day int, opts Options) (time.Time, bool) {
+	// Make sure year is in Gregorian era
+	if year < 1582 {
+		return timeZero, false
+	}
+
+	// Make sure month is valid
+	if month < 1 || month > 12 {
+		return timeZero, false
+	}
+
+	// Make sure day is valid
+	if day < 1 {
+		return timeZero, false
+	}
+
+	switch month {
+	case 1, 3, 5, 7, 8, 10, 12:
+		if day > 31 {
+			return timeZero, false
+		}
+
+	case 4, 6, 9, 11:
+		if day > 30 {
+			return timeZero, false
+		}
+
+	case 2:
+		isLeap := isLeapYear(year)
+		if (isLeap && day > 29) || (!isLeap && day > 28) {
+			return timeZero, false
+		}
+	}
+
+	// Generate date
+	dt := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
+	valid := validateDate(dt, opts)
+	return dt, valid
+}
+
 // validateDate checks if date is valid and within the possible date.
 func validateDate(date time.Time, opts Options) bool {
 	// If time is zero, it's not valid
