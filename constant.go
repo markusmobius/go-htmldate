@@ -63,10 +63,8 @@ var (
 		`Oca|Şub|Mar|Nis|Haz|Tem|Ağu|Eyl|Eki|Kas|Ara),? ` +
 		`([0-9]{4})`)
 
-	rxDateStubPattern = regexp.MustCompile(`(?i)([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{2,4})`)
-	rxEnglishDate     = regexp.MustCompile(`(?i)([0-9]{1,2})/([0-9]{1,2})/([0-9]{2,4})`)
-	rxCompleteUrl     = regexp.MustCompile(`(?i)([0-9]{4})[/-]([0-9]{1,2})[/-]([0-9]{1,2})`)
-	rxPartialUrl      = regexp.MustCompile(`(?i)/([0-9]{4})/([0-9]{1,2})/`)
+	rxCompleteUrl = regexp.MustCompile(`(?i)([0-9]{4})[/-]([0-9]{1,2})[/-]([0-9]{1,2})`)
+	rxPartialUrl  = regexp.MustCompile(`(?i)/([0-9]{4})/([0-9]{1,2})/`)
 
 	rxGermanTextSearch = regexp.MustCompile(`(?i)` +
 		`([0-9]{1,2})\.? (Januar|Jänner|Februar|Feber|März|April|` +
