@@ -283,7 +283,7 @@ func idiosyncrasiesSearch(htmlString string, opts Options) time.Time {
 
 // metaImgSearch looks for url in <meta> image elements.
 func metaImgSearch(doc *html.Node, opts Options) time.Time {
-	for _, elem := range dom.QuerySelectorAll(doc, `meta[property="image"]`) {
+	for _, elem := range dom.QuerySelectorAll(doc, `meta[property="og:image"]`) {
 		content := strings.TrimSpace(dom.GetAttribute(elem, "content"))
 		if content != "" {
 			result := extractUrlDate(content, opts)
