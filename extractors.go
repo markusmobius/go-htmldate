@@ -93,27 +93,27 @@ func extractPartialUrlDate(url string, opts Options) time.Time {
 
 // tryYmdDate tries to extract date which contains year, month and day using
 // a series of heuristics and rules.
-func tryYmdDate(s string, opts Options) time.Time {
+func tryYmdDate(s string, opts Options) (string, time.Time) {
 	// If string less than 6 runes, stop
 	if len(s) < 6 {
-		return timeZero
+		return s, timeZero
 	}
 
 	// Count how many digit number in this string
 	nDigit := getDigitCount(s)
 	if nDigit < 4 || nDigit > 18 {
-		return timeZero
+		return s, timeZero
 	}
 
 	// Check if string only contains time/single year or digits and not a date
 	if !rxTextDatePattern.MatchString(s) || rxNoTextDatePattern.MatchString(s) {
-		return timeZero
+		return s, timeZero
 	}
 
 	// Try to parse date
 	parseResult := fastParse(s, opts)
 	if !parseResult.IsZero() {
-		return parseResult
+		return s, parseResult
 	}
 
 	if !opts.SkipExtensiveSearch {
@@ -123,7 +123,7 @@ func tryYmdDate(s string, opts Options) time.Time {
 		// many languages. Unfortunately we haven't ported it so we will skip it.
 	}
 
-	return timeZero
+	return s, timeZero
 }
 
 // fastParse parse the string into time.Time.
@@ -211,7 +211,7 @@ func fastParse(s string, opts Options) time.Time {
 }
 
 // jsonSearch looks for JSON time patterns in JSON sections of the document.
-func jsonSearch(doc *html.Node, opts Options) time.Time {
+func jsonSearch(doc *html.Node, opts Options) (string, time.Time) {
 	// Determine pattern
 	var rxJson *regexp.Regexp
 	if opts.UseOriginalDate {
@@ -233,65 +233,72 @@ func jsonSearch(doc *html.Node, opts Options) time.Time {
 			continue
 		}
 
-		parts := rxJson.FindStringSubmatch(jsonText)
-		if len(parts) != 0 {
-			dt, err := time.Parse("2006-01-02", parts[1])
-			if err == nil && validateDate(dt, opts) {
-				return dt
-			}
+		idxs := rxJson.FindStringSubmatchIndex(jsonText)
+		if len(idxs) == 0 {
+			continue
+		}
+
+		group1 := jsonText[idxs[2]:idxs[3]]
+		dt, err := time.Parse("2006-01-02", group1)
+		if err == nil && validateDate(dt, opts) {
+			rawString := strLimit(jsonText[idxs[0]:], 100)
+			return rawString, dt
 		}
 	}
 
-	return timeZero
+	return "", timeZero
 }
 
 // timestampSearch looks for timestamps throughout the html string.
-func timestampSearch(htmlString string, opts Options) time.Time {
-	parts := rxTimestampPattern.FindStringSubmatch(htmlString)
-	if len(parts) != 0 {
-		return fastParse(parts[1], opts)
+func timestampSearch(htmlString string, opts Options) (string, time.Time) {
+	idxs := rxTimestampPattern.FindStringSubmatchIndex(htmlString)
+	if len(idxs) == 0 {
+		return "", timeZero
 	}
 
-	return timeZero
+	rawString := strLimit(htmlString[idxs[0]:], 100)
+	group1 := htmlString[idxs[2]:idxs[3]]
+	dt := fastParse(group1, opts)
+	return rawString, dt
 }
 
 // idiosyncrasiesSearch looks for author-written dates throughout the web page.
-func idiosyncrasiesSearch(htmlString string, opts Options) time.Time {
+func idiosyncrasiesSearch(htmlString string, opts Options) (string, time.Time) {
 	// Do it in order of DE-EN-TR
-	result := extractIdiosyncrasy(rxDePattern, htmlString, opts)
+	rawString, result := extractIdiosyncrasy(rxDePattern, htmlString, opts)
 
 	if result.IsZero() {
-		result = extractIdiosyncrasy(rxEnPattern, htmlString, opts)
+		rawString, result = extractIdiosyncrasy(rxEnPattern, htmlString, opts)
 	}
 
 	if result.IsZero() {
-		result = extractIdiosyncrasy(rxTrPattern, htmlString, opts)
+		rawString, result = extractIdiosyncrasy(rxTrPattern, htmlString, opts)
 	}
 
-	return result
+	return rawString, result
 }
 
 // metaImgSearch looks for url in <meta> image elements.
-func metaImgSearch(doc *html.Node, opts Options) time.Time {
+func metaImgSearch(doc *html.Node, opts Options) (string, time.Time) {
 	for _, elem := range dom.QuerySelectorAll(doc, `meta[property="og:image"]`) {
 		content := strings.TrimSpace(dom.GetAttribute(elem, "content"))
 		if content != "" {
 			result := extractUrlDate(content, opts)
 			if !result.IsZero() {
-				return result
+				return content, result
 			}
 		}
 	}
 
-	return timeZero
+	return "", timeZero
 }
 
 // extractIdiosyncrasy looks for a precise pattern throughout the web page.
-func extractIdiosyncrasy(rxIdiosyncrasy *regexp.Regexp, htmlString string, opts Options) time.Time {
+func extractIdiosyncrasy(rxIdiosyncrasy *regexp.Regexp, htmlString string, opts Options) (string, time.Time) {
 	var candidate time.Time
 	parts := rxIdiosyncrasy.FindStringSubmatch(htmlString)
 	if len(parts) == 0 {
-		return timeZero
+		return "", timeZero
 	}
 
 	var groups []int
@@ -300,7 +307,7 @@ func extractIdiosyncrasy(rxIdiosyncrasy *regexp.Regexp, htmlString string, opts 
 	} else if len(parts) >= 7 && parts[6] != "" {
 		groups = []int{0, 4, 5, 6}
 	} else {
-		return timeZero
+		return "", timeZero
 	}
 
 	if len(parts[1]) == 4 {
@@ -330,12 +337,17 @@ func extractIdiosyncrasy(rxIdiosyncrasy *regexp.Regexp, htmlString string, opts 
 		candidate, _ = validateDateParts(year, month, day, opts)
 	}
 
-	if !candidate.IsZero() {
-		log.Debug().Msgf("idiosyncratic pattern found: %s", parts[0])
-		return candidate
+	if candidate.IsZero() {
+		return "", timeZero
 	}
 
-	return timeZero
+	// Get raw string
+	idxs := rxIdiosyncrasy.FindStringIndex(htmlString)
+	rawString := strLimit(htmlString[idxs[0]:], 100)
+
+	// Return candidate
+	log.Debug().Msgf("idiosyncratic pattern found: %s", parts[0])
+	return rawString, candidate
 }
 
 // regexParse is full-text parse using a series of regular expressions.

@@ -52,7 +52,7 @@ func Test_tryYmdDate(t *testing.T) {
 	}
 
 	try := func(s string) string {
-		dt := tryYmdDate(s, opts)
+		_, dt := tryYmdDate(s, opts)
 		if !dt.IsZero() {
 			return dt.Format("2006-01-02")
 		}

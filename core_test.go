@@ -715,17 +715,17 @@ func Test_compareReference(t *testing.T) {
 		MaxDate: defaultMaxDate,
 	}
 
-	res := compareReference(0, "AAAA", opts)
+	_, res := compareReference("", 0, "AAAA", opts)
 	assert.Equal(t, int64(0), res)
 
-	res = compareReference(1517500000, "2018-33-01", opts)
+	_, res = compareReference("", 1517500000, "2018-33-01", opts)
 	assert.Equal(t, int64(1517500000), res)
 
-	res = compareReference(0, "2018-02-01", opts)
+	_, res = compareReference("", 0, "2018-02-01", opts)
 	assert.Less(t, int64(1517400000), res)
 	assert.Greater(t, int64(1517500000), res)
 
-	res = compareReference(1517500000, "2018-02-01", opts)
+	_, res = compareReference("", 1517500000, "2018-02-01", opts)
 	assert.Equal(t, int64(1517500000), res)
 }
 
@@ -738,14 +738,14 @@ func Test_selectCandidate(t *testing.T) {
 	// Candidate exist
 	candidates := createCandidates("2016-12-23", "2016-12-23", "2016-12-23",
 		"2016-12-23", "2017-08-11", "2016-07-12", "2017-11-28")
-	result := selectCandidate(candidates, rxCatch, rxYear, opts)
+	_, result := selectCandidate(candidates, rxCatch, rxYear, opts)
 	assert.NotEmpty(t, result)
 	assert.Equal(t, "2017-11-28", result[0])
 
 	// Candidates not exist
 	candidates = createCandidates("20208956", "20208956", "20208956",
 		"19018956", "209561", "22020895607-12", "2-28")
-	result = selectCandidate(candidates, rxCatch, rxYear, opts)
+	_, result = selectCandidate(candidates, rxCatch, rxYear, opts)
 	assert.Empty(t, result)
 }
 
@@ -770,44 +770,44 @@ func Test_searchPage(t *testing.T) {
 	defer f.Close()
 
 	bt, _ := ioutil.ReadAll(f)
-	dt = searchPage(string(bt), opts)
+	_, dt = searchPage(string(bt), opts)
 	assert.Equal(t, "2019-04-06", format(dt))
 
 	// From string
-	dt = searchPage(`<html><body><p>The date is 5/2010</p></body></html>`, opts)
+	_, dt = searchPage(`<html><body><p>The date is 5/2010</p></body></html>`, opts)
 	assert.Equal(t, "2010-05-01", format(dt))
 
-	dt = searchPage(`<html><body><p>The date is 5.5.2010</p></body></html>`, opts)
+	_, dt = searchPage(`<html><body><p>The date is 5.5.2010</p></body></html>`, opts)
 	assert.Equal(t, "2010-05-05", format(dt))
 
-	dt = searchPage(`<html><body><p>The date is 11/10/99</p></body></html>`, opts)
+	_, dt = searchPage(`<html><body><p>The date is 11/10/99</p></body></html>`, opts)
 	assert.Equal(t, "1999-10-11", format(dt))
 
-	dt = searchPage(`<html><body><p>The date is 3/3/11</p></body></html>`, opts)
+	_, dt = searchPage(`<html><body><p>The date is 3/3/11</p></body></html>`, opts)
 	assert.Equal(t, "2011-03-03", format(dt))
 
-	dt = searchPage(`<html><body><p>The date is 06.12.06</p></body></html>`, opts)
+	_, dt = searchPage(`<html><body><p>The date is 06.12.06</p></body></html>`, opts)
 	assert.Equal(t, "2006-12-06", format(dt))
 
-	dt = searchPage(`<html><body><p>The timestamp is 20140915D15:23H</p></body></html>`, opts)
+	_, dt = searchPage(`<html><body><p>The timestamp is 20140915D15:23H</p></body></html>`, opts)
 	assert.Equal(t, "2014-09-15", format(dt))
 
-	dt = searchPage(`<html><body><p>It could be 2015-04-30 or 2003-11-24.</p></body></html>`, opts)
+	_, dt = searchPage(`<html><body><p>It could be 2015-04-30 or 2003-11-24.</p></body></html>`, opts)
 	assert.Equal(t, "2015-04-30", format(dt))
 
-	dt = searchPage(`<html><body><p>It could be 03/03/2077 or 03/03/2013.</p></body></html>`, opts)
+	_, dt = searchPage(`<html><body><p>It could be 03/03/2077 or 03/03/2013.</p></body></html>`, opts)
 	assert.Equal(t, "2013-03-03", format(dt))
 
-	dt = searchPage(`<html><body><p>It could not be 03/03/2077 or 03/03/1988.</p></body></html>`, opts)
+	_, dt = searchPage(`<html><body><p>It could not be 03/03/2077 or 03/03/1988.</p></body></html>`, opts)
 	assert.Equal(t, "", format(dt))
 
-	dt = searchPage(`<html><body><p>© The Web Association 2013.</p></body></html>`, opts)
+	_, dt = searchPage(`<html><body><p>© The Web Association 2013.</p></body></html>`, opts)
 	assert.Equal(t, "2013-01-01", format(dt))
 
-	dt = searchPage(`<html><body><p>Next © Copyright 2018</p></body></html>`, opts)
+	_, dt = searchPage(`<html><body><p>Next © Copyright 2018</p></body></html>`, opts)
 	assert.Equal(t, "2018-01-01", format(dt))
 
-	dt = searchPage(`<html><body><p> © Company 2014-2019 </p></body></html>`, opts)
+	_, dt = searchPage(`<html><body><p> © Company 2014-2019 </p></body></html>`, opts)
 	assert.Equal(t, "2019-01-01", format(dt))
 }
 
@@ -821,20 +821,20 @@ func Test_searchPattern(t *testing.T) {
 	yearPattern := regexp.MustCompile(`^([12][0-9]{3})`)
 
 	str := "It happened on the 202.E.19, the day when it all began."
-	res := searchPattern(str, pattern, catchPattern, yearPattern, opts)
+	_, res := searchPattern(str, pattern, catchPattern, yearPattern, opts)
 	assert.Empty(t, res)
 
 	str = "The date is 2002.02.15."
-	res = searchPattern(str, pattern, catchPattern, yearPattern, opts)
+	_, res = searchPattern(str, pattern, catchPattern, yearPattern, opts)
 	assert.NotEmpty(t, res)
 	assert.Equal(t, "2002.02", res[0])
 
 	str = "http://www.url.net/index.html"
-	res = searchPattern(str, pattern, catchPattern, yearPattern, opts)
+	_, res = searchPattern(str, pattern, catchPattern, yearPattern, opts)
 	assert.Empty(t, res)
 
 	str = "http://www.url.net/2016/01/index.html"
-	res = searchPattern(str, pattern, catchPattern, yearPattern, opts)
+	_, res = searchPattern(str, pattern, catchPattern, yearPattern, opts)
 	assert.NotEmpty(t, res)
 	assert.Equal(t, "2016/01", res[0])
 
@@ -844,11 +844,11 @@ func Test_searchPattern(t *testing.T) {
 	yearPattern = regexp.MustCompile(`([12][0-9]{3})$`)
 
 	str = "It happened on the 202.E.19, the day when it all began."
-	res = searchPattern(str, pattern, catchPattern, yearPattern, opts)
+	_, res = searchPattern(str, pattern, catchPattern, yearPattern, opts)
 	assert.Empty(t, res)
 
 	str = "It happened on the 15.02.2002, the day when it all began."
-	res = searchPattern(str, pattern, catchPattern, yearPattern, opts)
+	_, res = searchPattern(str, pattern, catchPattern, yearPattern, opts)
 	assert.NotEmpty(t, res)
 	assert.Equal(t, "02.2002", res[0])
 
@@ -858,11 +858,32 @@ func Test_searchPattern(t *testing.T) {
 	yearPattern = regexp.MustCompile(`^(2[01][0-9]{2})`)
 
 	str = "It happened in the film 300."
-	res = searchPattern(str, pattern, catchPattern, yearPattern, opts)
+	_, res = searchPattern(str, pattern, catchPattern, yearPattern, opts)
 	assert.Empty(t, res)
 
 	str = "It happened in 2002."
-	res = searchPattern(str, pattern, catchPattern, yearPattern, opts)
+	_, res = searchPattern(str, pattern, catchPattern, yearPattern, opts)
 	assert.NotEmpty(t, res)
 	assert.Equal(t, "2002", res[0])
+}
+
+func createCandidates(items ...string) []yearCandidate {
+	uniqueItems := []string{}
+	mapItemCount := make(map[string]int)
+	for _, item := range items {
+		if _, exist := mapItemCount[item]; !exist {
+			uniqueItems = append(uniqueItems, item)
+		}
+		mapItemCount[item]++
+	}
+
+	var candidates []yearCandidate
+	for _, item := range uniqueItems {
+		candidates = append(candidates, yearCandidate{
+			Patternz:   item,
+			Occurences: mapItemCount[item],
+		})
+	}
+
+	return candidates
 }
