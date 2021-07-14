@@ -109,7 +109,7 @@ PC (Intel i7-8550U @ 4.000GHz, RAM 16 GB):
 
 |             Package            | Precision | Recall | Accuracy | F-Score | Speed (s) |
 |:------------------------------:|:---------:|:------:|:--------:|:-------:|:---------:|
-|      `go-htmldate` fast        |   0.919   |  0.933 |   0.862  |  0.926  |   0.344   |
+|      `go-htmldate` fast        |   0.920   |  0.938 |   0.867  |  0.929  |   0.398   |
 |    `go-htmldate` extensive     |   0.911   |  1.000 |   0.911  |  0.953  |   0.488   |
 
 For comparison, here is the result of the original htmldate:
