@@ -11,7 +11,7 @@ import (
 
 func main() {
 	// Download URL
-	url := "https://www.cnet.com/tech/home-entertainment/lgs-rollable-oled-tv-is-coming-to-the-us-for-a-whopping-100000/"
+	url := "https://edition.cnn.com/2021/07/13/politics/donald-trump-books-last-days-2020/index.html"
 	resp, err := http.Get(url)
 	if err != nil {
 		panic(err)
@@ -21,7 +21,8 @@ func main() {
 	// Prepare configuration
 	opts := htmldate.Options{
 		ExtractTime:     true,
-		UseOriginalDate: true,
+		UseOriginalDate: false,
+		EnableLog:       true,
 	}
 
 	// Extract date

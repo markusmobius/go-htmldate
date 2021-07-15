@@ -136,12 +136,12 @@ var dateAttributes = sliceToMap(
 	"timestamp",
 	"article:published_time", "bt:pubdate", "datecreated",
 	"dateposted", "datepublished", "dc:created", "dc:date",
-	"og:article:published_time", "og:published_time",
+	"og:article:published_time", "og:published_time", "og:pubdate",
 	"sailthru.date", "rnews:datepublished")
 
 var propertyModified = sliceToMap(
 	"article:modified_time", "datemodified", "modified_time",
-	"og:article:modified_time", "og:updated_time",
+	"og:article:modified_time", "og:updated_time", "og:modified_time",
 	"release_date", "updated_time")
 
 func sliceToMap(strings ...string) map[string]struct{} {

@@ -72,10 +72,19 @@ func FromDocument(doc *html.Node, opts Options) (time.Time, error) {
 		opts.MaxDate = defaultMaxDate
 	}
 
-	// If URL is not defined in options, use canonical link
+	// If URL is not defined in options, look in elements
 	if opts.URL == "" {
-		for _, link := range dom.QuerySelectorAll(doc, `link[rel="canonical"]`) {
-			href := dom.GetAttribute(link, "href")
+		links := dom.QuerySelectorAll(doc, `link[rel="canonical"]`)
+		metas := dom.QuerySelectorAll(doc, `meta[property="og:url"]`)
+		elements := append(links, metas...)
+
+		for _, elem := range elements {
+			attrName := "href"
+			if dom.TagName(elem) == "meta" {
+				attrName = "content"
+			}
+
+			href := dom.GetAttribute(elem, attrName)
 			href = strings.TrimSpace(href)
 			if href != "" {
 				opts.URL = href
@@ -105,16 +114,16 @@ func FromDocument(doc *html.Node, opts Options) (time.Time, error) {
 
 // findDate extract publish date from the specified html document.
 func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
-	// If URL is defined, extract date from it
+	// If we are extracting original date and URL is defined, extract date from it
 	var urlDate time.Time
-	if opts.URL != "" {
+	if opts.UseOriginalDate && opts.URL != "" {
 		urlDate = extractUrlDate(opts.URL, opts)
 	}
 
 	validateResult := func(result time.Time) bool {
-		// URL date is the baseline, so if URL date exist and for some
-		// reason the result is different with URL date, most likely that
-		// result is invalid.
+		// URL date is the baseline for original date, so if URL date exist
+		// and for some reason the result is different with URL date, most
+		// likely that result is invalid.
 		if !urlDate.IsZero() && !result.Equal(urlDate) {
 			return false
 		}
@@ -122,9 +131,9 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 	}
 
 	// Try from head elements
-	rawString, headerResult := examineHeader(doc, opts)
-	if validateResult(headerResult) {
-		return rawString, headerResult, nil
+	rawString, metaResult := examineMetaElements(doc, opts)
+	if validateResult(metaResult) {
+		return rawString, metaResult, nil
 	}
 
 	// Try to use JSON data
@@ -241,8 +250,11 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 	}
 
 	// If nothing else found, try from URL
-	if urlDate.IsZero() && opts.URL != "" {
-		urlDate = extractPartialUrlDate(opts.URL, opts)
+	if opts.URL != "" {
+		urlDate = extractUrlDate(opts.URL, opts)
+		if urlDate.IsZero() {
+			urlDate = extractPartialUrlDate(opts.URL, opts)
+		}
 	}
 
 	if !urlDate.IsZero() {
@@ -334,12 +346,49 @@ func findTime(rawString string, date time.Time) (time.Time, string) {
 	return date, ""
 }
 
-// examineHeader parse meta elements to find date cues.
-func examineHeader(doc *html.Node, opts Options) (string, time.Time) {
-	var headerDate time.Time
-	var reserveDate time.Time
-	var headerString string
-	var reserveString string
+// examineMetaElements parse meta elements to find date cues.
+func examineMetaElements(doc *html.Node, opts Options) (string, time.Time) {
+	// Extract dates
+	var metaDate time.Time
+	var metaString string
+
+	if opts.UseOriginalDate {
+		metaString, metaDate = examineMetaPublish(doc, opts)
+	} else {
+		metaString, metaDate = examineMetaModified(doc, opts)
+	}
+
+	// If date still not found, look for copyright year in metadata
+	for _, meta := range dom.QuerySelectorAll(doc, `meta[itemprop]`) {
+		itemProp := dom.GetAttribute(meta, "itemprop")
+		itemProp = strings.TrimSpace(itemProp)
+		itemProp = strings.ToLower(itemProp)
+		if itemProp != "copyrightyear" {
+			continue
+		}
+
+		content := dom.GetAttribute(meta, "content")
+		content = strings.TrimSpace(content)
+		if content == "" {
+			continue
+		}
+
+		log.Debug().Msgf("examining meta copyright year: %s", dom.OuterHTML(meta))
+		attempt := content + "-01-01"
+		dt, err := time.Parse("2006-01-02", attempt)
+		if err == nil && validateDate(dt, opts) {
+			metaString, metaDate = attempt, dt
+			break
+		}
+	}
+
+	return metaString, metaDate
+}
+
+// examineMetaPublish parse meta elements to find publish date (original date).
+func examineMetaPublish(doc *html.Node, opts Options) (string, time.Time) {
+	var metaDate time.Time
+	var metaString string
 
 	for _, elem := range dom.QuerySelectorAll(doc, "meta") {
 		// Fetch attributes
@@ -353,101 +402,113 @@ func examineHeader(doc *html.Node, opts Options) (string, time.Time) {
 
 		if property != "" && content != "" { // Handle property
 			attribute := strings.ToLower(property)
-
-			if opts.UseOriginalDate {
-				if inMap(attribute, dateAttributes) {
-					log.Debug().Msgf("examining meta property: %s", dom.OuterHTML(elem))
-					headerString, headerDate = tryYmdDate(content, opts)
-				}
-			} else {
-				if inMap(attribute, propertyModified) {
-					log.Debug().Msgf("examining meta property: %s", dom.OuterHTML(elem))
-					headerString, headerDate = tryYmdDate(content, opts)
-				} else if inMap(attribute, dateAttributes) {
-					log.Debug().Msgf("examining meta property: %s", dom.OuterHTML(elem))
-					headerString, headerDate = tryYmdDate(content, opts)
-				}
+			if inMap(attribute, dateAttributes) {
+				log.Debug().Msgf("examining meta property for publish date: %s", dom.OuterHTML(elem))
+				metaString, metaDate = tryYmdDate(content, opts)
 			}
 		} else if name != "" && content != "" { // Handle name
-			lowerName := strings.ToLower(name)
-
-			if lowerName == "og:url" {
-				headerString = content
-				headerDate = extractUrlDate(content, opts)
-			} else if inMap(lowerName, dateAttributes) {
-				log.Debug().Msgf("examining meta name: %s", dom.OuterHTML(elem))
-				headerString, headerDate = tryYmdDate(content, opts)
-			} else if strIn(lowerName, "lastmodified", "last-modified") {
-				log.Debug().Msgf("examining meta name: %s", dom.OuterHTML(elem))
-				if !opts.UseOriginalDate {
-					headerString, headerDate = tryYmdDate(content, opts)
-				} else {
-					headerString, reserveDate = tryYmdDate(content, opts)
-				}
+			attribute := strings.ToLower(name)
+			if inMap(attribute, dateAttributes) {
+				log.Debug().Msgf("examining meta name for publish date: %s", dom.OuterHTML(elem))
+				metaString, metaDate = tryYmdDate(content, opts)
 			}
 		} else if pubDate != "" { // Handle publish date
 			if strings.ToLower(pubDate) == "pubdate" {
 				log.Debug().Msgf("examining meta pubdate: %s", dom.OuterHTML(elem))
-				headerString, headerDate = tryYmdDate(content, opts)
+				metaString, metaDate = tryYmdDate(content, opts)
 			}
 		} else if itemProp != "" { // Handle item props
 			attribute := strings.ToLower(itemProp)
-
 			if strIn(attribute, "datecreated", "datepublished", "pubyear") {
-				log.Debug().Msgf("examining meta itemprop: %s", dom.OuterHTML(elem))
+				log.Debug().Msgf("examining meta itemprop for publish date: %s", dom.OuterHTML(elem))
+
+				var strDate string
 				if dateTime != "" {
-					headerString, headerDate = tryYmdDate(dateTime, opts)
+					strDate = dateTime
 				} else if content != "" {
-					headerString, headerDate = tryYmdDate(content, opts)
+					strDate = content
 				}
-			} else if attribute == "datemodified" && !opts.UseOriginalDate {
-				log.Debug().Msgf("examining meta itemprop: %s", dom.OuterHTML(elem))
-				if dateTime != "" {
-					headerString, headerDate = tryYmdDate(dateTime, opts)
-				} else if content != "" {
-					headerString, headerDate = tryYmdDate(content, opts)
-				}
-			} else if attribute == "copyrightyear" { // reserve with copyrightyear
-				log.Debug().Msgf("examining meta itemprop: %s", dom.OuterHTML(elem))
-				if content != "" {
-					attempt := content + "-01-01"
-					dt, err := time.Parse("2006-01-02", attempt)
-					if err == nil && validateDate(dt, opts) {
-						reserveDate = dt
-						reserveString = attempt
-					}
+
+				if strDate != "" {
+					metaString, metaDate = tryYmdDate(strDate, opts)
 				}
 			}
 		} else if httpEquiv != "" { // Handle http-equiv, rare
 			// See http://www.standardista.com/html5/http-equiv-the-meta-attribute-explained/
 			attribute := strings.ToLower(httpEquiv)
-
 			if attribute == "date" && content != "" {
-				log.Debug().Msgf("examining meta http-equiv: %s", dom.OuterHTML(elem))
-				headerString, headerDate = tryYmdDate(content, opts)
-			} else if attribute == "last-modified" && content != "" {
-				log.Debug().Msgf("examining meta http-equiv: %s", dom.OuterHTML(elem))
-				if !opts.UseOriginalDate {
-					headerString, headerDate = tryYmdDate(content, opts)
-				} else {
-					headerString, reserveDate = tryYmdDate(content, opts)
-				}
+				log.Debug().Msgf("examining meta http-equiv for publish date: %s", dom.OuterHTML(elem))
+				metaString, metaDate = tryYmdDate(content, opts)
 			}
 		}
 
 		// Exit loop
-		if !headerDate.IsZero() {
+		if !metaDate.IsZero() {
 			break
 		}
 	}
 
-	// If nothing was found, look for lower granularity (so far: "copyright year")
-	if headerDate.IsZero() && !reserveDate.IsZero() {
-		log.Debug().Msg("opting for reserve date with less granularity")
-		return reserveString, reserveDate
+	return metaString, metaDate
+}
+
+// examineMetaModified parse meta elements to find modified date.
+func examineMetaModified(doc *html.Node, opts Options) (string, time.Time) {
+	var metaDate time.Time
+	var metaString string
+
+	for _, elem := range dom.QuerySelectorAll(doc, "meta") {
+		// Fetch attributes
+		name := strings.TrimSpace(dom.GetAttribute(elem, "name"))
+		content := strings.TrimSpace(dom.GetAttribute(elem, "content"))
+		property := strings.TrimSpace(dom.GetAttribute(elem, "property"))
+		itemProp := strings.TrimSpace(dom.GetAttribute(elem, "itemprop"))
+		dateTime := strings.TrimSpace(dom.GetAttribute(elem, "datetime"))
+		httpEquiv := strings.TrimSpace(dom.GetAttribute(elem, "http-equiv"))
+
+		if property != "" && content != "" { // Handle property
+			attribute := strings.ToLower(property)
+			if inMap(attribute, propertyModified) {
+				log.Debug().Msgf("examining meta property for modified date: %s", dom.OuterHTML(elem))
+				metaString, metaDate = tryYmdDate(content, opts)
+			}
+		} else if name != "" && content != "" { // Handle name
+			attribute := strings.ToLower(name)
+			if strIn(attribute, "lastmodified", "last-modified", "lastmod") {
+				log.Debug().Msgf("examining meta name for modified date: %s", dom.OuterHTML(elem))
+				metaString, metaDate = tryYmdDate(content, opts)
+			}
+		} else if itemProp != "" { // Handle item props
+			attribute := strings.ToLower(itemProp)
+			if attribute == "datemodified" {
+				log.Debug().Msgf("examining meta itemprop for modified date: %s", dom.OuterHTML(elem))
+
+				var strDate string
+				if dateTime != "" {
+					strDate = dateTime
+				} else if content != "" {
+					strDate = content
+				}
+
+				if strDate != "" {
+					metaString, metaDate = tryYmdDate(strDate, opts)
+				}
+			}
+		} else if httpEquiv != "" { // Handle http-equiv, rare
+			// See http://www.standardista.com/html5/http-equiv-the-meta-attribute-explained/
+			attribute := strings.ToLower(httpEquiv)
+			if attribute == "last-modified" && content != "" {
+				log.Debug().Msgf("examining meta http-equiv for modified date: %s", dom.OuterHTML(elem))
+				metaString, metaDate = tryYmdDate(content, opts)
+			}
+		}
+
+		// Exit loop
+		if !metaDate.IsZero() {
+			break
+		}
 	}
 
-	return headerString, headerDate
+	return metaString, metaDate
 }
 
 // examineAbbrElements scans the page for <abbr> elements and check if their content

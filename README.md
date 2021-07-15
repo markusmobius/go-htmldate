@@ -13,6 +13,7 @@ libraries should give similar performance and any improvements from the original
 - [Usage as Go package](#usage-as-go-package)
 - [Usage as CLI Application](#usage-as-cli-application)
 - [Performance](#performance)
+- [Additional Notes](#additional-notes)
 - [License](#license)
 
 ## Features
@@ -110,11 +111,18 @@ PC (Intel i7-8550U @ 4.000GHz, RAM 16 GB):
 
 So, from the table above, this port has a similar performance with the original `htmldate`. 
 
-Despite the impressive score, there is a little caveat: this performance test only used to measure the
-accuracy of publish date extraction, and **not** the modified date. This issue is occured in the original `htmldate` as well since we use the comparison data from there.
+## Additional Notes
+
+Despite the impressive score above, there is a little caveat: the performance test is only used to
+measure the accuracy of publish date extraction, and **not** the modified date. This issue is occured in
+the original `htmldate` as well since we use the comparison data from there.
 
 With that said, if you use this package for extracting the modified date, the performance might not be
-as good as the table above. However, it should be still good enough to use.
+as good as the performance table above. However, it should be still good enough to use.
+
+> The weird thing is the default behavior for original `htmldate` is to extract the modified date
+> instead of the original, so ideally the performance test is done for modified date as well.
+> To be fair, collecting the modified date seems harder than collecting the original date though.
 
 ## License
 
