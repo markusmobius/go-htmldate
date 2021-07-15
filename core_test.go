@@ -709,6 +709,133 @@ func Test_HtmlDate(t *testing.T) {
 	assert.Equal(t, "2019-06-13", format(dt))
 }
 
+func Test_findTime(t *testing.T) {
+	// Variables and helper function
+	var dt time.Time
+	date := time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC)
+
+	format := func(t time.Time) string {
+		if !t.IsZero() {
+			return t.Format("2006-01-02 15:04:05 -0700")
+		}
+		return ""
+	}
+
+	// ISO-8601 format
+	dt, _ = findTime("12:00", date)
+	assert.Equal(t, "2021-01-01 12:00:00 +0000", format(dt))
+
+	dt, _ = findTime("12:00:10", date)
+	assert.Equal(t, "2021-01-01 12:00:10 +0000", format(dt))
+
+	dt, _ = findTime("12:00:10.372", date)
+	assert.Equal(t, "2021-01-01 12:00:10 +0000", format(dt))
+
+	dt, _ = findTime("10:21Z", date)
+	assert.Equal(t, "2021-01-01 10:21:00 +0000", format(dt))
+
+	dt, _ = findTime("10:21:40Z", date)
+	assert.Equal(t, "2021-01-01 10:21:40 +0000", format(dt))
+
+	dt, _ = findTime("10:21:40.462Z", date)
+	assert.Equal(t, "2021-01-01 10:21:40 +0000", format(dt))
+
+	dt, _ = findTime("16:14+02:00", date)
+	assert.Equal(t, "2021-01-01 16:14:00 +0200", format(dt))
+
+	dt, _ = findTime("16:14:51+02:00", date)
+	assert.Equal(t, "2021-01-01 16:14:51 +0200", format(dt))
+
+	dt, _ = findTime("16:14:51.075+02:00", date)
+	assert.Equal(t, "2021-01-01 16:14:51 +0200", format(dt))
+
+	dt, _ = findTime("16:14:51.075+0200", date)
+	assert.Equal(t, "2021-01-01 16:14:51 +0200", format(dt))
+
+	dt, _ = findTime("16:14:51.075+02", date)
+	assert.Equal(t, "2021-01-01 16:14:51 +0200", format(dt))
+
+	// Common format
+	dt, _ = findTime("7:8", date)
+	assert.Equal(t, "2021-01-01 07:08:00 +0000", format(dt))
+
+	dt, _ = findTime("7:8:9", date)
+	assert.Equal(t, "2021-01-01 07:08:09 +0000", format(dt))
+
+	dt, _ = findTime("7:8 am", date)
+	assert.Equal(t, "2021-01-01 07:08:00 +0000", format(dt))
+
+	dt, _ = findTime("7:8:9 am", date)
+	assert.Equal(t, "2021-01-01 07:08:09 +0000", format(dt))
+
+	dt, _ = findTime("7:8 pm", date)
+	assert.Equal(t, "2021-01-01 19:08:00 +0000", format(dt))
+
+	dt, _ = findTime("7:8:9 pm", date)
+	assert.Equal(t, "2021-01-01 19:08:09 +0000", format(dt))
+
+	dt, _ = findTime("7:8 a.m.", date)
+	assert.Equal(t, "2021-01-01 07:08:00 +0000", format(dt))
+
+	dt, _ = findTime("7:8:9 a.m.", date)
+	assert.Equal(t, "2021-01-01 07:08:09 +0000", format(dt))
+
+	dt, _ = findTime("7:8 p.m.", date)
+	assert.Equal(t, "2021-01-01 19:08:00 +0000", format(dt))
+
+	dt, _ = findTime("7:8:9 p.m.", date)
+	assert.Equal(t, "2021-01-01 19:08:09 +0000", format(dt))
+
+	dt, _ = findTime("07:08", date)
+	assert.Equal(t, "2021-01-01 07:08:00 +0000", format(dt))
+
+	dt, _ = findTime("07:08:09", date)
+	assert.Equal(t, "2021-01-01 07:08:09 +0000", format(dt))
+
+	dt, _ = findTime("07:08 am", date)
+	assert.Equal(t, "2021-01-01 07:08:00 +0000", format(dt))
+
+	dt, _ = findTime("07:08:09 am", date)
+	assert.Equal(t, "2021-01-01 07:08:09 +0000", format(dt))
+
+	dt, _ = findTime("07:08 pm", date)
+	assert.Equal(t, "2021-01-01 19:08:00 +0000", format(dt))
+
+	dt, _ = findTime("07:08:09 pm", date)
+	assert.Equal(t, "2021-01-01 19:08:09 +0000", format(dt))
+
+	dt, _ = findTime("07:08 a.m.", date)
+	assert.Equal(t, "2021-01-01 07:08:00 +0000", format(dt))
+
+	dt, _ = findTime("07:08:09 a.m.", date)
+	assert.Equal(t, "2021-01-01 07:08:09 +0000", format(dt))
+
+	dt, _ = findTime("07:08 p.m.", date)
+	assert.Equal(t, "2021-01-01 19:08:00 +0000", format(dt))
+
+	dt, _ = findTime("07:08:09 p.m.", date)
+	assert.Equal(t, "2021-01-01 19:08:09 +0000", format(dt))
+
+	dt, _ = findTime("07:08 a.m. +0100", date)
+	assert.Equal(t, "2021-01-01 07:08:00 +0100", format(dt))
+
+	dt, _ = findTime("07:08:09 a.m. +0100", date)
+	assert.Equal(t, "2021-01-01 07:08:09 +0100", format(dt))
+
+	dt, _ = findTime("07:08 p.m. +0100", date)
+	assert.Equal(t, "2021-01-01 19:08:00 +0100", format(dt))
+
+	dt, _ = findTime("07:08:09 p.m. +0100", date)
+	assert.Equal(t, "2021-01-01 19:08:09 +0100", format(dt))
+
+	// French format
+	dt, _ = findTime("07h08 a.m. +0100", date)
+	assert.Equal(t, "2021-01-01 07:08:00 +0100", format(dt))
+
+	dt, _ = findTime("07h08 p.m. +0100", date)
+	assert.Equal(t, "2021-01-01 19:08:00 +0100", format(dt))
+}
+
 func Test_compareReference(t *testing.T) {
 	opts := Options{
 		MinDate: defaultMinDate,

@@ -289,6 +289,7 @@ func findTime(rawString string, date time.Time) (time.Time, string) {
 	}
 
 	// Try ordinary time
+
 	// Capture timezone first and remove it from the raw string. This is done to
 	// prevent the later regex failed to differentiate between the time and timezone.
 	var timezone *time.Location
@@ -299,24 +300,27 @@ func findTime(rawString string, date time.Time) (time.Time, string) {
 		return ""
 	})
 
-	// If timezone not found, use UTC
-	if timezone == nil {
-		timezone = time.UTC
-	}
-
 	// Capture the common time
 	parts = rxCommonTime.FindStringSubmatch(rawString)
 	if len(parts) > 0 {
+		// Convert string to int
 		hour, _ := strconv.Atoi(parts[1])
 		minute, _ := strconv.Atoi(parts[2])
 		second, _ := strconv.Atoi(parts[3])
 
+		// Convert 12-hour clock to 24-hour
 		h12 := strings.ToLower(parts[4])
 		h12 = strings.ReplaceAll(h12, ".", "")
 		if h12 == "pm" {
 			hour += 12
 		}
 
+		// If timezone not found, use UTC
+		if timezone == nil {
+			timezone = time.UTC
+		}
+
+		// Generate date time
 		dateTime := time.Date(
 			date.Year(), date.Month(), date.Day(),
 			hour, minute, second, 0, timezone)
