@@ -29,6 +29,9 @@ type Options struct {
 	// TODO: NEED-DATEPARSER.
 	SkipExtensiveSearch bool
 
+	// ExtractTime specify if we want to extract publish time as well along the date. Still WIP.
+	ExtractTime bool
+
 	// UseOriginalDate specify whether to extract the original date (e.g. publication date) instead
 	// of most recent one (e.g. last modified, updated time).
 	UseOriginalDate bool

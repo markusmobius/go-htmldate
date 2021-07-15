@@ -113,7 +113,7 @@ func compareValues(reference int64, attempt time.Time, opts Options) (int64, boo
 // checkExtractedReference tests if the extracted reference date can be returned.
 func checkExtractedReference(reference int64, opts Options) time.Time {
 	if reference > 0 {
-		dt := time.Unix(reference, 0)
+		dt := time.Unix(reference, 0).UTC()
 		if validateDate(dt, opts) {
 			return dt
 		}

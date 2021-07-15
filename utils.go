@@ -20,7 +20,9 @@ package htmldate
 
 import (
 	"bytes"
+	"strconv"
 	"strings"
+	"time"
 	"unicode"
 
 	"github.com/go-shiori/dom"
@@ -148,6 +150,7 @@ func normalizeSpaces(s string) string {
 	return strings.TrimSpace(s)
 }
 
+// isLeapYear check if year is leap year.
 func isLeapYear(year int) bool {
 	// If year is not divisible by 4, then it is not a leap year
 	if year%4 != 0 {
@@ -166,4 +169,30 @@ func isLeapYear(year int) bool {
 
 	// If all passed, it's leap year
 	return true
+}
+
+// parseTimezoneCode returns the location for the specified timezone code.
+func parseTimezoneCode(tzCode string) *time.Location {
+	// If it's equal to Z, it's UTC
+	tzCode = strings.ToUpper(tzCode)
+	if tzCode == "Z" {
+		return time.UTC
+	}
+
+	// Try ISO timezone format
+	parts := rxTzCode.FindStringSubmatch(tzCode)
+	if len(parts) > 0 {
+		hour, _ := strconv.Atoi(parts[2])
+		minute, _ := strconv.Atoi(parts[3])
+
+		offset := hour*3_600 + minute*60
+		if parts[1] == "-" {
+			offset *= -1
+		}
+
+		return time.FixedZone(tzCode, offset)
+	}
+
+	// If nothing found, return nil
+	return nil
 }

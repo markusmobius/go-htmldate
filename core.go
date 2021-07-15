@@ -91,49 +91,48 @@ func FromDocument(doc *html.Node, opts Options) (time.Time, error) {
 
 	// Extract date
 	rawString, date, err := findDate(doc, opts)
-	if err != nil || date.IsZero() {
+	if err != nil {
 		return timeZero, err
 	}
 
-	if !opts.SkipExtensiveSearch {
-		var strDate string
-		if !date.IsZero() {
-			strDate = date.Format("2006-01-02")
-		}
-
-		fmt.Println("=======")
-		fmt.Println("\t", strings.TrimSpace(rawString), "\n\t", strDate)
+	// Extract time if necessary
+	if opts.ExtractTime {
+		date, _ = findTime(rawString, date)
 	}
 
-	// Extract time
 	return date, nil
 }
 
 // findDate extract publish date from the specified html document.
 func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 	// If URL is defined, extract date from it
+	var urlDate time.Time
 	if opts.URL != "" {
-		dateResult := extractUrlDate(opts.URL, opts)
-		if !dateResult.IsZero() {
-			return opts.URL, dateResult, nil
+		urlDate = extractUrlDate(opts.URL, opts)
+	}
+
+	validateResult := func(result time.Time) bool {
+		if !urlDate.IsZero() && !result.Equal(urlDate) {
+			return false
 		}
+		return !result.IsZero()
 	}
 
 	// Try from head elements
 	rawString, headerResult := examineHeader(doc, opts)
-	if !headerResult.IsZero() {
+	if validateResult(headerResult) {
 		return rawString, headerResult, nil
 	}
 
 	// Try to use JSON data
 	rawString, jsonResult := jsonSearch(doc, opts)
-	if !jsonResult.IsZero() {
+	if validateResult(jsonResult) {
 		return rawString, jsonResult, nil
 	}
 
 	// Try <abbr> elements
 	rawString, abbrResult := examineAbbrElements(doc, opts)
-	if !abbrResult.IsZero() {
+	if validateResult(abbrResult) {
 		return rawString, abbrResult, nil
 	}
 
@@ -143,7 +142,7 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 	discarded := discardUnwanted(prunedDoc)
 	dateElements := findElementsWithRule(prunedDoc, dateSelectorRule)
 	rawString, dateResult := examineOtherElements(dateElements, opts)
-	if !dateResult.IsZero() {
+	if validateResult(dateResult) {
 		return rawString, dateResult, nil
 	}
 
@@ -151,7 +150,7 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 	for _, subTree := range discarded {
 		dateElements := findElementsWithRule(subTree, dateSelectorRule)
 		rawString, dateResult := examineOtherElements(dateElements, opts)
-		if !dateResult.IsZero() {
+		if validateResult(dateResult) {
 			return rawString, dateResult, nil
 		}
 	}
@@ -160,14 +159,14 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 	if !opts.SkipExtensiveSearch {
 		dateElements := findElementsWithRule(doc, additionalSelectorRule)
 		rawString, dateResult := examineOtherElements(dateElements, opts)
-		if !dateResult.IsZero() {
+		if validateResult(dateResult) {
 			return rawString, dateResult, nil
 		}
 	}
 
 	// Try <time> elements
 	rawString, timeResult := examineTimeElements(doc, opts)
-	if !timeResult.IsZero() {
+	if validateResult(timeResult) {
 		return rawString, timeResult, nil
 	}
 
@@ -184,13 +183,13 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 
 	// String search using regex timestamp
 	rawString, timestampResult := timestampSearch(htmlString, opts)
-	if !timestampResult.IsZero() {
+	if validateResult(timestampResult) {
 		return rawString, timestampResult, nil
 	}
 
 	// Precise patterns and idiosyncrasies
 	rawString, textResult := idiosyncrasiesSearch(htmlString, opts)
-	if !textResult.IsZero() {
+	if validateResult(textResult) {
 		return rawString, textResult, nil
 	}
 
@@ -198,23 +197,15 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 	for _, titleElem := range dom.GetAllNodesWithTag(doc, "title", "h1") {
 		textContent := normalizeSpaces(dom.TextContent(titleElem))
 		_, attempt := tryYmdDate(textContent, opts)
-		if !attempt.IsZero() {
+		if validateResult(attempt) {
 			log.Debug().Msgf("found date in title: %s", textContent)
 			return textContent, attempt, nil
 		}
 	}
 
-	// Retry partial URL
-	if opts.URL != "" {
-		dateResult := extractPartialUrlDate(opts.URL, opts)
-		if !dateResult.IsZero() {
-			return opts.URL, dateResult, nil
-		}
-	}
-
 	// Try meta images
 	rawString, imgResult := metaImgSearch(doc, opts)
-	if !imgResult.IsZero() {
+	if validateResult(imgResult) {
 		return rawString, imgResult, nil
 	}
 
@@ -241,16 +232,97 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 
 		// Return
 		converted := checkExtractedReference(refValue, opts)
-		if !converted.IsZero() {
+		if validateResult(converted) {
 			return refString, converted, nil
 		}
 
 		// Search page HTML
 		rawString, searchResult := searchPage(htmlString, opts)
-		return rawString, searchResult, nil
+		if validateResult(searchResult) {
+			return rawString, searchResult, nil
+		}
+	}
+
+	// If nothing else found, try from URL
+	if urlDate.IsZero() && opts.URL != "" {
+		urlDate = extractPartialUrlDate(opts.URL, opts)
+	}
+
+	if !urlDate.IsZero() {
+		log.Debug().Msgf("nothing found, just use date from url")
+		return opts.URL, urlDate, nil
 	}
 
 	return "", timeZero, nil
+}
+
+func findTime(rawString string, date time.Time) (time.Time, string) {
+	// If raw string or date is empty, return early
+	rawString = normalizeSpaces(rawString)
+	if rawString == "" || date.IsZero() {
+		return date, ""
+	}
+
+	// Try ISO-8601 time format
+	parts := rxIsoTime.FindStringSubmatch(rawString)
+	if len(parts) > 0 {
+		hour, _ := strconv.Atoi(parts[1])
+		minute, _ := strconv.Atoi(parts[2])
+		second, _ := strconv.Atoi(parts[3])
+
+		tz := parseTimezoneCode(parts[4])
+		if tz == nil {
+			tz = time.UTC
+		}
+
+		dateTime := time.Date(
+			date.Year(), date.Month(), date.Day(),
+			hour, minute, second, 0, tz)
+
+		log.Debug().Msgf("found ISO-8601 time: %s", rawString)
+		return dateTime, "iso"
+	}
+
+	// Try ordinary time
+	// Capture timezone first and remove it from the raw string. This is done to
+	// prevent the later regex failed to differentiate between the time and timezone.
+	var timezone *time.Location
+	rawString = rxTzCode.ReplaceAllStringFunc(rawString, func(match string) string {
+		if timezone == nil {
+			timezone = parseTimezoneCode(match)
+		}
+		return ""
+	})
+
+	// If timezone not found, use UTC
+	if timezone == nil {
+		timezone = time.UTC
+	}
+
+	// Capture the common time
+	parts = rxCommonTime.FindStringSubmatch(rawString)
+	if len(parts) > 0 {
+		hour, _ := strconv.Atoi(parts[1])
+		minute, _ := strconv.Atoi(parts[2])
+		second, _ := strconv.Atoi(parts[3])
+
+		h12 := strings.ToLower(parts[4])
+		h12 = strings.ReplaceAll(h12, ".", "")
+		if h12 == "pm" {
+			hour += 12
+		}
+
+		dateTime := time.Date(
+			date.Year(), date.Month(), date.Day(),
+			hour, minute, second, 0, timezone)
+
+		log.Debug().Msgf("found common format time: %s", rawString)
+		return dateTime, "normal"
+	}
+
+	// If nothing found, just return the date
+	log.Debug().Msgf("time not found: %s", rawString)
+	return date, ""
 }
 
 // examineHeader parse meta elements to find date cues.
