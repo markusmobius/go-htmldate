@@ -112,6 +112,9 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 	}
 
 	validateResult := func(result time.Time) bool {
+		// URL date is the baseline, so if URL date exist and for some
+		// reason the result is different with URL date, most likely that
+		// result is invalid.
 		if !urlDate.IsZero() && !result.Equal(urlDate) {
 			return false
 		}
@@ -203,12 +206,6 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 		}
 	}
 
-	// Try meta images
-	rawString, imgResult := metaImgSearch(doc, opts)
-	if validateResult(imgResult) {
-		return rawString, imgResult, nil
-	}
-
 	// Last resort: do extensive search.
 	if !opts.SkipExtensiveSearch {
 		log.Debug().Msg("extensive search started")
@@ -251,6 +248,14 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 	if !urlDate.IsZero() {
 		log.Debug().Msgf("nothing found, just use date from url")
 		return opts.URL, urlDate, nil
+	}
+
+	// If url doesn't have any date, try to use URL from image metadata
+	if urlDate.IsZero() {
+		rawString, imgResult := metaImgSearch(doc, opts)
+		if !imgResult.IsZero() {
+			return rawString, imgResult, nil
+		}
 	}
 
 	return "", timeZero, nil
