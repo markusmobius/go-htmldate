@@ -65,6 +65,7 @@ func main() {
 
 	// Register persistent flags
 	flags := rootCmd.PersistentFlags()
+	flags.Bool("time", false, "extract publish time as well")
 	flags.Bool("ori", false, "extract original date instead of the the most recent one")
 	flags.BoolP("verbose", "v", false, "enable log message")
 	flags.IntP("timeout", "t", 30, "timeout for downloading web page in seconds")
@@ -163,6 +164,7 @@ func createExtractorOptions(cmd *cobra.Command) htmldate.Options {
 	var opts htmldate.Options
 
 	flags := cmd.Flags()
+	opts.ExtractTime, _ = flags.GetBool("time")
 	opts.UseOriginalDate, _ = flags.GetBool("ori")
 	opts.EnableLog, _ = flags.GetBool("verbose")
 	return opts
