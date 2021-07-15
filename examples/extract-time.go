@@ -41,6 +41,6 @@ func main() {
 	fmt.Println("Time:", dt.Format("15:04:05 MST"))
 
 	// The output should be:
-	// Date: 2021-07-14
-	// Time: 11:59:00 -0700
+	// Date: 2021-07-13
+	// Time: 19:25:31 UTC
 }
