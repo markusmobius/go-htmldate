@@ -312,9 +312,13 @@ func findTime(rawString string, date time.Time) (time.Time, string) {
 		return ""
 	})
 
-	// Capture the common time
-	parts = rxCommonTime.FindStringSubmatch(rawString)
-	if len(parts) > 0 {
+	// If timezone not found, try to use the named timezone
+	if timezone == nil {
+		timezone = findNamedTimezone(rawString)
+	}
+
+	// Capture the time
+	if parts = rxCommonTime.FindStringSubmatch(rawString); len(parts) > 0 {
 		// Convert string to int
 		hour, _ := strconv.Atoi(parts[1])
 		minute, _ := strconv.Atoi(parts[2])
