@@ -43,21 +43,21 @@ func init() {
 }
 
 // FromReader extract publish date from the specified reader.
-func FromReader(r io.Reader, opts Options) (time.Time, error) {
+func FromReader(r io.Reader, opts Options) (Result, error) {
 	// Parse html document
 	doc, err := dom.Parse(r)
 	if err != nil {
-		return timeZero, err
+		return resultZero, err
 	}
 
 	return FromDocument(doc, opts)
 }
 
 // FromDocument extract publish date from the specified html document.
-func FromDocument(doc *html.Node, opts Options) (time.Time, error) {
+func FromDocument(doc *html.Node, opts Options) (Result, error) {
 	// Make sure document exist
 	if doc == nil {
-		return timeZero, fmt.Errorf("document is empty")
+		return resultZero, fmt.Errorf("document is empty")
 	}
 
 	// Clone document so the original kept untouched
@@ -101,15 +101,34 @@ func FromDocument(doc *html.Node, opts Options) (time.Time, error) {
 	// Extract date
 	rawString, date, err := findDate(doc, opts)
 	if err != nil {
-		return timeZero, err
+		return resultZero, err
 	}
 
-	// Extract time if necessary
+	// Extract time if required
+	var timeFound bool
+	var timezoneFound bool
+
 	if opts.ExtractTime {
-		date, _ = findTime(rawString, date)
+		h, m, s, tz, found := findTime(rawString)
+		if found {
+			timeFound = true
+			date = date.Add(time.Hour * time.Duration(h))
+			date = date.Add(time.Minute * time.Duration(m))
+			date = date.Add(time.Second * time.Duration(s))
+		}
+
+		if tz != nil {
+			timezoneFound = true
+			date = time.Date(date.Year(), date.Month(), date.Day(),
+				date.Hour(), date.Minute(), date.Second(), 0, tz)
+		}
 	}
 
-	return date, nil
+	return Result{
+		DateTime:    date,
+		HasTime:     timeFound,
+		HasTimezone: timezoneFound,
+	}, nil
 }
 
 // findDate extract publish date from the specified html document.
@@ -273,81 +292,83 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 	return "", timeZero, nil
 }
 
-func findTime(rawString string, date time.Time) (time.Time, string) {
-	// If raw string or date is empty, return early
+func findTime(rawString string) (hour, minute, second int, timezone *time.Location, timeFound bool) {
+	// If raw string is empty, return early
 	rawString = normalizeSpaces(rawString)
-	if rawString == "" || date.IsZero() {
-		return date, ""
+	if rawString == "" {
+		return
 	}
 
-	// Try ISO-8601 time format
-	parts := rxIsoTime.FindStringSubmatch(rawString)
-	if len(parts) > 0 {
-		hour, _ := strconv.Atoi(parts[1])
-		minute, _ := strconv.Atoi(parts[2])
-		second, _ := strconv.Atoi(parts[3])
+	// Try ISO-8601 time format.
+	// While looking for ISO-8601, remove the matches so the later regex not confused.
+	rawString = rxIsoTime.ReplaceAllStringFunc(rawString, func(match string) string {
+		if !timeFound {
+			log.Debug().Msgf("found ISO-8601 time: %s", rawString)
 
-		tz := parseTimezoneCode(parts[4])
-		if tz == nil {
-			tz = time.UTC
+			parts := rxIsoTime.FindStringSubmatch(match)
+			hour, _ = strconv.Atoi(parts[1])
+			minute, _ = strconv.Atoi(parts[2])
+			second, _ = strconv.Atoi(parts[3])
+			timezone = parseTimezoneCode(parts[4])
+			timeFound = true
 		}
 
-		dateTime := time.Date(
-			date.Year(), date.Month(), date.Day(),
-			hour, minute, second, 0, tz)
-
-		log.Debug().Msgf("found ISO-8601 time: %s", rawString)
-		return dateTime, "iso"
-	}
-
-	// Try ordinary time
-
-	// Capture timezone first and remove it from the raw string. This is done to
-	// prevent the later regex failed to differentiate between the time and timezone.
-	var timezone *time.Location
-	rawString = rxTzCode.ReplaceAllStringFunc(rawString, func(match string) string {
-		if timezone == nil {
-			timezone = parseTimezoneCode(match)
-		}
-		return ""
+		return " "
 	})
 
-	// If timezone not found, try to use the named timezone
+	if timeFound && timezone != nil {
+		return
+	}
+
+	// If timezone not exist in ISO time, looks for the common TZ code (e.g. UTC +07:00)
+	// Like before, while looking for timezone code, remove the matches so the later
+	// regex not confused.
+	if timezone == nil {
+		rawString = rxTzCode.ReplaceAllStringFunc(rawString, func(match string) string {
+			if timezone == nil {
+				timezone = parseTimezoneCode(match)
+			}
+			return " "
+		})
+	}
+
+	if timeFound && timezone != nil {
+		return
+	}
+
+	// If timezone still not found, try to use the named timezone
 	if timezone == nil {
 		timezone = findNamedTimezone(rawString)
 	}
 
-	// Capture the time
-	if parts = rxCommonTime.FindStringSubmatch(rawString); len(parts) > 0 {
-		// Convert string to int
-		hour, _ := strconv.Atoi(parts[1])
-		minute, _ := strconv.Atoi(parts[2])
-		second, _ := strconv.Atoi(parts[3])
-
-		// Convert 12-hour clock to 24-hour
-		h12 := strings.ToLower(parts[4])
-		h12 = strings.ReplaceAll(h12, ".", "")
-		if h12 == "pm" {
-			hour += 12
-		}
-
-		// If timezone not found, use UTC
-		if timezone == nil {
-			timezone = time.UTC
-		}
-
-		// Generate date time
-		dateTime := time.Date(
-			date.Year(), date.Month(), date.Day(),
-			hour, minute, second, 0, timezone)
-
-		log.Debug().Msgf("found common format time: %s", rawString)
-		return dateTime, "normal"
+	if timeFound && timezone != nil {
+		return
 	}
 
-	// If nothing found, just return the date
-	log.Debug().Msgf("time not found: %s", rawString)
-	return date, ""
+	// At this point we have no more cards to play for extracting timezone, so now we
+	// switch to capturing time (if it still hasn't found).
+	if !timeFound {
+		parts := rxCommonTime.FindStringSubmatch(rawString)
+
+		if len(parts) > 0 {
+			// Convert string to int
+			hour, _ = strconv.Atoi(parts[1])
+			minute, _ = strconv.Atoi(parts[2])
+			second, _ = strconv.Atoi(parts[3])
+
+			// Convert 12-hour clock to 24-hour
+			h12 := strings.ToLower(parts[4])
+			h12 = strings.ReplaceAll(h12, ".", "")
+			if h12 == "pm" {
+				hour += 12
+			}
+
+			log.Debug().Msgf("found common format time: %s", rawString)
+			timeFound = true
+		}
+	}
+
+	return
 }
 
 // examineMetaElements parse meta elements to find date cues.

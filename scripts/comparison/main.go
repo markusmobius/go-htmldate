@@ -130,17 +130,17 @@ func runHtmlDate(doc *html.Node, extensive bool) (string, error) {
 		SkipExtensiveSearch: !extensive,
 	}
 
-	dt, err := htmldate.FromDocument(doc, opts)
+	res, err := htmldate.FromDocument(doc, opts)
 	if err != nil {
 		return "", err
 	}
 
-	var result string
-	if !dt.IsZero() {
-		result = dt.Format("2006-01-02")
+	var output string
+	if !res.IsZero() {
+		output = res.Format("2006-01-02")
 	}
 
-	return result, nil
+	return output, nil
 }
 
 func evaluateResult(result string, entry comparisonEntry) evaluationResult {

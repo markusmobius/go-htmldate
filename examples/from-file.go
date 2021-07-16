@@ -25,13 +25,13 @@ func main() {
 	}
 
 	// Extract date
-	dt, err := htmldate.FromReader(f, opts)
+	res, err := htmldate.FromReader(f, opts)
 	if err != nil {
 		panic(err)
 	}
 
 	// Print result if date found
-	if !dt.IsZero() {
-		fmt.Println(dt.Format("2006-01-02"))
+	if !res.IsZero() {
+		fmt.Println(res.Format("2006-01-02"))
 	}
 }

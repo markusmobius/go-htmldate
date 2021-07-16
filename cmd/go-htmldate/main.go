@@ -46,7 +46,7 @@ const (
 )
 
 var (
-	timeZero = time.Time{}
+	resultZero = htmldate.Result{}
 
 	log = zerolog.New(zerolog.ConsoleWriter{
 		Out:        os.Stderr,
@@ -89,7 +89,7 @@ func rootCmdHandler(cmd *cobra.Command, args []string) {
 	outputFormat, _ := cmd.Flags().GetString("format")
 
 	var err error
-	var result time.Time
+	var result htmldate.Result
 
 	if fileExists(source) {
 		result, err = processFile(source, opts)
@@ -109,11 +109,11 @@ func rootCmdHandler(cmd *cobra.Command, args []string) {
 	fmt.Println(result.Format(outputFormat))
 }
 
-func processFile(path string, opts htmldate.Options) (time.Time, error) {
+func processFile(path string, opts htmldate.Options) (htmldate.Result, error) {
 	// Open file
 	f, err := os.Open(path)
 	if err != nil {
-		return timeZero, err
+		return resultZero, err
 	}
 	defer f.Close()
 
@@ -128,7 +128,7 @@ func processFile(path string, opts htmldate.Options) (time.Time, error) {
 
 		_, err := html.Parse(tee)
 		if err != nil {
-			return timeZero, fmt.Errorf("%s is not a valid html file: %v", path, err)
+			return resultZero, fmt.Errorf("%s is not a valid html file: %v", path, err)
 		}
 
 		fReader = buffer
@@ -138,21 +138,21 @@ func processFile(path string, opts htmldate.Options) (time.Time, error) {
 	return htmldate.FromReader(fReader, opts)
 }
 
-func processURL(client *http.Client, userAgent string, url *nurl.URL, opts htmldate.Options) (time.Time, error) {
+func processURL(client *http.Client, userAgent string, url *nurl.URL, opts htmldate.Options) (htmldate.Result, error) {
 	// Download URL
 	strURL := url.String()
 	log.Info().Msgf("downloading %s", strURL)
 
 	resp, err := download(client, userAgent, strURL)
 	if err != nil {
-		return timeZero, err
+		return resultZero, err
 	}
 	defer resp.Body.Close()
 
 	// Make sure it's html
 	contentType := resp.Header.Get("Content-Type")
 	if !strings.Contains(contentType, "text/html") {
-		return timeZero, fmt.Errorf("page is not html: \"%s\"", contentType)
+		return resultZero, fmt.Errorf("page is not html: \"%s\"", contentType)
 	}
 
 	// Extract

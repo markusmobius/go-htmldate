@@ -23,7 +23,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"time"
 )
 
 // openMockFile is used to open HTML document from specified mock file.
@@ -42,7 +41,7 @@ func openMockFile(url string) io.ReadCloser {
 }
 
 // extractMockFile open then extract content from a mock file.
-func extractMockFile(url string, customOpts ...Options) time.Time {
+func extractMockFile(url string, customOpts ...Options) Result {
 	// Open mock file
 	f := openMockFile(url)
 	defer f.Close()
@@ -61,7 +60,7 @@ func extractMockFile(url string, customOpts ...Options) time.Time {
 	return result
 }
 
-func extractFromString(s string, customOpts ...Options) time.Time {
+func extractFromString(s string, customOpts ...Options) Result {
 	opts := Options{}
 	if len(customOpts) > 0 {
 		opts = mergeOpts(opts, customOpts[0])
@@ -76,7 +75,7 @@ func extractFromString(s string, customOpts ...Options) time.Time {
 	return result
 }
 
-func extractFromURL(url string, customOpts ...Options) time.Time {
+func extractFromURL(url string, customOpts ...Options) Result {
 	opts := Options{URL: url}
 	if len(customOpts) > 0 {
 		opts = mergeOpts(opts, customOpts[0])
