@@ -11,7 +11,7 @@ import (
 
 func main() {
 	// Download URL
-	resp, err := http.Get("https://www.sueddeutsche.de/bayern/wuerzburg-messer-attacke-verletzte-aktuell-eindruecke-1.5334175")
+	resp, err := http.Get("https://www.politico.com/states/california/story/2020/04/01/newsom-california-school-year-closure-the-right-thing-to-do-1270260")
 	if err != nil {
 		panic(err)
 	}
@@ -20,8 +20,9 @@ func main() {
 	// Prepare configuration
 	// Here we want the publish date instead of last modified
 	opts := htmldate.Options{
-		UseOriginalDate: true,
+		UseOriginalDate: false,
 		EnableLog:       true,
+		ExtractTime:     true,
 	}
 
 	// Extract date
@@ -32,6 +33,12 @@ func main() {
 
 	// Print result if date found
 	if !res.IsZero() {
-		fmt.Println(res.Format("2006-01-02"))
+		fmt.Printf("Date        : %s\n", res.Format("2006-01-02"))
+		fmt.Printf("Has time    : %v\n", res.HasTime)
+		fmt.Printf("Time        : %s\n", res.Format("15:04:05"))
+		fmt.Printf("Has timezone: %v\n", res.HasTimezone)
+
+		name, offset := res.DateTime.Zone()
+		fmt.Printf("Timezone    : %s (offset %d seconds)\n", name, offset)
 	}
 }

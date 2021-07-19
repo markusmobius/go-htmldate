@@ -710,13 +710,11 @@ func examineOtherElements(elements []*html.Node, opts Options) (string, time.Tim
 			// Shorten and try the beginning of the string.
 			toExamine := strLimit(textContent, 48)
 
-			// Trim non-digits at the end of the string.
-			toExamine = rxLastNonDigits.ReplaceAllString(toExamine, "")
-
 			// Log the examined element
 			elemHTML := dom.OuterHTML(elem)
 			elemHTML = strLimit(normalizeSpaces(elemHTML), 100)
-			log.Debug().Msgf("analyzing HTML: %s", elemHTML)
+			elemHTML = strings.TrimSpace(elemHTML)
+			log.Debug().Msgf("analyzing HTML: %s (%s)", elemHTML, toExamine)
 
 			// Attempt to extract date
 			_, attempt = tryYmdDate(toExamine, opts)
