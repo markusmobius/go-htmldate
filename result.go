@@ -6,9 +6,15 @@ var resultZero = Result{}
 
 // Result is the result of date time extraction.
 type Result struct {
-	DateTime    time.Time
-	HasTime     bool
+	// DateTime is the extracted date time.
+	DateTime time.Time
+	// HasTime specifies whether the result contains time or not.
+	HasTime bool
+	// HasTimezone specifies whether the result contains timezone or not.
+	// Useful for differentiating UTC timezone or timezone not found.
 	HasTimezone bool
+	// SrcString is the source where the date and time extracted.
+	SrcString string
 }
 
 // IsZero reports whether the result is empty or not.

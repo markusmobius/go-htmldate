@@ -128,6 +128,7 @@ func FromDocument(doc *html.Node, opts Options) (Result, error) {
 		DateTime:    date,
 		HasTime:     timeFound,
 		HasTimezone: timezoneFound,
+		SrcString:   normalizeSpaces(rawString),
 	}, nil
 }
 
