@@ -141,12 +141,14 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 	}
 
 	validateResult := func(result time.Time) bool {
-		// URL date is the baseline for original date, so if URL date exist
-		// and for some reason the result is different with URL date, most
-		// likely that result is invalid.
-		if opts.UseOriginalDate && !urlDate.IsZero() && !result.Equal(urlDate) {
-			return false
+		// URL date is the baseline for original date, so we compare it with the result.
+		if !urlDate.IsZero() {
+			if (opts.UseOriginalDate && !result.Equal(urlDate)) || // pub date must equal URL date
+				(!opts.UseOriginalDate && result.Before(urlDate)) { // mod date must be after URL date
+				return false
+			}
 		}
+
 		return !result.IsZero()
 	}
 
