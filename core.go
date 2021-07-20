@@ -1029,10 +1029,13 @@ func fixVagueDM(rawString string, date, urlDate time.Time, opts Options) time.Ti
 	}
 
 	// If date is different with URL date, try to swap day and month
-	if !date.Equal(urlDate) {
-		swapped := time.Date(date.Year(), time.Month(date.Day()),
-			int(date.Month()), 0, 0, 0, 0, date.Location())
+	year := date.Year()
+	month := int(date.Month())
+	day := date.Day()
+	location := date.Location()
 
+	if !date.Equal(urlDate) && day <= 12 {
+		swapped := time.Date(year, time.Month(day), month, 0, 0, 0, 0, location)
 		if swapped.Equal(urlDate) {
 			return swapped
 		}
@@ -1040,10 +1043,8 @@ func fixVagueDM(rawString string, date, urlDate time.Time, opts Options) time.Ti
 
 	// If we are looking for modified date and date is before URL date,
 	// try to swap day and month as well.
-	if !opts.UseOriginalDate && date.Before(urlDate) {
-		swapped := time.Date(date.Year(), time.Month(date.Day()),
-			int(date.Month()), 0, 0, 0, 0, date.Location())
-
+	if !opts.UseOriginalDate && date.Before(urlDate) && day <= 12 {
+		swapped := time.Date(year, time.Month(day), month, 0, 0, 0, 0, location)
 		if !swapped.Before(urlDate) {
 			return swapped
 		}
