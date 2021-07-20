@@ -133,9 +133,9 @@ func FromDocument(doc *html.Node, opts Options) (Result, error) {
 
 // findDate extract publish date from the specified html document.
 func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
-	// If we are extracting original date and URL is defined, extract date from it
+	// If URL is defined, extract baseline date from it
 	var urlDate time.Time
-	if opts.UseOriginalDate && opts.URL != "" {
+	if opts.URL != "" {
 		urlDate = extractUrlDate(opts.URL, opts)
 	}
 
@@ -143,7 +143,7 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 		// URL date is the baseline for original date, so if URL date exist
 		// and for some reason the result is different with URL date, most
 		// likely that result is invalid.
-		if !urlDate.IsZero() && !result.Equal(urlDate) {
+		if opts.UseOriginalDate && !urlDate.IsZero() && !result.Equal(urlDate) {
 			return false
 		}
 		return !result.IsZero()
@@ -151,18 +151,21 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 
 	// Try from head elements
 	rawString, metaResult := examineMetaElements(doc, opts)
+	metaResult = fixVagueDM(rawString, metaResult, urlDate, opts)
 	if validateResult(metaResult) {
 		return rawString, metaResult, nil
 	}
 
 	// Try to use JSON data
 	rawString, jsonResult := jsonSearch(doc, opts)
+	jsonResult = fixVagueDM(rawString, jsonResult, urlDate, opts)
 	if validateResult(jsonResult) {
 		return rawString, jsonResult, nil
 	}
 
 	// Try <abbr> elements
 	rawString, abbrResult := examineAbbrElements(doc, opts)
+	abbrResult = fixVagueDM(rawString, abbrResult, urlDate, opts)
 	if validateResult(abbrResult) {
 		return rawString, abbrResult, nil
 	}
@@ -173,6 +176,7 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 	discarded := discardUnwanted(prunedDoc)
 	dateElements := findElementsWithRule(prunedDoc, dateSelectorRule)
 	rawString, dateResult := examineOtherElements(dateElements, opts)
+	dateResult = fixVagueDM(rawString, dateResult, urlDate, opts)
 	if validateResult(dateResult) {
 		return rawString, dateResult, nil
 	}
@@ -181,6 +185,7 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 	for _, subTree := range discarded {
 		dateElements := findElementsWithRule(subTree, dateSelectorRule)
 		rawString, dateResult := examineOtherElements(dateElements, opts)
+		dateResult = fixVagueDM(rawString, dateResult, urlDate, opts)
 		if validateResult(dateResult) {
 			return rawString, dateResult, nil
 		}
@@ -190,6 +195,7 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 	if !opts.SkipExtensiveSearch {
 		dateElements := findElementsWithRule(doc, additionalSelectorRule)
 		rawString, dateResult := examineOtherElements(dateElements, opts)
+		dateResult = fixVagueDM(rawString, dateResult, urlDate, opts)
 		if validateResult(dateResult) {
 			return rawString, dateResult, nil
 		}
@@ -197,6 +203,7 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 
 	// Try <time> elements
 	rawString, timeResult := examineTimeElements(doc, opts)
+	timeResult = fixVagueDM(rawString, timeResult, urlDate, opts)
 	if validateResult(timeResult) {
 		return rawString, timeResult, nil
 	}
@@ -214,12 +221,14 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 
 	// String search using regex timestamp
 	rawString, timestampResult := timestampSearch(htmlString, opts)
+	timestampResult = fixVagueDM(rawString, timestampResult, urlDate, opts)
 	if validateResult(timestampResult) {
 		return rawString, timestampResult, nil
 	}
 
 	// Precise patterns and idiosyncrasies
 	rawString, textResult := idiosyncrasiesSearch(htmlString, opts)
+	textResult = fixVagueDM(rawString, textResult, urlDate, opts)
 	if validateResult(textResult) {
 		return rawString, textResult, nil
 	}
@@ -228,6 +237,7 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 	for _, titleElem := range dom.GetAllNodesWithTag(doc, "title", "h1") {
 		textContent := normalizeSpaces(dom.TextContent(titleElem))
 		_, attempt := tryYmdDate(textContent, opts)
+		attempt = fixVagueDM(textContent, attempt, urlDate, opts)
 		if validateResult(attempt) {
 			log.Debug().Msgf("found date in title: %s", textContent)
 			return textContent, attempt, nil
@@ -257,23 +267,22 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 
 		// Return
 		converted := checkExtractedReference(refValue, opts)
+		converted = fixVagueDM(refString, converted, urlDate, opts)
 		if validateResult(converted) {
 			return refString, converted, nil
 		}
 
 		// Search page HTML
 		rawString, searchResult := searchPage(htmlString, opts)
+		searchResult = fixVagueDM(rawString, searchResult, urlDate, opts)
 		if validateResult(searchResult) {
 			return rawString, searchResult, nil
 		}
 	}
 
 	// If nothing else found, try from URL
-	if opts.URL != "" {
-		urlDate = extractUrlDate(opts.URL, opts)
-		if urlDate.IsZero() {
-			urlDate = extractPartialUrlDate(opts.URL, opts)
-		}
+	if urlDate.IsZero() {
+		urlDate = extractPartialUrlDate(opts.URL, opts)
 	}
 
 	if !urlDate.IsZero() {
@@ -1002,4 +1011,41 @@ func selectCandidate(candidates []yearCandidate, catchPattern, yearPattern *rege
 	}
 
 	return rawString, matches
+}
+
+// fixVagueDm fix vague date that uses MM-DD-YYYY format instead of the common DD-MM-YYYY.
+func fixVagueDM(rawString string, date, urlDate time.Time, opts Options) time.Time {
+	// If date or url date is empty, or date equal url date, return early
+	if date.IsZero() || urlDate.IsZero() || date.Equal(urlDate) {
+		return date
+	}
+
+	// If raw string doesn't contain DMY, return early
+	if !rxDmyPattern.MatchString(rawString) {
+		return date
+	}
+
+	// If date is different with URL date, try to swap day and month
+	if !date.Equal(urlDate) {
+		swapped := time.Date(date.Year(), time.Month(date.Day()),
+			int(date.Month()), 0, 0, 0, 0, date.Location())
+
+		if swapped.Equal(urlDate) {
+			return swapped
+		}
+	}
+
+	// If we are looking for modified date and date is before URL date,
+	// try to swap day and month as well.
+	if !opts.UseOriginalDate && date.Before(urlDate) {
+		swapped := time.Date(date.Year(), time.Month(date.Day()),
+			int(date.Month()), 0, 0, 0, 0, date.Location())
+
+		if !swapped.Before(urlDate) {
+			return swapped
+		}
+	}
+
+	// If nothing else, return the original date
+	return date
 }

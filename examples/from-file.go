@@ -11,7 +11,7 @@ import (
 
 func main() {
 	// Open the file
-	f, err := os.Open("test-files/mock/bayern.de.html")
+	f, err := os.Open("test-files/mock/befifty.montauk.html")
 	if err != nil {
 		panic(err)
 	}
@@ -20,7 +20,7 @@ func main() {
 	// Prepare configuration
 	// Here we want the publish date instead of last modified
 	opts := htmldate.Options{
-		UseOriginalDate: true,
+		UseOriginalDate: false,
 		EnableLog:       true,
 	}
 
