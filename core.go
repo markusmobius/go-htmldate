@@ -136,20 +136,53 @@ func FromDocument(doc *html.Node, opts Options) (Result, error) {
 func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 	// If URL is defined, extract baseline date from it
 	var urlDate time.Time
+	urlDateIsPartial := false
+
 	if opts.URL != "" {
 		urlDate = extractUrlDate(opts.URL, opts)
+
+		// If complete date not found, try partial date
+		if urlDate.IsZero() {
+			urlDate = extractPartialUrlDate(opts.URL, opts)
+			urlDateIsPartial = !urlDate.IsZero()
+		}
 	}
 
 	validateResult := func(result time.Time) bool {
+		// Make sure result is not empty
+		if result.IsZero() {
+			return false
+		}
+
 		// URL date is the baseline for original date, so we compare it with the result.
 		if !urlDate.IsZero() {
-			if (opts.UseOriginalDate && !result.Equal(urlDate)) || // pub date must equal URL date
-				(!opts.UseOriginalDate && result.Before(urlDate)) { // mod date must be after URL date
-				return false
+			if !opts.UseOriginalDate {
+				// For modified date, the extracted date must be after URL date.
+				if result.Before(urlDate) {
+					return false
+				}
+			} else {
+				if !urlDateIsPartial {
+					// If URL has complete date, for publish date allow the extracted date to be at
+					// most three days from URL date. This is to handle case where author create
+					// the article but not publish it immediately. In some CMS, URL is generated
+					// when the post is created so the metadata for publish date might be different
+					// with URL date.
+					maxDate := urlDate.AddDate(0, 0, 3)
+					if result.Before(urlDate) || result.After(maxDate) {
+						return false
+					}
+				} else {
+					// If date is incomplete, for publish date year and month of the extracted date
+					// must be equal with URL date.
+					if result.Year() != urlDate.Year() || result.Month() != urlDate.Month() {
+						return false
+					}
+				}
 			}
 		}
 
-		return !result.IsZero()
+		return true
 	}
 
 	// Try from head elements
@@ -284,10 +317,6 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 	}
 
 	// If nothing else found, try from URL
-	if urlDate.IsZero() {
-		urlDate = extractPartialUrlDate(opts.URL, opts)
-	}
-
 	if !urlDate.IsZero() {
 		log.Debug().Msgf("nothing found, just use date from url")
 		return opts.URL, urlDate, nil
