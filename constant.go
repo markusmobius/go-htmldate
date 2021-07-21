@@ -71,11 +71,9 @@ var (
 		`Mai|Juni|Juli|August|September|Oktober|November|Dezember) ` +
 		`([0-9]{4})`)
 
-	rxJsonPatternModified  = regexp.MustCompile(`(?i)"dateModified":\s*"([0-9]{4}-[0-9]{2}-[0-9]{2})`)
-	rxJsonPatternPublished = regexp.MustCompile(`(?i)"datePublished":\s*"([0-9]{4}-[0-9]{2}-[0-9]{2})`)
-	rxTimestampPattern     = regexp.MustCompile(`(?i)([0-9]{4}-[0-9]{2}-[0-9]{2}|[0-9]{2}\.[0-9]{2}\.[0-9]{4}).[0-9]{2}:[0-9]{2}:[0-9]{2}`)
-	rxTextDatePattern      = regexp.MustCompile(`(?i)[.:,_/ -]|^[0-9]+$`)
-	rxNoTextDatePattern    = regexp.MustCompile(`(?i)^(?:[0-9]{3,}\D+[0-9]{3,}|[0-9]{2}:[0-9]{2}(:| )|\D*[0-9]{4}\D*$)`)
+	rxTimestampPattern  = regexp.MustCompile(`(?i)([0-9]{4}-[0-9]{2}-[0-9]{2}|[0-9]{2}\.[0-9]{2}\.[0-9]{4}).[0-9]{2}:[0-9]{2}:[0-9]{2}`)
+	rxTextDatePattern   = regexp.MustCompile(`(?i)[.:,_/ -]|^[0-9]+$`)
+	rxNoTextDatePattern = regexp.MustCompile(`(?i)^(?:[0-9]{3,}\D+[0-9]{3,}|[0-9]{2}:[0-9]{2}(:| )|\D*[0-9]{4}\D*$)`)
 
 	rxEnPattern = regexp.MustCompile(`(?i)(?:[Dd]ate[^0-9"]{0,20}|updated|published) *?(?:in)? *?:? *?([0-9]{1,4})[./]([0-9]{1,2})[./]([0-9]{2,4})`)
 	rxDePattern = regexp.MustCompile(`(?i)(?:Datum|Stand): ?([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{2,4})`)

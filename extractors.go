@@ -19,6 +19,7 @@
 package htmldate
 
 import (
+	"encoding/json"
 	"regexp"
 	"strconv"
 	"strings"
@@ -212,12 +213,31 @@ func fastParse(s string, opts Options) time.Time {
 
 // jsonSearch looks for JSON time patterns in JSON sections of the document.
 func jsonSearch(doc *html.Node, opts Options) (string, time.Time) {
-	// Determine pattern
-	var rxJson *regexp.Regexp
-	if opts.UseOriginalDate {
-		rxJson = rxJsonPatternPublished
-	} else {
-		rxJson = rxJsonPatternModified
+	// Prepare function to capture dates recursively
+	var findDates func(dst map[string]string, obj map[string]interface{})
+	findDates = func(dst map[string]string, obj map[string]interface{}) {
+		for key, value := range obj {
+			switch v := value.(type) {
+			case string:
+				v = normalizeSpaces(v)
+				lowerKey := strings.ToLower(key)
+				if strings.Contains(lowerKey, "date") && v != "" {
+					dst[key] = v
+					return
+				}
+
+			case map[string]interface{}:
+				findDates(dst, v)
+
+			case []interface{}:
+				for _, item := range v {
+					itemObject, isObject := item.(map[string]interface{})
+					if isObject {
+						findDates(dst, itemObject)
+					}
+				}
+			}
+		}
 	}
 
 	// Look throughout the HTML tree
@@ -225,24 +245,41 @@ func jsonSearch(doc *html.Node, opts Options) (string, time.Time) {
 	settingsJsonScripts := dom.QuerySelectorAll(doc, `script[type="application/settings+json"]`)
 	scriptNodes := append(ldJsonScripts, settingsJsonScripts...)
 
+	jsonDates := make(map[string]string)
 	for _, elem := range scriptNodes {
 		// Get the json text inside the script
 		jsonText := dom.TextContent(elem)
 		jsonText = strings.TrimSpace(jsonText)
-		if jsonText == "" || !strings.Contains(jsonText, `"date`) {
+
+		// Decode JSON text, assuming it is an object
+		data := map[string]interface{}{}
+		err := json.Unmarshal([]byte(jsonText), &data)
+		if err != nil {
 			continue
 		}
 
-		idxs := rxJson.FindStringSubmatchIndex(jsonText)
-		if len(idxs) == 0 {
+		// Find all dates recursively
+		findDates(jsonDates, data)
+	}
+
+	// Prepare keys to look for
+	var keys []string
+	if opts.UseOriginalDate {
+		keys = []string{"datePublished", "dateCreated"}
+	} else {
+		keys = []string{"dateModified"}
+	}
+
+	// Check each key
+	for _, key := range keys {
+		keyValue, exist := jsonDates[key]
+		if !exist {
 			continue
 		}
 
-		group1 := jsonText[idxs[2]:idxs[3]]
-		dt, err := time.Parse("2006-01-02", group1)
-		if err == nil && validateDate(dt, opts) {
-			rawString := strLimit(jsonText[idxs[0]:], 100)
-			return rawString, dt
+		dt := fastParse(keyValue, opts)
+		if validateDate(dt, opts) {
+			return keyValue, dt
 		}
 	}
 
