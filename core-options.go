@@ -22,11 +22,9 @@ import "time"
 
 // Options is configuration for the extractor.
 type Options struct {
-	// UseExtensiveSearch specify whether to skip pattern-based opportunistic text search or not.
-	// By the way, the extensive search in this Go port is not as powerful as the original because
-	// over there they use a powerful date parser named `scrapinghub/dateparser`. However, even
-	// despite that, the extensive search in this port should be good enough to use.
-	// TODO: NEED-DATEPARSER.
+	// UseExtensiveSearch specify whether to skip pattern-based opportunistic text search or not
+	// using the external `dateparser` library. Note: this extensive search might be quite slow,
+	// so use as necessary.
 	SkipExtensiveSearch bool
 
 	// ExtractTime specify if we want to extract publish time as well along the date. Still WIP.

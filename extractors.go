@@ -24,10 +24,18 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	"github.com/go-shiori/dom"
+	dps "github.com/markusmobius/go-dateparser"
 	"golang.org/x/net/html"
 )
+
+var externalDpsConfig = &dps.Configuration{
+	DateOrder:           dps.YMD,
+	PreferredDayOfMonth: dps.First,
+	PreferredDateSource: dps.Past,
+}
 
 // discardUnwanted removes unwanted sections of an HTML document and
 // return the discarded elements as a list.
@@ -96,7 +104,7 @@ func extractPartialUrlDate(url string, opts Options) time.Time {
 // a series of heuristics and rules.
 func tryYmdDate(s string, opts Options) (string, time.Time) {
 	// If string less than 6 runes, stop
-	if len(s) < 6 {
+	if utf8.RuneCountInString(s) < 6 {
 		return s, timeZero
 	}
 
@@ -118,10 +126,11 @@ func tryYmdDate(s string, opts Options) (string, time.Time) {
 	}
 
 	if !opts.SkipExtensiveSearch {
-		// TODO: NEED-DATEPARSER
-		// In original library they can run extensive (but slow) date parsing using
-		// `scrapinghub/dateparser` which can parse date from almost any string in
-		// many languages. Unfortunately we haven't ported it so we will skip it.
+		// Use dateparser to extensively parse the date
+		dt, _ := dps.Parse(externalDpsConfig, s)
+		if !dt.IsZero() && validateDate(dt.Time, opts) {
+			return s, dt.Time
+		}
 	}
 
 	return s, timeZero

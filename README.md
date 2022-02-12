@@ -59,7 +59,7 @@ Next, include it in your application :
 import "github.com/markusmobius/go-htmldate"
 ```
 
-Now you can use Trafilatura to extract date of a web page. For basic usage you can check the 
+Now you can use Trafilatura to extract date of a web page. For basic usage you can check the
 [examples](examples).
 
 ## Usage as CLI Application
@@ -104,12 +104,12 @@ For the sake of completeness a few documents in other languages were added (most
 but also in other European languages, Chinese, Japanese and Arabic). Here is the result when tested in my
 PC (Intel i7-8550U @ 4.000GHz, RAM 16 GB):
 
-|             Package            | Precision | Recall | Accuracy | F-Score | Speed (s) |
-|:------------------------------:|:---------:|:------:|:--------:|:-------:|:---------:|
-|      `go-htmldate` fast        |   0.920   |  0.938 |   0.867  |  0.929  |   0.398   |
-|    `go-htmldate` extensive     |   0.911   |  1.000 |   0.911  |  0.953  |   0.488   |
+|         Package         | Precision | Recall | Accuracy | F-Score | Speed (s) |
+| :---------------------: | :-------: | :----: | :------: | :-----: | :-------: |
+|   `go-htmldate` fast    |   0.920   | 0.938  |  0.867   |  0.929  |   0.502   |
+| `go-htmldate` extensive |   0.911   | 1.000  |  0.911   |  0.953  |   0.760   |
 
-So, from the table above, this port has a similar performance with the original `htmldate`. 
+So, from the table above, this port has a similar performance with the original `htmldate`.
 
 ## Additional Notes
 

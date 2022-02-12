@@ -43,9 +43,7 @@ func Test_extractPartialUrlDate(t *testing.T) {
 }
 
 func Test_tryYmdDate(t *testing.T) {
-	// Unfortunately, there are several tests in original library that can't be
-	// recreated here because it requires `scrapinghub/dateparser` library.
-	// TODO: NEED-DATEPARSER.
+	// Helper function
 	opts := Options{
 		MinDate: defaultMinDate,
 		MaxDate: defaultMaxDate,
@@ -59,11 +57,20 @@ func Test_tryYmdDate(t *testing.T) {
 		return ""
 	}
 
-	// Valid date
+	// Extensive search disabled
+	opts.SkipExtensiveSearch = true
+	assert.Equal(t, "", try("Fri, Sept 1, 2017"))
+
+	// Extensive search enabled
+	opts.SkipExtensiveSearch = false
+	assert.Equal(t, "2017-09-01", try("Friday, September 01, 2017"))
 	assert.Equal(t, "2017-09-01", try("Fr, 1 Sep 2017 16:27:51 MESZ"))
+	assert.Equal(t, "2017-09-01", try("Freitag, 01. September 2017"))
+	assert.Equal(t, "2017-09-01", try("Am 1. September 2017 um 15:36 Uhr schrieb"))
+	assert.Equal(t, "2017-09-01", try("Fri - September 1 - 2017"))
 	assert.Equal(t, "2017-09-01", try("1.9.2017"))
 	assert.Equal(t, "2017-09-01", try("1/9/17"))
-	assert.Equal(t, "2017-09-01", try("20170901"))
+	assert.Equal(t, "2017-09-01", try("201709011234"))
 
 	// Wrong date
 	assert.Equal(t, "", try("201"))
