@@ -21,12 +21,20 @@ package htmldate
 import (
 	"regexp"
 	"time"
+
+	dps "github.com/markusmobius/go-dateparser"
 )
 
 var (
 	timeZero       = time.Time{}
 	defaultMinDate = time.Date(1995, 1, 1, 0, 0, 0, 0, time.UTC)
 	defaultMaxDate = time.Now().AddDate(1, 0, 0)
+
+	externalDpsConfig = &dps.Configuration{
+		DateOrder:           dps.DMY,
+		PreferredDayOfMonth: dps.First,
+		PreferredDateSource: dps.Past,
+	}
 )
 
 const (

@@ -31,12 +31,6 @@ import (
 	"golang.org/x/net/html"
 )
 
-var externalDpsConfig = &dps.Configuration{
-	DateOrder:           dps.YMD,
-	PreferredDayOfMonth: dps.First,
-	PreferredDateSource: dps.Past,
-}
-
 // discardUnwanted removes unwanted sections of an HTML document and
 // return the discarded elements as a list.
 func discardUnwanted(doc *html.Node) []*html.Node {
@@ -140,13 +134,15 @@ func tryYmdDate(s string, opts Options) (string, time.Time) {
 // In the original Python library, this function is named `custom_parse`, but I
 // renamed it to `fastParse` because I think it's more suitable to its purpose.
 func fastParse(s string, opts Options) time.Time {
-	// Use regex first
 	// 1. Try YYYYMMDD first
-	match := rxYmdNoSepPattern.FindString(s)
-	if match != "" {
-		dt, err := time.Parse("20060102", match)
-		if err == nil && validateDate(dt, opts) {
-			log.Debug().Msgf("fast parse found Y-M-D without separator: %s", match)
+	// This also handle '201709011234' which not covered by dateparser
+	if len(s) >= 8 && isDigit(s[:8]) {
+		year, _ := strconv.Atoi(s[:4])
+		month, _ := strconv.Atoi(s[4:6])
+		day, _ := strconv.Atoi(s[6:8])
+
+		if dt, valid := validateDateParts(year, month, day, opts); valid {
+			log.Debug().Msgf("fast parse found Y-M-D without separator: %s", s[:8])
 			return dt
 		}
 	}
