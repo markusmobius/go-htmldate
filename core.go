@@ -750,6 +750,7 @@ func examineOtherElements(elements []*html.Node, opts Options) (string, time.Tim
 		if len(textContent) > 6 {
 			// Shorten and try the beginning of the string.
 			toExamine := strLimit(textContent, 48)
+			toExamine = rxLastNonDigits.ReplaceAllString(toExamine, "")
 
 			// Log the examined element
 			elemHTML := dom.OuterHTML(elem)
