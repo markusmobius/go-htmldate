@@ -18,15 +18,12 @@
 
 package htmldate
 
-import "time"
+import (
+	"time"
+)
 
 // Options is configuration for the extractor.
 type Options struct {
-	// UseExtensiveSearch specify whether to skip pattern-based opportunistic text search or not
-	// using the external `dateparser` library. Note: this extensive search might be quite slow,
-	// so use as necessary.
-	SkipExtensiveSearch bool
-
 	// ExtractTime specify if we want to extract publish time as well along the date. Still WIP.
 	ExtractTime bool
 
@@ -45,4 +42,13 @@ type Options struct {
 
 	// EnableLog specify whether log should be enabled or not.
 	EnableLog bool
+
+	// SkipExtensiveSearch specify whether to skip pattern-based opportunistic text search or not
+	// using the external `dateparser` library. Note: this extensive search might be quite slow,
+	// so use as necessary.
+	SkipExtensiveSearch bool
+
+	// Languages specify the languages of the page. Useful when looking for date using extensive
+	// search with `dateparser`. It's useless if `SkipExtensiveSearch=true`.
+	Languages []string
 }

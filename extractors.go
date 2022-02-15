@@ -121,7 +121,10 @@ func tryYmdDate(s string, opts Options) (string, time.Time) {
 
 	if !opts.SkipExtensiveSearch {
 		// Use dateparser to extensively parse the date
-		dt, _ := dps.Parse(externalDpsConfig, s)
+		cfg := externalDpsConfig.Clone()
+		cfg.Languages = opts.Languages
+
+		dt, _ := dps.Parse(cfg, s)
 		if !dt.IsZero() && validateDate(dt.Time, opts) {
 			return s, dt.Time
 		}
