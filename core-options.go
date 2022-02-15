@@ -20,6 +20,8 @@ package htmldate
 
 import (
 	"time"
+
+	dps "github.com/markusmobius/go-dateparser"
 )
 
 // Options is configuration for the extractor.
@@ -48,7 +50,7 @@ type Options struct {
 	// so use as necessary.
 	SkipExtensiveSearch bool
 
-	// Languages specify the languages of the page. Useful when looking for date using extensive
-	// search with `dateparser`. It's useless if `SkipExtensiveSearch=true`.
-	Languages []string
+	// DateParserConfig is configuration for the external `dateparser`. Only used extensive search
+	// is enabled (`SkipExtensiveSearch=false`).
+	DateParserConfig *dps.Configuration
 }
