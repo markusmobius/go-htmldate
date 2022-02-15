@@ -231,7 +231,6 @@ func jsonSearch(doc *html.Node, opts Options) (string, time.Time) {
 				lowerKey := strings.ToLower(key)
 				if strings.Contains(lowerKey, "date") && v != "" {
 					dst[key] = v
-					return
 				}
 
 			case map[string]interface{}:
