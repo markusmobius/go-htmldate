@@ -37,10 +37,15 @@ var log = zerolog.New(zerolog.ConsoleWriter{
 
 func main() {
 	var (
-		nDocument   int
-		evFast      evaluationResult
-		evExtensive evaluationResult
+		nDocument      int
+		evFast         evaluationResult
+		evExtensive    evaluationResult
+		comparisonData []comparisonEntry
 	)
+
+	// Change this depending on your data
+	// comparisonData = defaultComparisonData
+	comparisonData = mediacloudData
 
 	for _, entry := range comparisonData {
 		// Open file
@@ -80,7 +85,9 @@ func main() {
 
 			if fastResult != entry.Fast {
 				log.Debug().Msgf("\tfast different with original: \"%s\" vs \"%s\"", entry.Fast, fastResult)
-			} else {
+			}
+
+			if extensiveResult != entry.Extensive {
 				log.Debug().Msgf("\textensive different with original: \"%s\" vs \"%s\"", entry.Extensive, extensiveResult)
 			}
 		}
@@ -104,6 +111,7 @@ func openFile(name string) (*html.Node, error) {
 	var err error
 	pathList := []string{
 		fp.Join("test-files", "comparison", name),
+		fp.Join("test-files", "mediacloud", name),
 		fp.Join("test-files", "mock", name),
 	}
 
