@@ -25,1573 +25,1799 @@ var defaultComparisonData = []comparisonEntry{
 		Date:      "2014-07-19",
 		Extensive: "2014-07-19",
 		Fast:      "2014-07-19",
-	},
-	{
+	}, {
 		URL:       "http://blog.kinra.de/?p=959/",
 		File:      "kinra.de.html",
 		Date:      "2012-12-16",
 		Extensive: "2012-12-16",
 		Fast:      "2012-12-16",
-	},
-	{
+	}, {
 		URL:       "http://blog.python.org/2016/12/python-360-is-now-available.html",
 		File:      "blog.python.org.html",
 		Date:      "2016-12-23",
 		Extensive: "2016-12-23",
 		Fast:      "2016-12-23",
-	},
-	{
+	}, {
 		URL:       "http://blog.todamax.net/2018/midp-emulator-kemulator-und-brick-challenge/",
 		File:      "blog.todamax.net.html",
 		Date:      "2018-02-15",
 		Extensive: "2018-02-15",
 		Fast:      "2018-02-15",
-	},
-	{
+	}, {
 		URL:       "http://carta.info/der-neue-trend-muss-statt-wunschkoalition/",
 		File:      "carta.info.html",
 		Date:      "2012-05-08",
 		Extensive: "2012-05-08",
-		Fast:      "",
-	},
-	{
+		Fast:      "None",
+	}, {
 		URL:       "https://500px.com/photo/26034451/spring-in-china-by-alexey-kruglov",
 		File:      "500px.com.spring.html",
 		Date:      "2013-02-16",
 		Extensive: "2013-02-16",
 		Fast:      "2013-02-16",
-	},
-	{
+	}, {
 		URL:       "https://bayern.de/",
 		File:      "bayern.de.html",
 		Date:      "2017-10-06",
 		Extensive: "2017-10-06",
 		Fast:      "2017-10-06",
-	},
-	{
+	}, {
 		URL:       "https://creativecommons.org/about/",
 		File:      "creativecommons.org.html",
 		Date:      "2016-05-22",
 		Extensive: "2016-05-22",
-		Fast:      "",
-	},
-	{
+		Fast:      "None",
+	}, {
 		URL:       "https://en.blog.wordpress.com/",
 		File:      "blog.wordpress.com.html",
 		Date:      "2017-08-30",
 		Extensive: "2017-08-30",
 		Fast:      "2017-08-30",
-	},
-	{
+	}, {
 		URL:       "https://futurezone.at/digital-life/wie-creativecommons-richtig-genutzt-wird/24.600.504",
 		File:      "futurezone.at.cc.html",
 		Date:      "2013-08-09",
 		Extensive: "2013-08-09",
 		Fast:      "2013-08-09",
-	},
-	{
+	}, {
 		URL:       "https://netzpolitik.org/2016/die-cider-connection-abmahnungen-gegen-nutzer-von-creative-commons-bildern/",
 		File:      "netzpolitik.org.abmahnungen.html",
 		Date:      "2016-06-23",
 		Extensive: "2016-06-23",
 		Fast:      "2016-06-23",
-	},
-	{
+	}, {
 		URL:       "https://pixabay.com/en/service/terms/",
 		File:      "pixabay.com.tos.html",
 		Date:      "2017-08-09",
-		Extensive: "2017-01-01",
-		Fast:      "",
-	},
-	{
+		Extensive: "2017-08-09",
+		Fast:      "None",
+	}, {
 		URL:       "https://www.austria.info/",
 		File:      "austria.info.html",
 		Date:      "2017-09-07",
 		Extensive: "2017-09-07",
-		Fast:      "",
-	},
-	{
+		Fast:      "None",
+	}, {
 		URL:       "https://www.befifty.de/home/2017/7/12/unter-uns-montauk",
 		File:      "befifty.montauk.html",
 		Date:      "2017-07-12",
 		Extensive: "2017-07-12",
 		Fast:      "2017-07-12",
-	},
-	{
+	}, {
 		URL:       "https://www.beltz.de/fachmedien/paedagogik/didacta_2019_in_koeln_19_23_februar/beltz_veranstaltungen_didacta_2016/veranstaltung.html?tx_news_pi1%5Bnews%5D=14392&tx_news_pi1%5Bcontroller%5D=News&tx_news_pi1%5Baction%5D=detail&cHash=10b1a32fb5b2b05360bdac257b01c8fa",
 		File:      "beltz.de.didakta.html",
 		Date:      "2019-02-20",
 		Extensive: "2019-02-20",
 		Fast:      "2019-02-20",
-	},
-	{
+	}, {
 		URL:       "https://www.channelpartner.de/a/sieben-berufe-die-zukunft-haben,3050673",
 		File:      "channelpartner.de.berufe.html",
 		Date:      "2019-04-03",
 		Extensive: "2017-08-21",
 		Fast:      "2017-08-21",
-	},
-	{
+	}, {
 		URL:       "https://www.creativecommons.at/faircoin-hackathon",
 		File:      "creativecommons.at.faircoin.html",
 		Date:      "2017-07-24",
 		Extensive: "2017-07-24",
 		Fast:      "2017-07-24",
-	},
-	{
+	}, {
 		URL:       "https://www.eff.org/files/annual-report/2015/index.html",
 		File:      "eff.org.2015.html",
 		Date:      "2016-05-04",
 		Extensive: "2016-05-04",
-		Fast:      "",
-	},
-	{
+		Fast:      "2016-05-04",
+	}, {
 		URL:       "https://www.facebook.com/visitaustria/",
 		File:      "facebook.com.visitaustria.html",
 		Date:      "2017-10-06",
 		Extensive: "2017-10-06",
 		Fast:      "2017-10-06",
-	},
-	{
+	}, {
 		URL:       "https://www.gnu.org/licenses/gpl-3.0.en.html",
 		File:      "gnu.org.gpl.html",
 		Date:      "2016-11-18",
 		Extensive: "2016-11-18",
-		Fast:      "",
-	},
-	{
+		Fast:      "2016-11-18",
+	}, {
 		URL:       "https://www.goodform.ch/blog/schattiges_plaetzchen",
 		File:      "goodform.ch.blog.html",
 		Date:      "2018-06-27",
 		Extensive: "2018-06-27",
 		Fast:      "2018-06-27",
-	},
-	{
+	}, {
 		URL:       "https://www.horizont.net/marketing/kommentare/influencer-marketing-was-sich-nach-dem-vreni-frost-urteil-aendert-und-aendern-muss-172529",
 		File:      "horizont.net.html",
 		Date:      "2019-01-29",
 		Extensive: "2019-01-29",
 		Fast:      "2019-01-29",
-	},
-	{
+	}, {
 		URL:       "https://www.scs78.de/news/items/warm-war-es-schoen-war-es.html",
 		File:      "scs78.de.html",
 		Date:      "2018-06-10",
 		Extensive: "2018-06-10",
 		Fast:      "2018-06-10",
-	},
-	{
+	}, {
 		URL:       "https://www.tagesausblick.de/Analyse/USA/DOW-Jones-Jahresendrally-ade__601.html",
 		File:      "tagesausblick.de.dow.html",
 		Date:      "2012-12-22",
 		Extensive: "2012-12-22",
 		Fast:      "2012-12-22",
-	},
-	{
+	}, {
 		URL:       "https://www.transgen.de/aktuell/2687.afrikanische-schweinepest-genome-editing.html",
 		File:      "transgen.de.aktuell.html",
 		Date:      "2018-01-18",
 		Extensive: "2018-01-18",
 		Fast:      "2018-01-18",
-	},
-	{
+	}, {
 		URL:       "https://www.weltwoche.ch/ausgaben/2019-4/artikel/forbes-die-weltwoche-ausgabe-4-2019.html",
 		File:      "weltwoche.ch.html",
 		Date:      "2019-01-23",
 		Extensive: "2019-01-23",
-		Fast:      "",
-	},
-	{
+		Fast:      "None",
+	}, {
 		URL:       "http://www.freundeskreis-videoclips.de/waehlen-sie-car-player-tipps-zur-auswahl-der-besten-car-cd-player/",
 		File:      "freundeskreis-videoclips.de.html",
 		Date:      "2017-07-12",
 		Extensive: "2017-07-12",
 		Fast:      "2017-07-12",
-	},
-	{
+	}, {
 		URL:       "https://www.wunderweib.de/manuela-reimann-hochzeitsueberraschung-in-bayern-107930.html",
 		File:      "wunderweib.html",
 		Date:      "2019-06-20",
 		Extensive: "2019-06-20",
 		Fast:      "2019-06-20",
-	},
-	{
+	}, {
 		URL:       "http://unexpecteduser.blogspot.de/2011/",
 		File:      "unexpecteduser.2011.html",
 		Date:      "2011-03-30",
 		Extensive: "2011-03-30",
 		Fast:      "2011-03-30",
-	},
-	{
+	}, {
 		URL:       "http://www.eza.gv.at/das-ministerium/presse/aussendungen/2018/07/aussenministerin-karin-kneissl-beim-treffen-der-deutschsprachigen-aussenminister-in-luxemburg/",
 		File:      "eza.gv.at.html",
 		Date:      "2018-07-03",
 		Extensive: "2018-07-03",
 		Fast:      "2018-07-03",
-	},
-	{
+	}, {
 		URL:       "http://www.greenpeace.org/international/en/campaigns/forests/asia-pacific/",
 		File:      "greenpeace.org.forests.html",
 		Date:      "2017-04-28",
 		Extensive: "2017-04-28",
 		Fast:      "2017-04-28",
-	},
-	{
+	}, {
 		URL:       "http://www.hobby-werkstatt-blog.de/arduino/424-eine-arduino-virtual-wall-fuer-den-irobot-roomba.php",
 		File:      "hobby-werkstatt-blog.de.roomba.html",
 		Date:      "2015-12-14",
 		Extensive: "2015-12-14",
 		Fast:      "2015-12-14",
-	},
-	{
+	}, {
 		URL:       "http://www.jovelstefan.de/2012/05/11/parken-in-paris/",
 		File:      "jovelstefan.de.parken.html",
 		Date:      "2012-05-11",
 		Extensive: "2012-05-11",
 		Fast:      "2012-05-11",
-	},
-	{
+	}, {
 		URL:       "http://www.klimawandel-global.de/klimaschutz/energie-sparen/elektromobilitat-der-neue-trend/",
 		File:      "klimawandel-global.de.html",
 		Date:      "2013-05-03",
 		Extensive: "2013-05-03",
 		Fast:      "2013-05-03",
-	},
-	{
+	}, {
 		URL:       "http://www.medef.com/en/content/alternative-dispute-resolution-for-antitrust-damages",
 		File:      "medef.fr.dispute.html",
 		Date:      "2017-09-01",
 		Extensive: "2017-09-01",
 		Fast:      "2017-09-01",
-	},
-	{
+	}, {
 		URL:       "http://www.pbrunst.de/news/2011/12/kein-cyberterrorismus-diesmal/",
 		File:      "pbrunst.de.html",
 		Date:      "2011-12-03",
 		Extensive: "2010-06-01",
-		Fast:      "",
-	},
-	{
+		Fast:      "None",
+	}, {
 		URL:       "http://www.stuttgart.de/",
 		File:      "stuttgart.de.html",
 		Date:      "2017-10-09",
 		Extensive: "2017-10-09",
 		Fast:      "2017-10-09",
-	},
-	{
+	}, {
 		URL:       "https://paris-luttes.info/quand-on-comprend-que-les-grenades-12355",
 		File:      "paris-luttes.info.html",
 		Date:      "2019-06-29",
-		Extensive: "2019-07-03",
-		Fast:      "2019-07-03",
-	},
-	{
+		Extensive: "2019-06-29",
+		Fast:      "2019-06-29",
+	}, {
 		URL:       "https://www.brigitte.de/aktuell/riverdale--so-ehrt-die-serie-luke-perry-in-staffel-vier-11602344.html",
 		File:      "brigitte.de.riverdale.html",
 		Date:      "2019-06-20",
 		Extensive: "2019-06-20",
 		Fast:      "2019-06-20",
-	},
-	{
+	}, {
 		URL:       "https://www.ldt.de/ldtblog/fall-in-love-with-black/",
 		File:      "ldt.de.fallinlove.html",
 		Date:      "2017-08-08",
 		Extensive: "2017-08-08",
 		Fast:      "2017-08-08",
-	},
-	{
+	}, {
 		URL:       "http://www.loldf.org/spip.php?article717",
 		File:      "loldf.org.html",
 		Date:      "2019-06-27",
 		Extensive: "2019-06-27",
 		Fast:      "2019-06-27",
-	},
-	{
+	}, {
 		URL:       "https://www.oberstdorf-resort.de/interaktiv/blog/unser-kraeutergarten-wannenkopfhuette.html",
 		File:      "oberstdorfresort.de.kraeuter.html",
 		Date:      "2018-06-20",
 		Extensive: "2018-06-20",
 		Fast:      "2018-06-20",
-	},
-	{
+	}, {
 		URL:       "https://www.wienbadminton.at/news/119843/Come-Together",
 		File:      "wienbadminton.at.html",
 		Date:      "2018-05-06",
 		Extensive: "2018-05-06",
-		Fast:      "",
-	},
-	{
+		Fast:      "None",
+	}, {
 		URL:       "https://blog.wikimedia.org/2018/06/28/interactive-maps-now-in-your-language/",
 		File:      "blog.wikimedia.interactivemaps.html",
 		Date:      "2018-06-28",
 		Extensive: "2018-06-28",
 		Fast:      "2018-06-28",
-	},
-	{
+	}, {
 		URL:       "https://blogs.mediapart.fr/elba/blog/260619/violences-policieres-bombe-retardement-mediatique",
 		File:      "mediapart.fr.violences.html",
 		Date:      "2019-06-27",
 		Extensive: "2019-06-27",
-		Fast:      "2019-07-30",
-	},
-	{
+		Fast:      "2019-06-27",
+	}, {
 		URL:       "https://verfassungsblog.de/the-first-decade/",
 		File:      "verfassungsblog.de.decade.html",
 		Date:      "2019-07-13",
 		Extensive: "2019-07-13",
 		Fast:      "2019-07-13",
-	},
-	{
+	}, {
 		URL:       "https://cric-grenoble.info/infos-locales/article/putsh-en-cours-a-radio-kaleidoscope-1145",
 		File:      "cric-grenoble.info.radio.html",
 		Date:      "2019-06-09",
 		Extensive: "2019-06-09",
 		Fast:      "2019-06-09",
-	},
-	{
+	}, {
 		URL:       "https://www.sebastian-kurz.at/magazin/wasserstoff-als-schluesseltechnologie",
 		File:      "kurz.at.wasserstoff.html",
 		Date:      "2019-07-30",
 		Extensive: "2019-07-30",
 		Fast:      "2019-07-30",
-	},
-	{
+	}, {
 		URL:       "https://la-bas.org/la-bas-magazine/chroniques/Didier-Porte-souhaite-la-Sante-a-Balkany",
 		File:      "la-bas.org.porte.html",
 		Date:      "2019-06-28",
 		Extensive: "2019-06-28",
-		Fast:      "2019-12-09",
-	},
-	{
+		Fast:      "2019-06-28",
+	}, {
 		URL:       "https://www.revolutionpermanente.fr/Antonin-Bernanos-en-prison-depuis-pres-de-deux-mois-en-raison-de-son-militantisme",
 		File:      "revolutionpermanente.fr.antonin.html",
 		Date:      "2019-06-13",
 		Extensive: "2019-06-13",
-		Fast:      "",
-	},
-	{
+		Fast:      "None",
+	}, {
 		URL:       "http://www.wara-enforcement.org/guinee-un-braconnier-delephant-interpelle-et-condamne-a-la-peine-maximale/",
 		File:      "wara-enforcement.org.guinee.html",
 		Date:      "2016-09-27",
 		Extensive: "2016-09-27",
 		Fast:      "2016-09-27",
-	},
-	{
+	}, {
 		URL:       "https://ebene11.com/die-arbeit-mit-fremden-dwg-dateien-in-autocad",
 		File:      "ebene11.com.autocad.html",
 		Date:      "2017-01-12",
 		Extensive: "2017-01-12",
-		Fast:      "",
-	},
-	{
+		Fast:      "None",
+	}, {
 		URL:       "https://www.acredis.com/schoenheitsoperationen/augenlidstraffung/",
 		File:      "acredis.com.augenlidstraffung.html",
 		Date:      "2018-02-28",
 		Extensive: "2018-02-28",
 		Fast:      "2018-02-28",
-	},
-	{
+	}, {
 		URL:       "https://www.hertie-school.org/en/debate/detail/content/whats-on-the-cards-for-von-der-leyen/",
 		File:      "hertie-school.org.leyen.html",
 		Date:      "2019-12-02",
 		Extensive: "2019-03-27",
-		Fast:      "",
-	},
-	{
+		Fast:      "None",
+	}, {
 		URL:       "https://www.adac.de/rund-ums-fahrzeug/tests/kindersicherheit/kindersitztest-2018/",
 		File:      "adac.de.kindersitztest.html",
 		Date:      "2018-10-23",
 		Extensive: "2018-10-23",
 		Fast:      "2018-10-23",
-	},
-	{
+	}, {
 		URL:       "https://www.ahlen.de/start/aktuelles/aktuelle/information/nachricht/aus-ahlen/reparaturcafe-am-31-januar/",
 		File:      "ahlen.de.reparaturcafe.html",
 		Date:      "2020-01-27",
 		Extensive: "2020-01-27",
 		Fast:      "2020-01-27",
-	},
-	{
+	}, {
 		URL:       "https://rete-mirabile.net/notizen/15-jahre-rete-mirabile/",
 		File:      "rete-mirabile.net.15jahre.html",
 		Date:      "2019-07-28",
 		Extensive: "2019-07-28",
 		Fast:      "2019-07-28",
-	},
-	{
+	}, {
 		URL:       "https://shop.nmb-media.de/eBay-Template-Datenschutz-Google-Fonts-Fontawesome",
 		File:      "nmb-media.de.ebay.html",
 		Date:      "2018-06-22",
 		Extensive: "2018-08-29",
 		Fast:      "2018-08-29",
-	},
-	{
+	}, {
 		URL:       "https://viertausendhertz.de/ddg48/",
 		File:      "viertausendhertz.de.ddg48.html",
 		Date:      "2019-12-16",
 		Extensive: "2019-12-16",
 		Fast:      "2019-12-16",
-	},
-	{
+	}, {
 		URL:       "http://www.bibliothek2null.de/2014/05/18/alles-neue-mach-der-mai/",
 		File:      "bibliothek2null.de.mai.html",
 		Date:      "2014-05-18",
 		Extensive: "2014-05-18",
 		Fast:      "2014-05-18",
-	},
-	{
+	}, {
 		URL:       "http://www.helge.at/2014/03/warum-wien-zu-blod-fur-eine-staufreie-mahu-ist/",
 		File:      "helge.at.mahu.html",
 		Date:      "2014-03-05",
 		Extensive: "2014-03-05",
 		Fast:      "2014-03-05",
-	},
-	{
+	}, {
 		URL:       "https://blogoff.de/2015/11/12/i-htm/",
 		File:      "blogoff.de.i-htm.html",
 		Date:      "2015-11-12",
 		Extensive: "2015-11-12",
 		Fast:      "2015-11-12",
-	},
-	{
+	}, {
 		URL:       "https://de.globalvoices.org/2019/04/30/ein-jahr-voller-proteste-nicaraguaner-wollen-nicht-mehr-nur-den-rucktritt-ortegas-sondern-einen-neuanfang/",
 		File:      "de.globalvoices.org.nicaragua.html",
 		Date:      "2019-04-30",
 		Extensive: "2019-04-30",
 		Fast:      "2019-04-30",
-	},
-	{
+	}, {
 		URL:       "http://www.heiko-adams.de/laufen-im-winter-von-baeh-zu-yeah-in-12-monaten/",
 		File:      "heiko-adams.de.laufen.html",
 		Date:      "2019-02-10",
 		Extensive: "2019-02-10",
 		Fast:      "2019-02-10",
-	},
-	{
+	}, {
 		URL:       "https://www.faz.net/aktuell/wirtschaft/nutzerbasierte-abrechnung-musik-stars-fordern-neues-streaming-modell-16604622.html",
 		File:      "faz.net.streaming.html",
 		Date:      "2020-01-28",
 		Extensive: "2020-01-28",
 		Fast:      "2020-01-28",
-	},
-	{
+	}, {
 		URL:       "http://wir-empfehlen.info/?p=3289",
 		File:      "wir-empfehlen.info.3289.html",
 		Date:      "2020-01-03",
 		Extensive: "2020-01-03",
 		Fast:      "2020-01-03",
-	},
-	{
+	}, {
 		URL:       "https://nextkabinett.wordpress.com/2014/01/17/derek-jarman-%c2%b7-the-garden/",
 		File:      "nextkabinett.wordpress.com.garden.html",
 		Date:      "2014-01-17",
 		Extensive: "2014-01-17",
 		Fast:      "2014-01-17",
-	},
-	{
+	}, {
 		URL:       "https://sprechblase.wordpress.com/2019/11/17/elektro-zapfsaeulen/",
 		File:      "sprechblase.wordpress.com.zapfsaeulen.html",
 		Date:      "2019-11-17",
 		Extensive: "2019-11-17",
 		Fast:      "2019-11-17",
-	},
-	{
+	}, {
 		URL:       "https://creeny.wordpress.com/2020/01/24/nebelsuppe-6/",
 		File:      "creeny.wordpress.com.nebelsuppe.html",
 		Date:      "2020-01-24",
 		Extensive: "2020-01-24",
 		Fast:      "2020-01-24",
-	},
-	{
+	}, {
 		URL:       "https://nurmeinstandpunkt.wordpress.com/2020/01/23/blogposting-01-23-2020/",
 		File:      "nurmeinstandpunkt.wordpress.com.blogposting.html",
 		Date:      "2020-01-23",
 		Extensive: "2020-01-23",
 		Fast:      "2020-01-23",
-	},
-	{
+	}, {
 		URL:       "https://flowfx.de/blog/copy-paste-from-tmux-to-system-clipboard/",
 		File:      "flowfx.de.tmux.html",
 		Date:      "2020-01-16",
 		Extensive: "2020-01-16",
 		Fast:      "2020-01-16",
-	},
-	{
+	}, {
 		URL:       "https://gnadlib.wordpress.com/2020/01/05/scherenschnitt-3/",
 		File:      "gnadlib.wordpress.com.scherenschnitt.html",
 		Date:      "2020-01-05",
 		Extensive: "2020-01-05",
 		Fast:      "2020-01-05",
-	},
-	{
+	}, {
 		URL:       "https://www.spontis.de/schwarze-szene/liebe-leser-bitte-rutschen-sie-nicht-in-das-neue-jahrzehnt/",
 		File:      "spontis.de.jahrzehnt.html",
 		Date:      "2019-12-31",
 		Extensive: "2019-12-31",
 		Fast:      "2019-12-31",
-	},
-	{
+	}, {
 		URL:       "https://www.schneems.com/2018/10/09/pair-with-me-rubocop-cop-that-detects-duplicate-array-allocations/",
 		File:      "schneems.com.rubocop.html",
 		Date:      "2018-10-09",
 		Extensive: "2018-10-09",
 		Fast:      "2018-10-09",
-	},
-	{
+	}, {
 		URL:       "https://hackernoon.com/how-to-scrape-google-with-python-bo7d2tal",
 		File:      "hackernoon.com.scrape.html",
 		Date:      "2019-12-29",
 		Extensive: "2019-12-29",
 		Fast:      "2019-12-29",
-	},
-	{
+	}, {
 		URL:       "http://www.colours-of-the-soul.alhelm.net",
 		File:      "colours-of-the-soul.alhelm.net",
 		Date:      "2009-02-18",
-		Extensive: "2004-08-25",
-		Fast:      "",
-	},
-	{
+		Extensive: "2005-05-04",
+		Fast:      "2003-04-09",
+	}, {
 		URL:       "https://lernpfadprismen.wordpress.com/masse/masse-des-quaders/",
 		File:      "lernpfadprismen.wordpress.com.masse.html",
 		Date:      "2015-12-07",
 		Extensive: "2015-12-07",
 		Fast:      "2015-12-07",
-	},
-	{
+	}, {
 		URL:       "https://grossefragen.wordpress.com/2019/03/13/wuerde-des-lebens-ein-projekt/",
 		File:      "grossefragen.wordpress.com.projekt.html",
 		Date:      "2019-03-13",
 		Extensive: "2019-03-13",
 		Fast:      "2019-03-13",
-	},
-	{
+	}, {
 		URL:       "https://knowledge-on-air.de/2019/12/17/koa039-live-vom-knowledgecamp-2019/",
 		File:      "knowledge-on-air.de.koa039.html",
 		Date:      "2019-12-17",
 		Extensive: "2019-12-17",
 		Fast:      "2019-12-17",
-	},
-	{
+	}, {
 		URL:       "https://campino2k.de/2016/02/28/uberspace-und-lets-encrypt/",
 		File:      "campino2k.de.uberspace.html",
 		Date:      "2016-02-28",
 		Extensive: "2016-02-28",
 		Fast:      "2016-02-28",
-	},
-	{
+	}, {
 		URL:       "http://www.silvias.net/blog/wahlzensur-angriff-auf-universitaeten/",
 		File:      "silvias.net.wahlzensur.html",
 		Date:      "2018-10-26",
 		Extensive: "2018-10-26",
-		Fast:      "2018-05-10",
-	},
-	{
+		Fast:      "2018-10-26",
+	}, {
 		URL:       "https://wolfsrebellen-netz.forumieren.com/t7-forums-regeln",
 		File:      "wolfsrebellen-netz.forumieren.com.regeln.html",
 		Date:      "2013-10-26",
-		Extensive: "2020-11-02",
-		Fast:      "2020-11-02",
-	},
-	{
+		Extensive: "2013-10-26",
+		Fast:      "2013-10-26",
+	}, {
 		URL:       "https://resonator-podcast.de/2019/res158-kathrin-goebel/",
 		File:      "resonator-podcast.de.res158.html",
 		Date:      "2019-08-16",
 		Extensive: "2019-08-24",
 		Fast:      "2019-08-24",
-	},
-	{
+	}, {
 		URL:       "https://bunterepublik.wordpress.com/2017/06/12/keine-spiel-talstrasse-zur-bunten-republik-neustadt/",
 		File:      "bunterepublik.wordpress.com.talstrasse.html",
 		Date:      "2017-06-12",
 		Extensive: "2017-06-12",
 		Fast:      "2017-06-12",
-	},
-	{
+	}, {
 		URL:       "https://murdeltas.wordpress.com/2015/04/05/barcamp-graz-2015-politcamp-call-for-action/",
 		File:      "murdeltas.wordpress.com.politcamp.html",
 		Date:      "2015-04-05",
 		Extensive: "2015-04-05",
 		Fast:      "2015-04-05",
-	},
-	{
+	}, {
 		URL:       "https://herrpfleger.de/2019/10/new-balance-fuelcell-echo-bringt-speed/",
 		File:      "herrpfleger.de.fuelcell.html",
 		Date:      "2019-10-01",
 		Extensive: "2019-10-01",
 		Fast:      "2019-10-01",
-	},
-	{
+	}, {
 		URL:       "https://andreabottlinger.wordpress.com/2019/12/26/arent-we-all/",
 		File:      "andreabottlinger.wordpress.com.arent.html",
 		Date:      "2019-12-26",
 		Extensive: "2019-12-26",
 		Fast:      "2019-12-26",
-	},
-	{
+	}, {
 		URL:       "http://www.jan-grosser.de/art/385_xum1541_dateien_zwischen_linux.html",
 		File:      "jan-grosser.de.xum1541.html",
 		Date:      "2016-01-31",
 		Extensive: "2016-01-31",
 		Fast:      "2016-01-31",
-	},
-	{
+	}, {
 		URL:       "http://www.einfachspanien.de/malaga-die-quirlige-metropole-in-andalusien.html",
 		File:      "einfachspanien.de.malaga.html",
 		Date:      "2011-11-22",
 		Extensive: "2011-11-22",
 		Fast:      "2011-11-22",
-	},
-	{
+	}, {
 		URL:       "https://prof-pc.de/",
 		File:      "prof-pc.de.html",
 		Date:      "2017-09-10",
-		Extensive: "2017-01-01",
-		Fast:      "",
-	},
-	{
+		Extensive: "2017-09-10",
+		Fast:      "None",
+	}, {
 		URL:       "https://mobilsicher.de/aktuelles/apple-kippt-verschluesselungsplaene-fuer-icloud",
 		File:      "mobilsicher.de.icloud.html",
 		Date:      "2020-01-23",
 		Extensive: "2020-01-23",
 		Fast:      "2020-01-23",
-	},
-	{
+	}, {
 		URL:       "https://gnaur.wordpress.com/2013/06/14/die-moglichkeit-nichts-zu-tun-ist-auch-eine-moglichkeit/",
 		File:      "gnaur.wordpress.com.moglichkeit.html",
 		Date:      "2013-06-14",
 		Extensive: "2013-06-14",
 		Fast:      "2013-06-14",
-	},
-	{
+	}, {
 		URL:       "http://www.seelenradio.de/nummer-zwei-leo/",
 		File:      "seelenradio.de.leo.html",
 		Date:      "2015-08-03",
 		Extensive: "2015-08-03",
 		Fast:      "2015-08-03",
-	},
-	{
+	}, {
 		URL:       "http://www.hertha-blog.de/der-lange-und-die-alte-dame.html",
 		File:      "hertha-blog.de.dame.html",
 		Date:      "2017-07-23",
 		Extensive: "2017-07-23",
 		Fast:      "2017-07-23",
-	},
-	{
+	}, {
 		URL:       "http://www.echte-demokratie-jetzt.de/blog/",
 		File:      "echte-demokratie-jetzt.de.blog.html",
 		Date:      "2014-01-13",
 		Extensive: "2014-01-13",
 		Fast:      "2014-01-13",
-	},
-	{
+	}, {
 		URL:       "https://gizmeo.eu/makrophotos-von-insekten/",
 		File:      "gizmeo.eu.insekten.html",
 		Date:      "2020-01-22",
 		Extensive: "2020-01-22",
 		Fast:      "2020-01-22",
-	},
-	{
+	}, {
 		URL:       "https://alexanderlasch.wordpress.com/2019/11/14/was-das-christkind-und-native-americans-gemeinsam-haben-oder-warum-wir-sprachgeschichte-brauchen/",
 		File:      "alexanderlasch.wordpress.com.sprachgeschichte.html",
 		Date:      "2019-11-14",
 		Extensive: "2019-11-14",
 		Fast:      "2019-11-14",
-	},
-	{
+	}, {
 		URL:       "https://www.alexander-klier.net/zeitenkompetenz/zeitphilosophie/",
 		File:      "alexander-klier.net.zeitphilosophie.html",
 		Date:      "2012-06-08",
 		Extensive: "2012-06-08",
 		Fast:      "2012-06-08",
-	},
-	{
+	}, {
 		URL:       "https://2gewinnt.wordpress.com/uber-uns/",
 		File:      "2gewinnt.wordpress.com.uns.html",
 		Date:      "2012-06-30",
 		Extensive: "2012-06-30",
 		Fast:      "2012-06-30",
-	},
-	{
+	}, {
 		URL:       "http://www.buero-hoppe.de/baumgutachten.htm",
 		File:      "buero-hoppe.de.baumgutachten.htm",
 		Date:      "2006-12-16",
 		Extensive: "2006-12-16",
 		Fast:      "2006-12-16",
-	},
-	{
+	}, {
 		URL:       "https://www.pamelaandersonfoundation.org/news/2018/12/4/yellow-vests-and-i",
 		File:      "pamelaandersonfoundation.org.yellow.html",
 		Date:      "2018-12-04",
 		Extensive: "2018-12-04",
 		Fast:      "2018-12-04",
-	},
-	{
+	}, {
 		URL:       "https://www.dbjr.de/artikel/bundespraesident-wuerdigte-das-ehrenamtliche-engagement/",
 		File:      "dbjr.de.bundespraesident.html",
 		Date:      "2020-01-23",
 		Extensive: "2020-01-23",
 		Fast:      "2020-01-23",
-	},
-	{
+	}, {
 		URL:       "https://achtundvierzig.hypotheses.org/822",
 		File:      "achtundvierzig.hypotheses.org.822.html",
 		Date:      "2015-01-28",
 		Extensive: "2015-01-28",
 		Fast:      "2015-01-28",
-	},
-	{
+	}, {
 		URL:       "http://bayrische-bembel.de/bbr/modules/news/article.php?storyid=504",
 		File:      "bayrische-bembel.de.504.html",
 		Date:      "2015-08-25",
 		Extensive: "2015-08-25",
 		Fast:      "2015-08-25",
-	},
-	{
+	}, {
 		URL:       "https://ethify.org/content/vegetarier-zu-sein-bedarf-trend-oder-eigene-entscheidung",
 		File:      "ethify.org.vegetarier.html",
 		Date:      "2019-07-07",
 		Extensive: "2019-07-07",
 		Fast:      "2019-07-07",
-	},
-	{
+	}, {
 		URL:       "https://disfunctions.de/tutorials/podcasts-in-plex-einbinden/",
 		File:      "disfunctions.de.podcasts.html",
 		Date:      "2014-05-06",
 		Extensive: "2014-05-06",
 		Fast:      "2014-05-06",
-	},
-	{
+	}, {
 		URL:       "http://archiv.krimiblog.de/?p=2895",
 		File:      "archiv.krimiblog.de.2895.html",
 		Date:      "2009-08-06",
 		Extensive: "2009-08-06",
 		Fast:      "2009-08-06",
-	},
-	{
+	}, {
 		URL:       "https://journal.3960.org/posts/2019-12-22-firefox-weniger-werbung-mehr-speed-unter-android/",
 		File:      "journal.3960.org.firefox.html",
 		Date:      "2019-12-22",
 		Extensive: "2019-12-22",
 		Fast:      "2019-12-22",
-	},
-	{
+	}, {
 		URL:       "https://beyssonmanagement.com/2014/07/15/was-ist-innovation/",
 		File:      "beyssonmanagement.com.innovation.html",
 		Date:      "2014-07-15",
 		Extensive: "2014-07-15",
 		Fast:      "2014-07-15",
-	},
-	{
+	}, {
 		URL:       "https://damianduchamps.wordpress.com/2019/08/03/office-365-hbdi-die-dritte/",
 		File:      "damianduchamps.wordpress.com.hbdi.html",
 		Date:      "2019-08-03",
 		Extensive: "2019-08-03",
 		Fast:      "2019-08-03",
-	},
-	{
+	}, {
 		URL:       "https://sladisworld.wordpress.com/2019/12/10/was-wurde-eigentlich-aus-six-sigma/",
 		File:      "sladisworld.wordpress.com.sigma.html",
 		Date:      "2019-12-10",
 		Extensive: "2019-12-10",
 		Fast:      "2019-12-10",
-	},
-	{
+	}, {
 		URL:       "https://www.piratenpartei-marburg.de/2019/09/21/wir-unterstuetzen-fridays-for-future/",
 		File:      "piratenpartei-marburg.de.fridays.html",
 		Date:      "2019-09-21",
 		Extensive: "2019-09-21",
 		Fast:      "2019-09-21",
-	},
-	{
+	}, {
 		URL:       "https://www.piratenpartei.at/volksbegehren-zum-bedingungslosen-grundeinkommen-bge/",
 		File:      "piratenpartei.at.grundeinkommen.html",
 		Date:      "2019-11-17",
 		Extensive: "2019-11-17",
 		Fast:      "2019-11-17",
-	},
-	{
+	}, {
 		URL:       "https://www.dobszay.ch/2016-04-15/was-ist-der-unterschied-zwischen-privaten-und-staatlichen-geheimdiensten/",
 		File:      "dobszay.ch.geheimdiensten.html",
 		Date:      "2016-04-15",
 		Extensive: "2016-04-15",
 		Fast:      "2016-04-15",
-	},
-	{
+	}, {
 		URL:       "https://www.unsere-zeitung.at/2020/02/02/ist-die-inklusion-im-kapitalismus-umsetzbar/",
 		File:      "unsere-zeitung.at.inklusion.html",
 		Date:      "2020-02-02",
 		Extensive: "2020-02-02",
 		Fast:      "2020-02-02",
-	},
-	{
+	}, {
 		URL:       "http://www.sprechwaisen.com/sw082-82-gruende-zum-weiter-hoeren/",
 		File:      "sprechwaisen.com.sw082.html",
 		Date:      "2019-07-21",
 		Extensive: "2019-07-21",
 		Fast:      "2019-07-21",
-	},
-	{
+	}, {
 		URL:       "https://www.unterwegsinberlin.de/radtouren-berlin/radtour-durch-friedrichsfelde-karlshorst-und-schoeneweide/",
 		File:      "unterwegsinberlin.de.friedrichsfelde.html",
 		Date:      "2020-02-02",
 		Extensive: "2020-02-02",
 		Fast:      "2020-02-02",
-	},
-	{
+	}, {
 		URL:       "https://www.strafprozess.ch/rasende-polizisten/",
 		File:      "strafprozess.ch.polizisten.html",
 		Date:      "2020-02-04",
 		Extensive: "2020-02-04",
 		Fast:      "2020-02-04",
-	},
-	{
+	}, {
 		URL:       "https://wolfgangschmale.eu/abgebrochene-forschung-eine-neue-studie-von-heinz-duchhardt/",
 		File:      "wolfgangschmale.eu.duchhardt.html",
 		Date:      "2020-02-10",
 		Extensive: "2020-02-10",
 		Fast:      "2020-02-10",
-	},
-	{
+	}, {
 		URL:       "https://netzfueralle.blog.rosalux.de/2019/10/30/netzpolitik-als-us-wahlkampfthema/",
 		File:      "netzfueralle.blog.rosalux.de.netzpolitik.html",
 		Date:      "2019-10-30",
 		Extensive: "2019-10-30",
 		Fast:      "2019-10-30",
-	},
-	{
+	}, {
 		URL:       "https://www.anchor.ch/gesellschaft/ein-tag-aus-dem-leben-eines-taugenichts-oder-die-leute-von-sri-lanka/",
 		File:      "anchor.ch.lanka.html",
 		Date:      "2019-12-22",
 		Extensive: "2019-12-22",
 		Fast:      "2019-12-22",
-	},
-	{
+	}, {
 		URL:       "https://www.ejwue.de/aktuell/news/faire-lieferketten/",
 		File:      "ejwue.de.lieferketten.html",
 		Date:      "2020-02-05",
 		Extensive: "2020-02-12",
 		Fast:      "2020-02-12",
-	},
-	{
+	}, {
 		URL:       "https://thebigbone.wordpress.com/2017/04/13/die-ueberforderung-durch-ueberangebote/",
 		File:      "thebigbone.wordpress.com.ueberforderung.html",
 		Date:      "2017-04-13",
 		Extensive: "2017-04-13",
 		Fast:      "2017-04-13",
-	},
-	{
+	}, {
 		URL:       "https://ritinardo.wordpress.com/2017/11/26/bundesregierung-2017-btw17-groko/",
 		File:      "ritinardo.wordpress.com.btw17.html",
 		Date:      "2017-11-26",
 		Extensive: "2017-11-26",
 		Fast:      "2017-11-26",
-	},
-	{
+	}, {
 		URL:       "http://www.qualisys.eu/gefahrstoff-service",
 		File:      "qualisys.eu.gefahrstoff.html",
 		Date:      "2019-12-19",
 		Extensive: "2019-12-19",
-		Fast:      "",
-	},
-	{
+		Fast:      "None",
+	}, {
 		URL:       "http://www.xinhuanet.com/local/2020-02/19/c_1125597921.htm",
 		File:      "xinhuanet.com.c_1125597921.htm",
 		Date:      "2020-02-19",
 		Extensive: "2020-02-19",
 		Fast:      "2020-02-19",
-	},
-	{
+	}, {
 		URL:       "http://www.banyuetan.org/jmcs/detail/20200102/1000200033136171577956287380194268_1.html",
 		File:      "banyuetan.org.1000200033136171577956287380194268_1.html",
 		Date:      "2020-01-02",
 		Extensive: "2020-01-02",
 		Fast:      "2020-01-02",
-	},
-	{
+	}, {
 		URL:       "https://baike.baidu.com/item/%E8%94%A1%E5%81%A5%E9%9B%85",
 		File:      "baike.baidu.com.tanya.html",
 		Date:      "2020-02-14",
 		Extensive: "2020-02-14",
 		Fast:      "2020-02-14",
-	},
-	{
+	}, {
 		URL:       "https://www.lastampa.it/cronaca/2020/02/19/news/temperature-in-calo-in-tutta-italia-attesa-neve-sull-appennino-1.38487954",
 		File:      "lastampa.it.temperature.html",
 		Date:      "2020-02-19",
 		Extensive: "2020-02-19",
 		Fast:      "2020-02-19",
-	},
-	{
+	}, {
 		URL:       "https://elpais.com/elpais/2020/02/18/ciencia/1582045946_459487.html",
 		File:      "elpais.com.ciencia.html",
 		Date:      "2020-02-19",
 		Extensive: "2020-02-18",
 		Fast:      "2020-02-18",
-	},
-	{
+	}, {
 		URL:       "https://www.latimes.com/politics/story/2020-02-19/mike-bloomberg-democratic-debate-history",
 		File:      "latimes.com.bloomberg.html",
 		Date:      "2020-02-19",
 		Extensive: "2020-02-19",
 		Fast:      "2020-02-19",
-	},
-	{
+	}, {
 		URL:       "https://www.uusisuomi.fi/uutiset/sanna-marin-tapasi-angela-merkelin-myos-saksa-haluaa-pitaa-kiinni-maataloustuista-meidan-nakemyksiamme-suurimpana-nettomaksajana-ei-ole-otettu-riittavasti-huomioon/b29c11d3-9590-4045-8e2c-a568f9f24617",
 		File:      "uusisuomi.fi.angela.html",
 		Date:      "2019-02-19",
 		Extensive: "2020-02-19",
 		Fast:      "2020-02-19",
-	},
-	{
+	}, {
 		URL:       "https://yle.fi/uutiset/3-11212601",
 		File:      "yle.fi.3-11212601.html",
 		Date:      "2019-02-19",
 		Extensive: "2020-02-19",
 		Fast:      "2020-02-19",
-	},
-	{
+	}, {
 		URL:       "https://www.tofugu.com/travel/dezuka-suisan/",
 		File:      "tofugu.com.dezuka-suisan.html",
 		Date:      "2020-02-04",
 		Extensive: "2020-02-04",
 		Fast:      "2020-02-04",
-	},
-	{
+	}, {
 		URL:       "https://blog.gaijinpot.com/tweet-of-the-week-67-dealing-with-chikan/",
 		File:      "blog.gaijinpot.com.chikan.html",
 		Date:      "2020-02-08",
 		Extensive: "2020-02-08",
 		Fast:      "2020-02-08",
-	},
-	{
+	}, {
 		URL:       "https://madame.lefigaro.fr/bien-etre/problemes-dintestin-quoi-manger-pour-aller-bien-110417-130897",
 		File:      "madame.lefigaro.fr.dintestin.html",
 		Date:      "2017-04-12",
 		Extensive: "2017-04-12",
 		Fast:      "2017-04-12",
-	},
-	{
+	}, {
 		URL:       "https://www.bondyblog.fr/societe/a-paris-8-un-peu-de-tension-beaucoup-d-actions/",
 		File:      "bondyblog.fr.paris-8.html",
 		Date:      "2020-02-17",
 		Extensive: "2020-02-17",
 		Fast:      "2020-02-17",
-	},
-	{
+	}, {
 		URL:       "https://lapresse.tn/48915/parite-hommes-femmes-en-tunisie-au-dessous-de-la-moyenne-mondiale/",
 		File:      "lapresse.tn.parite.html",
 		Date:      "2020-02-18",
 		Extensive: "2020-02-18",
 		Fast:      "2020-02-18",
-	},
-	{
+	}, {
 		URL:       "https://www.ledevoir.com/politique/montreal/573258/la-fin-des-trottinettes-en-libre-service-a-montreal",
 		File:      "ledevoir.com.trottinettes.html",
 		Date:      "2020-02-19",
 		Extensive: "2020-02-19",
 		Fast:      "2020-02-19",
-	},
-	{
+	}, {
 		URL:       "https://wiki.piratenpartei.de/HE:Kassel/Stammtisch",
 		File:      "wiki.piratenpartei.de.stammtisch.html",
 		Date:      "2020-01-29",
 		Extensive: "2020-01-29",
 		Fast:      "2020-01-29",
-	},
-	{
+	}, {
 		URL:       "https://aktion-hummelschutz.de/biologie/tote-hummeln-unter-linden/",
 		File:      "aktion-hummelschutz.de.hummeln.html",
 		Date:      "2017-08-09",
 		Extensive: "2017-08-09",
 		Fast:      "2017-08-09",
-	},
-	{
+	}, {
 		URL:       "https://www.vinosytapas.de/wein/herkunft/spanien/d_o_ca_-rioja/",
 		File:      "vinosytapas.de.rioja.html",
 		Date:      "2020-02-11",
 		Extensive: "2020-02-11",
 		Fast:      "2020-02-11",
-	},
-	{
+	}, {
 		URL:       "http://www.creativecommons.ch/wie-funktionierts/",
 		File:      "creativecommons.ch.wie.html",
 		Date:      "2014-03-17",
 		Extensive: "2014-03-17",
 		Fast:      "2014-03-17",
-	},
-	{
+	}, {
 		URL:       "https://arsnova.thm.de/blog/frag-jetzt/",
 		File:      "arsnova.thm.de.frag.html",
 		Date:      "2019-06-28",
 		Extensive: "2019-06-28",
 		Fast:      "2019-06-28",
-	},
-	{
+	}, {
 		URL:       "https://shabka.org/about-us/",
 		File:      "shabka.org.about.html",
 		Date:      "2018-06-07",
 		Extensive: "2018-06-07",
 		Fast:      "2018-06-07",
-	},
-	{
+	}, {
 		URL:       "https://www.parallels.com/products/desktop/",
 		File:      "parallels.com.desktop.html",
 		Date:      "2020-02-03",
 		Extensive: "2020-02-03",
 		Fast:      "2020-02-03",
-	},
-	{
+	}, {
 		URL:       "https://taz.de/Siemens-und-die-Kohlemine-Adani/!5655255/",
 		File:      "taz.de.siemens.html",
 		Date:      "2020-01-13",
 		Extensive: "2020-01-13",
 		Fast:      "2020-01-13",
-	},
-	{
+	}, {
 		URL:       "https://fivethirtyeight.com/features/the-2020-endorsement-race-is-getting-interesting/",
 		File:      "fivethirtyeight.com.endorsement.html",
 		Date:      "2020-01-28",
 		Extensive: "2020-01-28",
 		Fast:      "2020-01-28",
-	},
-	{
+	}, {
 		URL:       "https://www.wired.com/story/ai-great-things-burn-planet/",
 		File:      "wired.com.burn.html",
 		Date:      "2020-01-21",
 		Extensive: "2020-01-21",
 		Fast:      "2020-01-21",
-	},
-	{
+	}, {
 		URL:       "http://www.parcoabruzzo.it/dettaglio.php?id=58354",
 		File:      "parcoabruzzo.it.58354.html",
 		Date:      "2020-01-14",
 		Extensive: "2020-01-01",
-		Fast:      "",
-	},
-	{
+		Fast:      "None",
+	}, {
 		URL:       "https://www.timesofisrael.com/state-of-washington-swears-in-first-native-american-jewish-supreme-court-justice/",
 		File:      "timesofisrael.com.washington.html",
 		Date:      "2020-01-08",
 		Extensive: "2020-01-08",
 		Fast:      "2020-01-08",
-	},
-	{
+	}, {
 		URL:       "https://www.scmp.com/comment/opinion/article/3046526/taiwanese-president-tsai-ing-wens-political-playbook-should-be",
 		File:      "scmp.com.playbook.html",
 		Date:      "2020-01-20",
 		Extensive: "2020-01-20",
 		Fast:      "2020-01-20",
-	},
-	{
+	}, {
 		URL:       "https://medium.com/@ransu.massol/recherche-non-%C3%A0-une-loi-in%C3%A9galitaire-be507f7cf761",
 		File:      "medium.com.recherche.html",
 		Date:      "2019-12-09",
 		Extensive: "2019-12-12",
 		Fast:      "2019-12-12",
-	},
-	{
+	}, {
 		URL:       "https://juliasleseblog.blogspot.com/2018/08/irland-roadtrip.html",
 		File:      "juliasleseblog.blogspot.com.irland.html",
 		Date:      "2018-08-02",
 		Extensive: "2018-08-01",
 		Fast:      "2018-08-01",
-	},
-	{
+	}, {
 		URL:       "https://literaturgefluester.wordpress.com/2019/01/01/ins-neue-jahr-4/",
 		File:      "literaturgefluester.wordpress.com.jahr.html",
 		Date:      "2019-01-01",
 		Extensive: "2019-01-01",
 		Fast:      "2019-01-01",
-	},
-	{
+	}, {
 		URL:       "https://abookshelffullofsunshine.blogspot.com/2013/10/news-viertes-eigenes-blog-interview.html",
 		File:      "abookshelffullofsunshine.blogspot.com.interview.html",
 		Date:      "2013-10-05",
 		Extensive: "2013-10-05",
 		Fast:      "2013-10-05",
-	},
-	{
+	}, {
 		URL:       "https://www.derpapierplanet.de/2015/06/through-booking-glass-juni-genre.html",
 		File:      "derpapierplanet.de.juni.html",
 		Date:      "2015-06-05",
 		Extensive: "2015-06-05",
 		Fast:      "2015-06-05",
-	},
-	{
+	}, {
 		URL:       "https://weinlachgummis.blogspot.com/2017/09/rezi-love-is-war-sehnsucht-von-r-k.html",
 		File:      "weinlachgummis.blogspot.com.rezi.html",
 		Date:      "2017-09-09",
 		Extensive: "2017-09-09",
 		Fast:      "2017-09-09",
-	},
-	{
+	}, {
 		URL:       "https://happyface313.com/2018/03/07/im-test-plantur-39-color-braun-phyto-coffein-shampoo-und-pflege-spulung/",
 		File:      "happyface313.com.plantur.html",
 		Date:      "2018-03-07",
 		Extensive: "2018-03-07",
 		Fast:      "2018-03-07",
-	},
-	{
+	}, {
 		URL:       "https://www.limespace.de/2019/10/22/professionell-entloeten-so-machen-sie-alte-elektrogeraete-wieder-einsatzbereit/",
 		File:      "limespace.de.entloeten.html",
 		Date:      "2019-10-22",
 		Extensive: "2019-10-22",
 		Fast:      "2019-10-22",
-	},
-	{
+	}, {
 		URL:       "https://frau-sabienes.de/konsumsparen-fazit/",
 		File:      "frau-sabienes.de.konsumsparen.html",
 		Date:      "2020-02-17",
 		Extensive: "2020-02-17",
 		Fast:      "2020-02-17",
-	},
-	{
+	}, {
 		URL:       "http://lexikon.huettenhilfe.de/obst/banane.html",
 		File:      "lexikon.huettenhilfe.de.banane.html",
 		Date:      "2011-07-25",
 		Extensive: "2011-07-25",
 		Fast:      "2011-07-25",
-	},
-	{
+	}, {
 		URL:       "https://de.happycoffee.org/collections/shop/products/happy-coffee-sidamo-bio-kaffeebohnen",
 		File:      "de.happycoffee.org.sidamo.html",
 		Date:      "2019-03-02",
 		Extensive: "2019-03-02",
 		Fast:      "2019-03-02",
-	},
-	{
+	}, {
 		URL:       "https://www.spektrum.de/wissen/laesst-sich-die-coronavirus-ausbreitung-in-deutschland-kontrollieren/1700384",
 		File:      "spektrum.de.coronavirus.html",
 		Date:      "2020-02-26",
 		Extensive: "2020-02-26",
 		Fast:      "2020-02-26",
-	},
-	{
+	}, {
 		URL:       "https://www.talent.ch/?p=5031",
 		File:      "talent.ch.5031.html",
 		Date:      "2019-12-26",
 		Extensive: "2019-12-26",
 		Fast:      "2019-12-26",
-	},
-	{
+	}, {
 		URL:       "https://www.pronats.de/informationen/kindheit-und-arbeit/kinder-und-arbeit/",
 		File:      "pronats.de.arbeit.html",
 		Date:      "2016-12-30",
 		Extensive: "2016-12-30",
 		Fast:      "2016-12-30",
-	},
-	{
+	}, {
 		URL:       "https://www.tafelblog.de/welches-europa-wir-wollen/",
 		File:      "tafelblog.de.europa.html",
 		Date:      "2019-06-11",
 		Extensive: "2019-06-11",
 		Fast:      "2019-06-11",
-	},
-	{
+	}, {
 		URL:       "http://columbus-entdeckt.de/ski-fahren-auf-den-spuren-des-trolls/",
 		File:      "columbus-entdeckt.de.trolls.html",
 		Date:      "2020-01-05",
 		Extensive: "2018-02-28",
 		Fast:      "2018-02-28",
-	},
-	{
+	}, {
 		URL:       "https://www.advents-shopping.de/die-weihnachtsmarkt-saison-beginnt-so-finden-sie-die-besten-weihnachtsmaerkte-in-ihrer-naehe.html",
 		File:      "advents-shopping.de.weihnachtsmaerkte.html",
 		Date:      "2014-11-02",
 		Extensive: "2014-11-02",
 		Fast:      "2014-11-02",
-	},
-	{
+	}, {
 		URL:       "https://bloghaus.hypotheses.org/2320",
 		File:      "bloghaus.hypotheses.org.2320.html",
 		Date:      "2019-09-26",
 		Extensive: "2019-09-26",
 		Fast:      "2019-09-26",
-	},
-	{
+	}, {
 		URL:       "http://www.der-erfolg-gibt-recht.de/rezepte/rinderleber-geschnetzeltes-mit-apfel-und-zwiebel.htm",
 		File:      "der-erfolg-gibt-recht.de.rinderleber.html",
 		Date:      "2010-12-08",
 		Extensive: "2010-12-08",
 		Fast:      "2010-12-08",
-	},
-	{
+	}, {
 		URL:       "https://tell-review.de/unstillbares-heimweh/",
 		File:      "tell-review.de.heimweh.html",
 		Date:      "2019-09-18",
 		Extensive: "2019-09-18",
 		Fast:      "2019-09-18",
-	},
-	{
+	}, {
 		URL:       "https://it-for-kids.org/blog/191211_variables/",
 		File:      "it-for-kids.org.variables.html",
 		Date:      "2019-12-11",
 		Extensive: "2019-12-11",
 		Fast:      "2019-12-11",
-	},
-	{
+	}, {
 		URL:       "http://papaganda.org/2016/04/02/minions-mit-schablonen-malen-mit-malerrolle-und-bunten-farben/",
 		File:      "papaganda.org.minions.html",
 		Date:      "2016-04-02",
 		Extensive: "2016-04-02",
 		Fast:      "2016-04-02",
-	},
-	{
+	}, {
 		URL:       "http://marktplatz.die-besserwisser.org/alles-hat-seine-zeit/",
 		File:      "marktplatz.die-besserwisser.org.zeit.html",
 		Date:      "2017-04-05",
 		Extensive: "2017-04-05",
 		Fast:      "2017-04-05",
-	},
-	{
+	}, {
 		URL:       "https://www.doschu.com/2020/02/solopreneur-social-media-linkedin/",
 		File:      "doschu.com.solopreneur.html",
 		Date:      "2020-02-14",
 		Extensive: "2020-02-14",
 		Fast:      "2020-02-14",
-	},
-	{
+	}, {
 		URL:       "https://blog.teufel.de/musik-und-sport-so-steigern-songs-deine-leistung/",
 		File:      "blog.teufel.de.leistung.html",
 		Date:      "2020-02-13",
 		Extensive: "2020-02-13",
 		Fast:      "2020-02-13",
-	},
-	{
+	}, {
 		URL:       "https://www.whiskyverkostung.com/termine-whisky-tastings-januar-mai-2020-halle-saale/5805",
 		File:      "whiskyverkostung.com.halle.html",
 		Date:      "2019-11-27",
 		Extensive: "2019-11-27",
 		Fast:      "2019-11-27",
-	},
-	{
+	}, {
 		URL:       "https://zahlenzauberin.wordpress.com/2012/08/22/was-zum-horen-in-den-ferien/",
 		File:      "zahlenzauberin.wordpress.com.ferien.html",
 		Date:      "2010-08-22",
 		Extensive: "2012-08-22",
 		Fast:      "2012-08-22",
-	},
-	{
+	}, {
 		URL:       "https://www.deutschlandfunk.de/die-zukunft-der-arbeit-wir-dekorieren-auf-der-titanic-die.911.de.html?dram:article_id=385022",
 		File:      "deutschlandfunk.de.titanic.html",
 		Date:      "2017-05-01",
 		Extensive: "2017-05-01",
 		Fast:      "2017-05-01",
-	},
-	{
+	}, {
 		URL:       "https://1hundetagebuch.wordpress.com/2019/10/31/nach-viel-zu-langer-zeit-mal-wieder/",
 		File:      "1hundetagebuch.wordpress.com.langer.html",
 		Date:      "2019-10-31",
 		Extensive: "2019-10-31",
 		Fast:      "2019-10-31",
-	},
-	{
+	}, {
 		URL:       "http://www.steinhau.com/steinhau/wordpress/einmal-zahlen-alles-lesen/",
 		File:      "steinhau.com.zahlen.html",
 		Date:      "2019-11-13",
 		Extensive: "2019-11-13",
 		Fast:      "2019-11-13",
-	},
-	{
+	}, {
 		URL:       "http://www.pointofsail-kiel.de/artikel/ben-wilson-surf.html",
 		File:      "pointofsail-kiel.de.wilson.html",
 		Date:      "2019-06-20",
 		Extensive: "2019-06-20",
 		Fast:      "2019-06-20",
-	},
-	{
+	}, {
 		URL:       "http://www.interscenar.io/politik/eindruecke/was-wir-ueber-uns-nicht-hoeren-wollen",
 		File:      "interscenar.io.hoeren.html",
 		Date:      "2019-03-03",
 		Extensive: "2019-03-03",
 		Fast:      "2019-03-03",
-	},
-	{
+	}, {
 		URL:       "https://www.deviante-pfade.de/unbefriedigt/",
 		File:      "deviante-pfade.de.unbefriedigt.html",
 		Date:      "2020-01-08",
 		Extensive: "2020-01-08",
 		Fast:      "2020-01-08",
-	},
-	{
+	}, {
 		URL:       "https://seglerblog.stössenseer.de/haltet-unsere-gewaesser-sauber/",
 		File:      "seglerblog.stössenseer.de.sauber.html",
 		Date:      "2020-02-23",
 		Extensive: "2020-02-23",
 		Fast:      "2020-02-23",
-	},
-	{
+	}, {
 		URL:       "https://www.ihrwebprofi.at/2011/09/17/publikumsvoting-beim-wiener-content-award-gestartet/",
 		File:      "ihrwebprofi.at.publikumsvoting.html",
 		Date:      "2011-09-17",
 		Extensive: "2011-09-17",
 		Fast:      "2011-09-17",
-	},
-	{
+	}, {
 		URL:       "https://mitternachtskabinett.wordpress.com/2016/06/19/geister-spuk-gentrifizierung/",
 		File:      "mitternachtskabinett.wordpress.com.gentrifizierung.html",
 		Date:      "2016-06-19",
 		Extensive: "2016-06-19",
 		Fast:      "2016-06-19",
-	},
-	{
+	}, {
 		URL:       "http://www.aussengedanken.de/streit-ums-feuerholz/",
 		File:      "aussengedanken.de.feuerholz.html",
 		Date:      "2017-02-13",
 		Extensive: "2017-02-13",
 		Fast:      "2017-02-13",
-	},
-	{
+	}, {
 		URL:       "https://insubordinant.wordpress.com/2015/08/11/need-for-speed/",
 		File:      "insubordinant.wordpress.com.speed.html",
 		Date:      "2015-08-11",
 		Extensive: "2015-08-11",
 		Fast:      "2015-08-11",
-	},
-	{
+	}, {
 		URL:       "http://rueda.wikidot.com/enchufla",
 		File:      "rueda.wikidot.com.enchufla.html",
 		Date:      "2008-03-23",
 		Extensive: "2018-06-17",
 		Fast:      "2018-06-17",
-	},
-	{
+	}, {
 		URL:       "https://zulang.wordpress.com/2015/12/12/3-jahre-legalisierte-genitalverstuemmelung/",
 		File:      "zulang.wordpress.com.genitalverstuemmelung.html",
 		Date:      "2015-12-12",
 		Extensive: "2015-12-12",
 		Fast:      "2015-12-12",
-	},
-	{
+	}, {
 		URL:       "https://surfguard.wordpress.com/2016/11/01/ich-las-sah-hoerte-medien-im-oktober-2016/",
 		File:      "surfguard.wordpress.com.medien.html",
 		Date:      "2016-11-01",
 		Extensive: "2016-11-01",
 		Fast:      "2016-11-01",
-	},
-	{
+	}, {
 		URL:       "https://litradio.net/die-autorin-nora-bossong-im-gespraech-ueber-ihren-roman-schutzzone/",
 		File:      "litradio.net.bossong.html",
 		Date:      "2020-02-22",
 		Extensive: "2020-02-22",
 		Fast:      "2020-02-22",
-	},
-	{
+	}, {
 		URL:       "https://www.japantimes.co.jp/news/2020/02/18/national/crime-legal/6000-surgical-masks-stolen/",
 		File:      "japantimes.co.jp.surgical.html",
 		Date:      "2020-02-18",
 		Extensive: "2020-02-18",
 		Fast:      "2020-02-18",
-	},
-	{
+	}, {
 		URL:       "http://www.hearya.com/2006/12/04/hit-paraders-top-100-metal-vocalists-of-all-time/",
 		File:      "hearya.com.metal.html",
 		Date:      "2006-12-04",
 		Extensive: "2006-12-04",
 		Fast:      "2006-12-04",
-	},
-	{
+	}, {
 		URL:       "http://thenervousbreakdown.com/tanderson/2011/07/the-loneliest-woman-in-the-world-an-appreciation-of-hearts-alone/",
 		File:      "thenervousbreakdown.com.loneliest.html",
 		Date:      "2011-07-11",
 		Extensive: "2011-07-11",
 		Fast:      "2011-07-11",
-	},
-	{
+	}, {
 		URL:       "https://www.cbsnews.com/news/2020-presidential-election-south-carolina-black-voters-democrats-joe-biden/",
 		File:      "cbsnews.com.carolina.html",
 		Date:      "2020-02-24",
 		Extensive: "2020-02-24",
 		Fast:      "2020-02-24",
-	},
-	{
+	}, {
 		URL:       "https://pagesix.com/2020/02/24/former-wh-press-secretary-dee-dee-myers-exits-warner-bros-role/",
 		File:      "pagesix.com.myers.html",
 		Date:      "2020-02-24",
 		Extensive: "2020-02-24",
 		Fast:      "2020-02-24",
-	},
-	{
+	}, {
 		URL:       "https://tonedeaf.thebrag.com/record-of-the-week-luboku-pale-blue-dot-lift-off/",
 		File:      "tonedeaf.thebrag.com.luboku.html",
 		Date:      "2020-02-21",
 		Extensive: "2020-02-21",
 		Fast:      "2020-02-21",
-	},
-	{
+	}, {
 		URL:       "https://it-learner.de/wenn-das-netzwerk-unter-windows-10-sehr-langsam-ist-koennte-das-abschalten-der-autotuning-funktion-abhilfe-schaffen/",
 		File:      "it-learner.de.autotuning.html",
 		Date:      "2019-05-16",
 		Extensive: "2019-05-16",
 		Fast:      "2019-05-16",
-	},
-	{
+	}, {
 		URL:       "https://de.induux.com/4press/energiezaehler-m-bus-mod-bus-ethernet-mid-3999/",
 		File:      "de.induux.com.energiezaehler.html",
 		Date:      "2018-04-20",
 		Extensive: "2018-04-20",
 		Fast:      "2018-04-20",
-	},
-	{
+	}, {
 		URL:       "https://aoc.media/opinion/2019/12/09/pour-le-neoliberalisme-la-retraite-est-un-archaisme/",
 		File:      "aoc.media.archaisme.html",
 		Date:      "2019-12-10",
 		Extensive: "2019-12-09",
 		Fast:      "2019-12-09",
-	},
-	{
+	}, {
 		URL:       "http://www.regards.fr/politique/article/deux-ans-et-demi-en-macronie-9-mises-en-examen-10-enquetes-en-cours-et-2",
 		File:      "regards.fr.enquetes.html",
 		Date:      "2018-09-30",
 		Extensive: "2018-09-11",
 		Fast:      "2018-09-11",
-	},
-	{
+	}, {
 		URL:       "https://newrepublic.com/article/155970/collapse-neoliberalism",
 		File:      "newrepublic.com.neoliberalism.html",
 		Date:      "2019-12-23",
 		Extensive: "2019-12-23",
 		Fast:      "2019-12-23",
-	},
-	{
+	}, {
 		URL:       "https://www.tdg.ch/suisse/berne-interdit-chlorothalonil/story/18348200",
 		File:      "tdg.ch.chlorothalonil.html",
 		Date:      "2019-12-12",
 		Extensive: "2019-12-12",
 		Fast:      "2019-12-12",
-	},
-	{
+	}, {
 		URL:       "https://www.gala.fr/l_actu/news_de_stars/jean-paul-delevoye-monsieur-retraites-du-gouvernement-jacques-chirac-lui-donnait-un-surnom-peu-flatteur_439447",
 		File:      "gala.fr.surnom.html",
 		Date:      "2019-12-09",
 		Extensive: "2019-12-09",
 		Fast:      "2019-12-09",
-	},
-	{
+	}, {
 		URL:       "https://www.elle.de/plateau-sneaker-trend",
 		File:      "elle.de.sneaker.html",
 		Date:      "2019-06-19",
 		Extensive: "2019-06-19",
 		Fast:      "2019-06-19",
-	},
-	{
+	}, {
 		URL:       "https://www.faz.net/aktuell/reise/reise-durch-sierra-leone-es-ist-zeit-fuer-den-tourismus-16306548.html",
 		File:      "faz.net.leone.html",
 		Date:      "2019-07-30",
 		Extensive: "2019-07-30",
 		Fast:      "2019-07-30",
-	},
-	{
+	}, {
 		URL:       "https://www.management-circle.de/blog/remote-support-mit-smart-glasses/",
 		File:      "management-circle.de.glasses.html",
 		Date:      "2019-07-25",
 		Extensive: "2019-07-25",
 		Fast:      "2019-07-25",
-	},
-	{
+	}, {
 		URL:       "https://www.it-finanzmagazin.de/creditshelf-kooperiert-mit-finleap-und-plant-akquisition-der-valendo-gmbh-90871/",
 		File:      "it-finanzmagazin.de.creditshelf.html",
 		Date:      "2019-06-20",
 		Extensive: "2019-06-20",
 		Fast:      "2019-06-20",
-	},
-	{
+	}, {
 		URL:       "https://abenteuer-astronomie.de/astrofoto-community/plejaden-m45-2/",
 		File:      "abenteuer-astronomie.de.plejaden.html",
 		Date:      "2019-09-17",
 		Extensive: "2019-09-17",
 		Fast:      "2019-09-17",
-	},
-	{
+	}, {
 		URL:       "https://www.soundofscience.fr/1927",
 		File:      "soundofscience.fr.1927.html",
 		Date:      "2020-01-20",
 		Extensive: "2020-01-20",
 		Fast:      "2020-01-20",
-	},
-	{
+	}, {
 		URL:       "https://www.theguardian.com/education/2020/jan/20/thousands-of-uk-academics-treated-as-second-class-citizens",
 		File:      "theguardian.com.academics.html",
 		Date:      "2020-01-20",
 		Extensive: "2020-01-20",
 		Fast:      "2020-01-20",
-	},
-	{
+	}, {
 		URL:       "https://phys.org/news/2019-10-flint-flake-tool-partially-birch.html",
 		File:      "phys.org.tool.html",
 		Date:      "2019-10-22",
 		Extensive: "2019-10-22",
 		Fast:      "2019-10-22",
-	},
-	{
+	}, {
 		URL:       "https://laviedesidees.fr/L-evaluation-et-les-listes-de.html",
 		File:      "laviedesidees.fr.evaluation.html",
 		Date:      "2009-09-15",
 		Extensive: "2009-09-15",
-		Fast:      "",
-	},
-	{
+		Fast:      "2009-09-15",
+	}, {
 		URL:       "https://gregoryszorc.com/blog/2020/01/13/mercurial%27s-journey-to-and-reflections-on-python-3/",
 		File:      "gregoryszorc.com.python3.html",
 		Date:      "2020-01-13",
 		Extensive: "2020-01-13",
 		Fast:      "2020-01-13",
-	},
-	{
+	}, {
 		URL:       "https://www.pluralsight.com/tech-blog/managing-python-environments/",
 		File:      "pluralsight.com.python.html",
 		Date:      "2020-01-10",
 		Extensive: "2020-01-10",
 		Fast:      "2020-01-10",
-	},
-	{
+	}, {
 		URL:       "https://stackoverflow.blog/2020/01/20/what-is-rust-and-why-is-it-so-popular/",
 		File:      "stackoverflow.com.rust.html",
 		Date:      "2020-01-20",
 		Extensive: "2020-01-20",
 		Fast:      "2020-01-20",
-	},
-	{
+	}, {
 		URL:       "https://www.theplanetarypress.com/2020/01/management-of-intact-forestlands-by-indigenous-peoples-key-to-protecting-climate/",
 		File:      "theplanetarypress.com.forestlands.html",
 		Date:      "2020-01-19",
 		Extensive: "2020-01-17",
 		Fast:      "2020-01-17",
-	},
-	{
+	}, {
 		URL:       "https://wikimediafoundation.org/news/2020/01/15/access-to-wikipedia-restored-in-turkey-after-more-than-two-and-a-half-years/",
 		File:      "wikimediafoundation.org.turkey.html",
 		Date:      "2020-01-15",
 		Extensive: "2020-01-15",
 		Fast:      "2020-01-15",
-	},
-	{
+	}, {
 		URL:       "https://www.reuters.com/article/us-awards-sag/parasite-scores-upset-at-sag-awards-boosting-oscar-chances-idUSKBN1ZI0EH",
 		File:      "reuters.com.parasite.html",
 		Date:      "2020-01-19",
 		Extensive: "2020-01-20",
 		Fast:      "2020-01-20",
-	},
-	{
+	}, {
 		URL:       "https://www.nationalgeographic.co.uk/environment-and-conservation/2020/01/ravenous-wild-goats-ruled-island-over-century-now-its-being",
 		File:      "nationalgeographic.co.uk.goats.html",
 		Date:      "2020-01-06",
 		Extensive: "2020-01-06",
 		Fast:      "2020-01-06",
-	},
-	{
+	}, {
 		URL:       "https://www.nature.com/articles/d41586-019-02790-3",
 		File:      "nature.com.telescope.html",
 		Date:      "2019-09-24",
 		Extensive: "2019-09-24",
 		Fast:      "2019-09-24",
-	},
-	{
+	}, {
 		URL:       "https://www.salon.com/2020/01/10/despite-everything-u-s-emissions-dipped-in-2019_partner/",
 		File:      "salon.com.emissions.html",
 		Date:      "2020-01-10",
 		Extensive: "2020-01-10",
 		Fast:      "2020-01-10",
+	}, {
+		URL:       "https://www.msn.com/en-gb/news/uknews/uk-university-student-halls-too-full-to-be-safe-experts-warn/ar-BB19DUqK",
+		File:      "msn.com.university.html",
+		Date:      "2020-10-02",
+		Extensive: "2020-10-02",
+		Fast:      "2020-10-02",
+	}, {
+		URL:       "https://www.popsugar.co.uk/smart-living/Cheap-Homemade-Halloween-Costumes-42432483/amp",
+		File:      "popsugar.co.uk.halloween.html",
+		Date:      "2020-10-30",
+		Extensive: "2020-10-30",
+		Fast:      "2020-10-30",
+	}, {
+		URL:       "https://ext.theperspective.com/items-we-never-knew-we-wanted/1/",
+		File:      "ext.theperspective.com.items.html",
+		Date:      "2020-09-21",
+		Extensive: "2020-09-21",
+		Fast:      "2020-09-21",
+	}, {
+		URL:       "https://www.standard.co.uk/news/uk/turkey-poland-caribbean-islands-added-to-uk-quarantine-list-a4561256.html",
+		File:      "standard.co.uk.caribbean.html",
+		Date:      "2020-10-01",
+		Extensive: "2020-10-01",
+		Fast:      "2020-10-01",
+	}, {
+		URL:       "https://mydailymagazine.com/get-in-the-spooky-spirit-with-these-halloween-workouts/",
+		File:      "mydailymagazine.com.halloween.html",
+		Date:      "2020-10-26",
+		Extensive: "2020-10-26",
+		Fast:      "2020-10-26",
+	}, {
+		URL:       "https://www.foxyfolksy.com/chocolate-buttercream-frosting-without-powdered-sugar-ermine-icing/",
+		File:      "foxyfolksy.com.buttercream.html",
+		Date:      "2018-01-28",
+		Extensive: "2018-01-28",
+		Fast:      "2018-01-28",
+	}, {
+		URL:       "https://www.thelist.com/214894/when-you-take-a-multivitamin-every-day-this-is-what-happens-to-your-body/",
+		File:      "thelist.com.multivitamin.html",
+		Date:      "2020-06-12",
+		Extensive: "2020-06-12",
+		Fast:      "2020-06-12",
+	}, {
+		URL:       "https://www.chocolate.com/view/woman-sees-a-car-stop-for-pregnant-beggar-this-is-what-she-finds-when-she-follows/&page=2",
+		File:      "chocolate.com.pregnant.html",
+		Date:      "2020-04-13",
+		Extensive: "2020-04-13",
+		Fast:      "2020-04-13",
+	}, {
+		URL:       "https://www.corkbeo.ie/news/local-news/level-3-live-cork-ireland-19056312",
+		File:      "corkbeo.ie.level.html",
+		Date:      "2020-10-06",
+		Extensive: "2020-10-06",
+		Fast:      "2020-10-06",
+	}, {
+		URL:       "https://www.tomshardware.com/uk/news/where-and-how-to-buy-rtx-3080-3090-3070",
+		File:      "tomshardware.com.rtx.html",
+		Date:      "2020-11-02",
+		Extensive: "2020-11-04",
+		Fast:      "2020-11-04",
+	}, {
+		URL:       "https://stardewvalleywiki.com/Penny",
+		File:      "stardewvalleywiki.com.penny.html",
+		Date:      "2020-10-25",
+		Extensive: "2020-11-04",
+		Fast:      "2020-11-04",
+	}, {
+		URL:       "https://www.instyle.com/beauty/wigs-for-black-women-cancer",
+		File:      "instyle.com.cancer.html",
+		Date:      "2020-10-13",
+		Extensive: "2020-10-13",
+		Fast:      "2020-10-13",
+	}, {
+		URL:       "https://www.realsimple.com/home-organizing/gardening/outdoor/hydrangea-care",
+		File:      "realsimple.com.hydrangea.html",
+		Date:      "2019-05-06",
+		Extensive: "2016-08-29",
+		Fast:      "2016-08-29",
+	}, {
+		URL:       "https://www.healthline.com/nutrition/ways-to-measure-body-fat",
+		File:      "healthline.com.fat.html",
+		Date:      "2018-04-29",
+		Extensive: "2018-04-29",
+		Fast:      "2018-04-29",
+	}, {
+		URL:       "https://flawlessfood.co.uk/olive-herb-focaccia-bread/",
+		File:      "flawlessfood.co.uk.olive.html",
+		Date:      "2020-04-12",
+		Extensive: "2020-04-12",
+		Fast:      "2020-04-12",
+	}, {
+		URL:       "https://www.vegolosi.it/news/climate-clock/",
+		File:      "vegolosi.it.climate.html",
+		Date:      "2020-09-30",
+		Extensive: "2020-09-30",
+		Fast:      "2020-09-30",
+	}, {
+		URL:       "https://www.tine.no/presserom/nyhetsarkiv/nff-tine-fotballskole-viktig-for-barneidretten-gjennom-pandemien",
+		File:      "tine.no.fotballskole.html",
+		Date:      "2020-10-07",
+		Extensive: "2020-10-07",
+		Fast:      "2020-10-07",
+	}, {
+		URL:       "https://www.kochbar.de/tipp/1918/Tomaten-richtig-schneiden.html",
+		File:      "kochbar.de.schneiden.html",
+		Date:      "2020-09-20",
+		Extensive: "2020-09-23",
+		Fast:      "2020-09-23",
+	}, {
+		URL:       "https://www.hassanchef.com/2020/09/bhindi-masala-okra-stir-fry.html",
+		File:      "hassanchef.com.bhindi.html",
+		Date:      "2020-09-15",
+		Extensive: "2020-09-15",
+		Fast:      "2020-09-15",
+	}, {
+		URL:       "https://www.bettycrocker.com/recipes/easy-pineapple-upside-down-cake/c4d3321d-fad9-41cb-8f29-8d91a4279b07",
+		File:      "bettycrocker.com.pineapple.html",
+		Date:      "2019-06-13",
+		Extensive: "2004-01-01",
+		Fast:      "2004-01-01",
+	}, {
+		URL:       "https://www.theatlantic.com/ideas/archive/2020/08/californias-disasters-are-a-warning-climate-change-is-here/615610/",
+		File:      "theatlantic.com.disasters.html",
+		Date:      "2020-08-23",
+		Extensive: "2020-08-23",
+		Fast:      "2020-08-23",
+	}, {
+		URL:       "https://diem25.org/the-eus-green-deal-isnt-enough-save-from-climate-catastrophe/",
+		File:      "diem25.org.climate.html",
+		Date:      "2020-12-12",
+		Extensive: "2020-10-12",
+		Fast:      "2020-10-12",
+	}, {
+		URL:       "https://www.economist.com/open-future/2018/06/18/why-collaborative-thinking-beats-individual-smarts",
+		File:      "economist.com.thinking.html",
+		Date:      "2018-06-18",
+		Extensive: "2018-06-18",
+		Fast:      "2018-06-18",
+	}, {
+		URL:       "https://medium.com/@pimterry/host-your-node-app-on-dokku-digitalocean-1cb97e3ab041",
+		File:      "medium.com.dokku.html",
+		Date:      "2016-03-28",
+		Extensive: "2016-03-28",
+		Fast:      "2016-03-28",
+	}, {
+		URL:       "https://www.medicalnewstoday.com/articles/318674",
+		File:      "medicalnewstoday.com.318674.html",
+		Date:      "2017-07-27",
+		Extensive: "2017-07-27",
+		Fast:      "2017-07-27",
+	}, {
+		URL:       "https://www.unocero.com/smartphones/marcas-mala-gestion-apps-segundo-plano-android/",
+		File:      "unocero.com.marcas.html",
+		Date:      "2019-08-27",
+		Extensive: "2019-08-27",
+		Fast:      "2019-08-27",
+	}, {
+		URL:       "https://www3.nhk.or.jp/news/easy/k10011959621000/k10011959621000.html",
+		File:      "nhk.or.jp.k100.html",
+		Date:      "2019-06-24",
+		Extensive: "2022-03-04",
+		Fast:      "None",
+	}, {
+		URL:       "https://security.googleblog.com/2020/05/enhanced-safe-browsing-protection-now.html",
+		File:      "security.googleblog.com.protection.html",
+		Date:      "2020-05-19",
+		Extensive: "2020-05-01",
+		Fast:      "2020-05-01",
+	}, {
+		URL:       "https://harpers.org/a-letter-on-justice-and-open-debate/",
+		File:      "harpers.org.justice.html",
+		Date:      "2020-07-07",
+		Extensive: "2020-07-07",
+		Fast:      "2020-07-07",
+	}, {
+		URL:       "https://www.royalroad.com/fiction/34798/melas/chapter/535107/chapter-1-prologue-murdered",
+		File:      "royalroad.com.melas.html",
+		Date:      "2020-08-06",
+		Extensive: "2020-08-06",
+		Fast:      "2020-08-06",
+	}, {
+		URL:       "https://link.springer.com/article/10.1007/s11926-017-0626-z",
+		File:      "link.springer.com.1007.html",
+		Date:      "2017-01-30",
+		Extensive: "2017-01-30",
+		Fast:      "2017-01-30",
+	}, {
+		URL:       "http://sibenlab.blogspot.com/2018/06/sibenlab-privacy-policy.html",
+		File:      "sibenlab.blogspot.com.privacy.html",
+		Date:      "2018-06-05",
+		Extensive: "2018-06-05",
+		Fast:      "2018-06-05",
+	}, {
+		URL:       "https://web.archive.org/web/20110106023242/http://dzs-clan.de/index.php?site=news_comments&newsID=111",
+		File:      "archive.org.dzs-clan.de.html",
+		Date:      "2010-12-29",
+		Extensive: "2010-12-29",
+		Fast:      "2010-12-29",
+	}, {
+		URL:       "https://chabermu.wordpress.com/2015/09/02/windows-expertenwissen-per-update-spioniert-microsoft-nun-auch-windows-7-8-und-8-1-aus-microsoft-privacy-windows10-chabermu/",
+		File:      "chabermu.wordpress.com.expertenwissen.html",
+		Date:      "2015-09-02",
+		Extensive: "2015-09-02",
+		Fast:      "2015-09-02",
+	}, {
+		URL:       "https://www.oekonomenstimme.org/artikel/2015/01/eine-realistische-interpretation-des-keynes-hicks-multiplikators/",
+		File:      "oekonomenstimme.org.keynes.html",
+		Date:      "2015-01-21",
+		Extensive: "2015-01-01",
+		Fast:      "2015-01-01",
+	}, {
+		URL:       "https://mywakenews.wordpress.com/2016/07/09/nwo-psyop-unitedwestrike-radio-marathon/",
+		File:      "mywakenews.wordpress.com.psyop.html",
+		Date:      "2016-06-09",
+		Extensive: "2016-07-09",
+		Fast:      "2016-07-09",
+	}, {
+		URL:       "https://web.archive.org/web/20130307194448/the-pain.net/2008/05/silkroad-roc-mountain-quests-und-npcs.html",
+		File:      "archive.org.the-pain.net.silkroad.html",
+		Date:      "2008-05-26",
+		Extensive: "2009-02-24",
+		Fast:      "2009-02-24",
+	}, {
+		URL:       "https://foren.myoos.de/viewtopic.php?f=4&t=167&sid=58428beaa14598c2e02d93ad5c773e4d",
+		File:      "foren.myoos.de.html",
+		Date:      "2009-01-21",
+		Extensive: "2009-01-21",
+		Fast:      "2009-01-21",
+	}, {
+		URL:       "https://blog.leichtathletik-ostalbkreis.de/2007/05/20/ergebnisse-rm-schuelerinnen-a-aalen-unterkochen-1952007/",
+		File:      "leichtathletik-ostalbkreis.de.1952007.html",
+		Date:      "2007-05-20",
+		Extensive: "2007-05-20",
+		Fast:      "2007-05-20",
+	}, {
+		URL:       "https://web.archive.org/web/20120216182711/http://www.stol.it/Artikel/Politik-im-Ueberblick/Politik/Verfassungsgericht-Berlusconis-Sex-Prozess-geht-weiter",
+		File:      "archive.org.stol.it.berlusconi.html",
+		Date:      "2012-02-14",
+		Extensive: "2012-02-11",
+		Fast:      "None",
+	}, {
+		URL:       "https://web.archive.org/web/20130217080612/http://tv-orange.de/2012/08/future-of-hope-island-befreit-sich-von-den-bankstern-der-film/",
+		File:      "archive.org.tv-orange.de.future.html",
+		Date:      "2012-08-02",
+		Extensive: "2012-08-02",
+		Fast:      "2012-08-02",
+	}, {
+		URL:       "https://www.axios.com/newsletters/axios-future-7120a6cf-cf67-4e01-9f15-f73f114e8d27.html",
+		File:      "axios.com.future.html",
+		Date:      "2019-01-18",
+		Extensive: "2019-01-18",
+		Fast:      "2019-01-18",
+	}, {
+		URL:       "https://www.linkedin.com/pulse/ich-war-am-wochenende-auf-einer-hochzeit-im-wendland-inga-hoeltmann",
+		File:      "linkedin.com.hoeltmann.html",
+		Date:      "2019-08-19",
+		Extensive: "2019-08-19",
+		Fast:      "2019-08-19",
+	}, {
+		URL:       "https://businessjargons.com/leadership-styles.html",
+		File:      "businessjargons.com.leadership.html",
+		Date:      "2016-02-08",
+		Extensive: "2016-02-08",
+		Fast:      "2016-02-08",
+	}, {
+		URL:       "https://wordsmith.org/words/maudlin.html",
+		File:      "wordsmith.org.maudlin.html",
+		Date:      "2009-04-07",
+		Extensive: "2009-04-07",
+		Fast:      "None",
+	}, {
+		URL:       "https://strangemachines.io/articles/performant-python",
+		File:      "strangemachines.io.performant.html",
+		Date:      "2019-12-03",
+		Extensive: "2019-12-03",
+		Fast:      "2019-12-03",
+	}, {
+		URL:       "https://www.dalloz-actualite.fr/node/libre-cours-raoult-nazis-et-moi",
+		File:      "dalloz-actualite.fr.raoult.html",
+		Date:      "2020-05-07",
+		Extensive: "2020-05-07",
+		Fast:      "2020-05-07",
+	}, {
+		URL:       "https://www.fluter.de/corona-big-data-suedkorea-vorbild-fuer-deutschland",
+		File:      "fluter.de.vorbild.html",
+		Date:      "2020-03-31",
+		Extensive: "2020-03-31",
+		Fast:      "2020-03-31",
+	}, {
+		URL:       "https://www.ok-magazin.de/people/real-life/horror-fund-instagram-star-24-einbetoniert-62276.html",
+		File:      "ok-magazin.de.einbetoniert.html",
+		Date:      "2019-10-18",
+		Extensive: "2019-10-18",
+		Fast:      "2019-10-18",
+	}, {
+		URL:       "https://blog.mondediplo.net/turpitude-et-architecture",
+		File:      "blog.mondediplo.net.turpitude.html",
+		Date:      "2018-06-21",
+		Extensive: "2018-06-21",
+		Fast:      "2018-06-21",
+	}, {
+		URL:       "https://www.acpjournals.org/doi/10.7326/M19-3075",
+		File:      "acpjournals.org.3075.html",
+		Date:      "2020-04-07",
+		Extensive: "2020-03-03",
+		Fast:      "2020-03-03",
+	}, {
+		URL:       "https://www.rutgers.edu/news/new-robot-does-superior-job-sampling-blood",
+		File:      "rutgers.edu.robot.html",
+		Date:      "2020-02-05",
+		Extensive: "2020-02-05",
+		Fast:      "2020-02-05",
+	}, {
+		URL:       "https://wiki.python.org/moin/BeginnersGuide/Download",
+		File:      "wiki.python.org.Download.html",
+		Date:      "2019-11-10",
+		Extensive: "2019-11-10",
+		Fast:      "2019-11-10",
+	}, {
+		URL:       "https://www.bundespraesident.de/SharedDocs/Reden/DE/Johannes-Rau/Reden/2003/03/20030331_Rede2.html",
+		File:      "bundespraesident.de.20030331.html",
+		Date:      "2003-03-31",
+		Extensive: "2003-03-20",
+		Fast:      "2003-03-20",
+	}, {
+		URL:       "https://www.cicero.de/innenpolitik/corona-pandemie-es-kommt-auch-darauf-an-wie-die-menschen-sterben",
+		File:      "cicero.de.pandemie.html",
+		Date:      "2020-04-21",
+		Extensive: "2020-04-21",
+		Fast:      "2020-04-21",
+	}, {
+		URL:       "https://www.furche.at/gesellschaft/achtsam-durch-die-krise-2497954",
+		File:      "furche.at.achtsam.html",
+		Date:      "2020-03-18",
+		Extensive: "2020-07-01",
+		Fast:      "2020-07-01",
+	}, {
+		URL:       "https://www.neues-deutschland.de/artikel/1136087.mietenstreik-in-den-usa-einfach-kein-geld-mehr-um-die-miete-zu-zahlen.html",
+		File:      "neues-deutschland.de.mietenstreik.html",
+		Date:      "2020-04-29",
+		Extensive: "2020-04-30",
+		Fast:      "2020-04-30",
+	}, {
+		URL:       "https://www.bdzv.de/nachrichten-und-service/presse/pressemitteilungen/artikel/detail/olafur-eliasson-gestaltet-titelseite-fuer-die-deutschen-zeitungen/",
+		File:      "bdzv.de.eliasson.html",
+		Date:      "2020-04-24",
+		Extensive: "2020-04-24",
+		Fast:      "None",
+	}, {
+		URL:       "https://www.thelocal.se/20200428/meet-the-swede-who-tattooed-a-state-epidemiologists-face-on-his-arm",
+		File:      "thelocal.se.tattooed.html",
+		Date:      "2020-04-28",
+		Extensive: "2020-04-28",
+		Fast:      "None",
+	}, {
+		URL:       "https://pythonspeed.com/articles/pipenv-docker/",
+		File:      "pythonspeed.com.docker.html",
+		Date:      "2020-06-04",
+		Extensive: "2019-06-17",
+		Fast:      "2019-06-17",
+	}, {
+		URL:       "http://www.modabot.de/paris-haute-couture-ss14-serkan-cura",
+		File:      "modabot.de.serkan.html",
+		Date:      "2014-01-27",
+		Extensive: "2014-01-27",
+		Fast:      "2014-01-27",
+	}, {
+		URL:       "https://web.archive.org/web/20160820205919/http://www.medialepfade.de/2016/01/medienpaedagogin-in-muenchen-gesucht/",
+		File:      "archive.org.medialepfade.de.medienpaedagogin.html",
+		Date:      "2016-01-15",
+		Extensive: "2016-01-15",
+		Fast:      "2016-01-15",
+	}, {
+		URL:       "https://web.archive.org/web/20140109030403/http://nesselsetzer.wordpress.com/2013/12/09/rebloggt-von-gnaddrig-ad-libitum-antipoden-die-wahrheit/",
+		File:      "archive.org.nesselsetzer.wordpress.com.antipoden.html",
+		Date:      "2013-12-09",
+		Extensive: "2013-12-09",
+		Fast:      "2013-12-09",
+	}, {
+		URL:       "https://web.archive.org/web/20171008220355/http://juergenheitmann.com/essays/2017/01/aggression-fotografie/",
+		File:      "archive.org.juergenheitmann.com.aggression.html",
+		Date:      "2017-01-26",
+		Extensive: "2017-01-26",
+		Fast:      "2017-01-26",
+	}, {
+		URL:       "https://web.archive.org/web/20160218174457/http://bewegliche-lettern.de/2010/05/literatur-und-animated-typography/",
+		File:      "archive.org.bewegliche-lettern.de.typography.html",
+		Date:      "2010-05-19",
+		Extensive: "2010-05-01",
+		Fast:      "2010-05-01",
+	}, {
+		URL:       "https://web.archive.org/web/20181206101316/https://swap-stop.org/de/filmswap/zusammenarbeit-shuji-walter-april-2018-i/",
+		File:      "archive.org.swap-stop.org.shuji.html",
+		Date:      "2018-04-11",
+		Extensive: "2018-04-11",
+		Fast:      "2018-04-11",
+	}, {
+		URL:       "https://web.archive.org/web/20140226054445/http://www.time4talks.com/2013/08/07/weitere-digitalisierung-der-schweizer-kinos/",
+		File:      "archive.org.time4talks.com.kinos.html",
+		Date:      "2013-08-07",
+		Extensive: "2013-08-07",
+		Fast:      "2013-08-07",
+	}, {
+		URL:       "https://www.focus.de/auto/experten/auto-leasen-oder-kaufen-fuer-wen-lohnt-sich-was_id_9209161.html",
+		File:      "focus.de.leasen.html",
+		Date:      "2018-07-06",
+		Extensive: "2018-07-06",
+		Fast:      "2018-07-06",
+	}, {
+		URL:       "https://www.backenmachtgluecklich.de/rezepte/saftiger-zitronenkuchen-vom-blech.html",
+		File:      "backenmachtgluecklich.de.zitronenkuchen.html",
+		Date:      "2020-02-17",
+		Extensive: "2020-02-17",
+		Fast:      "2020-02-17",
+	}, {
+		URL:       "https://www.chefkoch.de/rezepte/607331160490733/Mandarinen-Schmand-Kuchen.html",
+		File:      "chefkoch.de.mandarinen.html",
+		Date:      "2006-10-10",
+		Extensive: "2006-10-10",
+		Fast:      "2006-10-10",
+	}, {
+		URL:       "https://verfassungsblog.de/expertinnen-in-der-krise/",
+		File:      "verfassungsblog.de.expertinnen.html",
+		Date:      "2020-04-09",
+		Extensive: "2020-04-09",
+		Fast:      "2020-04-09",
+	}, {
+		URL:       "https://wien.orf.at/stories/3017954/",
+		File:      "0a6291ebbce449b3b04256b43c73e39d.html",
+		Date:      "2019-10-19",
+		Extensive: "2019-10-19",
+		Fast:      "2019-10-19",
+	}, {
+		URL:       "https://appen.com/blog/artificial-intelligence-and-machine-learning-industry-news-ai-in-patient-care-and-operations-ai-as-a-preventive-tool-and-how-major-hospitals-are-already-using-ai/",
+		File:      "d44c5ef50718437984dca47627dee96b.html",
+		Date:      "2019-10-18",
+		Extensive: "2019-10-18",
+		Fast:      "2019-10-18",
+	}, {
+		URL:       "https://www.monsterdealz.de/user-deals/deals/gratisartikel-kostenlos/rewe-produkttest-10-000-produkttester-fuer-leibniz-keksn-cream-milk-oder-choco",
+		File:      "d71bfdce9dd246c9a6ee6d08c8b39e4c.html",
+		Date:      "2019-10-17",
+		Extensive: "2019-10-17",
+		Fast:      "2019-10-17",
+	}, {
+		URL:       "https://web.archive.org/web/20131110121040/http://www.peptalks.de/haben-sich-mozarts-eltern-wegen-seiner-schulnoten-gesorgt/",
+		File:      "archive.peptalks.de.schulnoten.html",
+		Date:      "2013-04-04",
+		Extensive: "2013-04-04",
+		Fast:      "2013-04-04",
 	},
 }
