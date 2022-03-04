@@ -92,6 +92,9 @@ func Test_HtmlDate(t *testing.T) {
 	str = `<html><head><meta name="created" content="2017-01-09"/></head><body></body></html>`
 	checkString(str, "2017-01-09")
 
+	str = `<html><head><meta name="citation_publication_date" content="2017-01-09"/></head><body></body></html>`
+	checkString(str, "2017-01-09")
+
 	str = `<html><head><meta itemprop="copyrightyear" content="2017"/></head><body></body></html>`
 	checkString(str, "2017-01-01")
 
