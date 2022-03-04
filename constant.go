@@ -115,7 +115,7 @@ var (
 	rxCommonTime = regexp.MustCompile(`(?i)(?:\D|^)(\d{1,2})(?::|\s*h\s*)(\d{1,2})(?::(\d{1,2})(?:\.\d+)?)?(?:\s*((?:a|p)\.?m\.?))?`)
 )
 
-// English + German + Turkish months cache
+// English, French, German, Indonesian and Turkish dates cache
 var monthNumber = map[string]int{
 	"Januar": 1, "Jänner": 1, "January": 1, "Januari": 1, "Jan": 1, "Ocak": 1, "Oca": 1, "janvier": 1,
 	"Februar": 2, "Feber": 2, "February": 2, "Februari": 2, "Feb": 2, "Şubat": 2, "Şub": 2, "février": 2,

@@ -175,15 +175,7 @@ func fastParse(s string, opts Options) time.Time {
 		day, _ := strconv.Atoi(parts[1])
 		month, _ := strconv.Atoi(parts[2])
 		year, _ := strconv.Atoi(parts[3])
-
-		// Append year if necessary
-		if year < 100 {
-			if year >= 90 {
-				year += 1900
-			} else {
-				year += 2000
-			}
-		}
+		year = correctYear(year)
 
 		// If month is more than 12, swap it with the day
 		if month > 12 && day <= 12 {
@@ -368,20 +360,13 @@ func extractIdiosyncrasy(rxIdiosyncrasy *regexp.Regexp, htmlString string, opts 
 		month, _ := strconv.Atoi(parts[groups[2]])
 		day, _ := strconv.Atoi(parts[groups[1]])
 
-		// Switch to MM/DD/YY if necessary
+		// Swap variables to switch to MM/DD/YY
 		if month > 12 {
 			day, month = month, day
 		}
 
 		// Append year if necessary
-		if year < 100 {
-			if year >= 90 {
-				year += 1900
-			} else {
-				year += 2000
-			}
-		}
-
+		year = correctYear(year)
 		candidate, _ = validateDateParts(year, month, day, opts)
 	}
 
@@ -463,6 +448,17 @@ func regexParseMultilingual(s string, opts Options) time.Time {
 	}
 
 regex_finish:
+	year = correctYear(year)
+	dt, valid := validateDateParts(year, month, day, opts)
+	if valid {
+		log.Debug().Msgf("multilingual text found: %s", s)
+		return dt
+	}
+
+	return timeZero
+}
+
+func correctYear(year int) int {
 	if year < 100 {
 		if year >= 90 {
 			year += 1900
@@ -471,11 +467,5 @@ regex_finish:
 		}
 	}
 
-	dt, valid := validateDateParts(year, month, day, opts)
-	if valid {
-		log.Debug().Msgf("multilingual text found: %s", s)
-		return dt
-	}
-
-	return timeZero
+	return year
 }
