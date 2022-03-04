@@ -411,6 +411,11 @@ func Test_HtmlDate(t *testing.T) {
 	str = `<html><body><a class="ribbon date " title="12th December 2018" href="https://example.org/" itemprop="url">Text</a></body></html>`
 	checkString(str, "2018-12-12")
 
+	// Archive.org documents
+	url = "http://web.archive.org/web/20210916140120/https://www.kath.ch/die-insel-der-klosterzoeglinge/"
+	checkMockFile(url, "", skipExtensiveSearch)
+	checkMockFile(url, "2021-07-13")
+
 	// =========================================================
 	// Tests below these point should return an approximate date
 	// =========================================================

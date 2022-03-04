@@ -131,23 +131,17 @@ func discardSelectorRule(n *html.Node) bool {
 	class := strings.ToLower(dom.GetAttribute(n, "class"))
 	tagName := dom.TagName(n)
 
-	// Rule 1
-	if tagName == "footer" {
-		return true
-	}
-
-	// Rule 2
-	switch tagName {
-	case "div", "section":
-	default:
-		return false
-	}
-
 	switch {
-	case id == "footer",
-		class == "footer":
-		return true
+	// Rule 1
+	case tagName == "footer":
+	// Rule 2
+	case (tagName == "div" || tagName == "section") && (id == "footer" || class == "footer"):
+	// Rule 3
+	case tagName == "div" && (id == "wm-ipp-base" || id == "wm-ipp"):
+
 	default:
 		return false
 	}
+
+	return true
 }

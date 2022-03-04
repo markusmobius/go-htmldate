@@ -228,7 +228,7 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 		}
 	}
 
-	// Search in the discarded elements (currently only footer)
+	// Search in the discarded elements (currently: footers and archive.org banner)
 	for _, subTree := range discarded {
 		dateElements := findElementsWithRule(subTree, dateSelectorRule)
 		rawString, dateResult := examineOtherElements(dateElements, opts)

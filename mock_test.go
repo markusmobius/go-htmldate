@@ -178,4 +178,5 @@ var mapMockFiles = map[string]string{
 	"https://www.acredis.com/schoenheitsoperationen/augenlidstraffung/":                                                     "acredis.com.augenlidstraffung.html",
 	"https://www.hertie-school.org/en/debate/detail/content/whats-on-the-cards-for-von-der-leyen/":                          "hertie-school.org.leyen.html",
 	"https://www.adac.de/rund-ums-fahrzeug/tests/kindersicherheit/kindersitztest-2018/":                                     "adac.de.kindersitztest.html",
+	"http://web.archive.org/web/20210916140120/https://www.kath.ch/die-insel-der-klosterzoeglinge/":                         "archive.org.kath.ch.html",
 }
