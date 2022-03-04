@@ -43,9 +43,8 @@ func main() {
 		comparisonData []comparisonEntry
 	)
 
-	// Change this depending on your data
-	// comparisonData = defaultComparisonData
-	comparisonData = mediacloudData
+	comparisonData = append(comparisonData, mediacloudData...)
+	comparisonData = append(comparisonData, defaultComparisonData...)
 
 	for _, entry := range comparisonData {
 		// Open file
@@ -110,8 +109,8 @@ func openFile(name string) (*html.Node, error) {
 	var f *os.File
 	var err error
 	pathList := []string{
-		fp.Join("test-files", "comparison", name),
 		fp.Join("test-files", "mediacloud", name),
+		fp.Join("test-files", "comparison", name),
 		fp.Join("test-files", "mock", name),
 	}
 
