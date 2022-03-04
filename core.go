@@ -140,9 +140,10 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 
 	if opts.URL != "" {
 		urlDate = extractUrlDate(opts.URL, opts)
-
-		// If complete date not found, try partial date
-		if urlDate.IsZero() {
+		if !urlDate.IsZero() {
+			return opts.URL, urlDate, nil
+		} else {
+			// If complete date not found, try partial date
 			urlDate = extractPartialUrlDate(opts.URL, opts)
 			urlDateIsPartial = !urlDate.IsZero()
 		}

@@ -320,11 +320,8 @@ func Test_HtmlDate(t *testing.T) {
 	url = "https://www.wunderweib.de/manuela-reimann-hochzeitsueberraschung-in-bayern-107930.html"
 	checkMockFile(url, "2019-06-20")
 
-	// In this test case, the modified date not explicitly specified. However, there is a string that
-	// looks like date, so htmldate decided to choose it as the result. Ideally, htmldate should return
-	// zero if the date not found. TODO: Need more investigation.
 	url = "https://www.befifty.de/home/2017/7/12/unter-uns-montauk"
-	checkMockFile(url, "2019-07-03")
+	checkMockFile(url, "2017-07-12")
 
 	url = "https://www.brigitte.de/aktuell/riverdale--so-ehrt-die-serie-luke-perry-in-staffel-vier-11602344.html"
 	checkMockFile(url, "2019-06-20")
