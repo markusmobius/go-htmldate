@@ -218,6 +218,16 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 		return rawString, dateResult, nil
 	}
 
+	// Supply more expressions.
+	if !opts.SkipExtensiveSearch {
+		dateElements := findElementsWithRule(prunedDoc, additionalSelectorRule)
+		rawString, dateResult := examineOtherElements(dateElements, opts)
+		dateResult = fixVagueDM(rawString, dateResult, urlDate, opts)
+		if validateResult(dateResult) {
+			return rawString, dateResult, nil
+		}
+	}
+
 	// Search in the discarded elements (currently only footer)
 	for _, subTree := range discarded {
 		dateElements := findElementsWithRule(subTree, dateSelectorRule)
@@ -228,32 +238,22 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 		}
 	}
 
-	// Supply more expressions.
-	if !opts.SkipExtensiveSearch {
-		dateElements := findElementsWithRule(doc, additionalSelectorRule)
-		rawString, dateResult := examineOtherElements(dateElements, opts)
-		dateResult = fixVagueDM(rawString, dateResult, urlDate, opts)
-		if validateResult(dateResult) {
-			return rawString, dateResult, nil
-		}
-	}
-
 	// Try <time> elements
-	rawString, timeResult := examineTimeElements(doc, opts)
+	rawString, timeResult := examineTimeElements(prunedDoc, opts)
 	timeResult = fixVagueDM(rawString, timeResult, urlDate, opts)
 	if validateResult(timeResult) {
 		return rawString, timeResult, nil
 	}
 
 	// Try string search
-	cleanDocument(doc)
+	cleanedDoc := cleanDocument(doc)
 
 	var htmlString string
-	htmlNode := dom.QuerySelector(doc, "html")
+	htmlNode := dom.QuerySelector(cleanedDoc, "html")
 	if htmlNode != nil {
 		htmlString = dom.InnerHTML(htmlNode)
 	} else {
-		htmlString = dom.InnerHTML(doc)
+		htmlString = dom.InnerHTML(cleanedDoc)
 	}
 
 	// String search using regex timestamp

@@ -28,9 +28,12 @@ import (
 )
 
 // cleanDocument cleans the document by discarding unwanted elements.
-func cleanDocument(doc *html.Node) {
+func cleanDocument(doc *html.Node) *html.Node {
+	// Clone doc
+	clone := dom.Clone(doc, true)
+
 	// Remove comments
-	removeHtmlCommentNode(doc)
+	removeHtmlCommentNode(clone)
 
 	// Remove useless nodes
 	tagNames := []string{
@@ -44,11 +47,13 @@ func cleanDocument(doc *html.Node) {
 		"picture", "rdf", "svg", "video",
 	}
 
-	for _, node := range dom.GetAllNodesWithTag(doc, tagNames...) {
+	for _, node := range dom.GetAllNodesWithTag(clone, tagNames...) {
 		if node.Parent != nil {
 			node.Parent.RemoveChild(node)
 		}
 	}
+
+	return clone
 }
 
 // removeHtmlCommentNode removes all `html.CommentNode` in document.

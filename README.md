@@ -33,7 +33,7 @@ and extensive mode is negligible, so might as well use the extensive mode.
 
 ## Status
 
-This package is stable enough for use and up to date with the original `htmldate` commit [e325529][2].
+This package is stable enough for use and up to date with the original `htmldate` commit [794fa14][2].
 However, since time extraction is a brand new feature which doesn't exist in the original, use it with
 care. So far it works quite nicely on most news sites that I've tried, but it still needs more testing.
 
@@ -99,15 +99,15 @@ clone this repository then run:
 go run scripts/comparison/*.go
 ```
 
-For the test, we use 255 documents which were selected from large collections of web pages in German.
+For the test, we use 500 documents which were selected from large collections of web pages in German.
 For the sake of completeness a few documents in other languages were added (mostly in English and French
 but also in other European languages, Chinese, Japanese and Arabic). Here is the result when tested in my
 PC (Intel i7-8550U @ 4.000GHz, RAM 16 GB):
 
 |         Package         | Precision | Recall | Accuracy | F-Score | Speed (s) |
 | :---------------------: | :-------: | :----: | :------: | :-----: | :-------: |
-|   `go-htmldate` fast    |   0.920   | 0.938  |  0.867   |  0.929  |   0.502   |
-| `go-htmldate` extensive |   0.911   | 1.000  |  0.911   |  0.953  |   0.760   |
+|   `go-htmldate` fast    |   0.838   | 0.917  |  0.781   |  0.876  |   1.432   |
+| `go-htmldate` extensive |   0.823   | 0.993  |  0.818   |  0.900  |   3.197   |
 
 So, from the table above, this port has a similar performance with the original `htmldate`.
 
@@ -130,7 +130,7 @@ Like the original, `go-htmldate` is distributed under the [GNU General Public Li
 
 [0]: https://github.com/adbar/htmldate
 [1]: https://github.com/adbar
-[2]: https://github.com/adbar/htmldate/commit/e325529105583c3187d6f05d0f2669a2dff60cb1
+[2]: https://github.com/adbar/htmldate/commit/794fa14462db780d9073006697e171a733e306cb
 [3]: https://github.com/scrapinghub/dateparser
 [ref-badge]: https://pkg.go.dev/badge/github.com/markusmobius/go-htmldate.svg
 [ref-link]: https://pkg.go.dev/github.com/markusmobius/go-htmldate
