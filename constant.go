@@ -38,7 +38,7 @@ var (
 )
 
 const (
-	maxPossibleCandidates = 300
+	maxPossibleCandidates = 150
 	defaultDateFormat     = "2006-1-2"
 )
 
