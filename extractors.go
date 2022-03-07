@@ -217,26 +217,36 @@ func fastParse(s string, opts Options) time.Time {
 
 // jsonSearch looks for JSON time patterns in JSON sections of the document.
 func jsonSearch(doc *html.Node, opts Options) (string, time.Time) {
-	// Prepare function to capture dates recursively
-	var findDates func(dst map[string]string, obj map[string]interface{})
-	findDates = func(dst map[string]string, obj map[string]interface{}) {
+	// Prepare targetKeys to look for
+	var targetKeys map[string]struct{}
+	if opts.UseOriginalDate {
+		targetKeys = sliceToMap("datePublished", "dateCreated")
+	} else {
+		targetKeys = sliceToMap("dateModified")
+	}
+
+	// Prepare function to capture date texts recursively
+	var capturedTexts []jsonCapturedText
+	var findDateTexts func(obj map[string]interface{})
+	findDateTexts = func(obj map[string]interface{}) {
 		for key, value := range obj {
 			switch v := value.(type) {
 			case string:
-				v = normalizeSpaces(v)
-				lowerKey := strings.ToLower(key)
-				if strings.Contains(lowerKey, "date") && v != "" {
-					dst[key] = v
+				if inMap(key, targetKeys) {
+					capturedTexts = append(capturedTexts, jsonCapturedText{
+						Key:  key,
+						Text: normalizeSpaces(v),
+					})
 				}
 
 			case map[string]interface{}:
-				findDates(dst, v)
+				findDateTexts(v)
 
 			case []interface{}:
 				for _, item := range v {
 					itemObject, isObject := item.(map[string]interface{})
 					if isObject {
-						findDates(dst, itemObject)
+						findDateTexts(itemObject)
 					}
 				}
 			}
@@ -248,7 +258,6 @@ func jsonSearch(doc *html.Node, opts Options) (string, time.Time) {
 	settingsJsonScripts := dom.QuerySelectorAll(doc, `script[type="application/settings+json"]`)
 	scriptNodes := append(ldJsonScripts, settingsJsonScripts...)
 
-	jsonDates := make(map[string]string)
 	for _, elem := range scriptNodes {
 		// Get the json text inside the script
 		jsonText := dom.TextContent(elem)
@@ -262,31 +271,38 @@ func jsonSearch(doc *html.Node, opts Options) (string, time.Time) {
 		}
 
 		// Find all dates recursively
-		findDates(jsonDates, data)
+		findDateTexts(data)
 	}
 
-	// Prepare keys to look for
-	var keys []string
-	if opts.UseOriginalDate {
-		keys = []string{"datePublished", "dateCreated"}
-	} else {
-		keys = []string{"dateModified"}
-	}
-
-	// Check each key
-	for _, key := range keys {
-		keyValue, exist := jsonDates[key]
-		if !exist {
-			continue
-		}
-
-		dt := fastParse(keyValue, opts)
+	// Parse date for each captured texts
+	var dates []jsonCapturedDate
+	for _, capturedText := range capturedTexts {
+		dt := fastParse(capturedText.Text, opts)
 		if validateDate(dt, opts) {
-			return keyValue, dt
+			dates = append(dates, jsonCapturedDate{
+				Text: capturedText.Text,
+				Date: dt,
+			})
 		}
 	}
 
-	return "", timeZero
+	if len(dates) == 0 {
+		return "", timeZero
+	}
+
+	log.Debug().Msgf("captured dates: %v", dates)
+
+	// Find the best date
+	var best jsonCapturedDate
+	for _, cd := range dates {
+		if best.Date.IsZero() ||
+			(opts.UseOriginalDate && cd.Date.Before(best.Date)) ||
+			(!opts.UseOriginalDate && cd.Date.After(best.Date)) {
+			best = cd
+		}
+	}
+
+	return best.Text, best.Date
 }
 
 // timestampSearch looks for timestamps throughout the html string.
@@ -468,4 +484,14 @@ func correctYear(year int) int {
 	}
 
 	return year
+}
+
+type jsonCapturedText struct {
+	Key  string
+	Text string
+}
+
+type jsonCapturedDate struct {
+	Text string
+	Date time.Time
 }
