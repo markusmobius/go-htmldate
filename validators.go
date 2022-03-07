@@ -95,16 +95,11 @@ func validateDate(date time.Time, opts Options) bool {
 func compareValues(reference int64, attempt time.Time, opts Options) (int64, bool) {
 	changed := false
 	timestamp := attempt.Unix()
-	if opts.UseOriginalDate {
-		if reference == 0 || timestamp < reference {
-			changed = true
-			reference = timestamp
-		}
-	} else {
-		if timestamp > reference {
-			changed = true
-			reference = timestamp
-		}
+
+	if (opts.UseOriginalDate && (reference == 0 || timestamp < reference)) ||
+		(!opts.UseOriginalDate && timestamp > reference) {
+		changed = true
+		reference = timestamp
 	}
 
 	return reference, changed
@@ -123,7 +118,7 @@ func checkExtractedReference(reference int64, opts Options) time.Time {
 
 // plausibleYearFilter filters the date patterns to find plausible years only.
 // Unlike in the original, here we sort it as well by the highest frequency.
-func plausibleYearFilterx(htmlString string, rxPattern, rxYearPattern *regexp.Regexp, toComplete bool, opts Options) []yearCandidate {
+func plausibleYearFilter(htmlString string, rxPattern, rxYearPattern *regexp.Regexp, toComplete bool, opts Options) []yearCandidate {
 	// Prepare min and max year
 	minYear := opts.MinDate.Year()
 	maxYear := opts.MaxDate.Year()

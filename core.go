@@ -379,16 +379,13 @@ func examineMetaElements(doc *html.Node, opts Options) (string, time.Time) {
 
 		if property != "" && content != "" { // Property attribute
 			attribute := strings.ToLower(property)
-			if opts.UseOriginalDate { // original date
-				if inMap(attribute, dateAttributes) {
-					log.Debug().Msgf("examining meta property for publish date: %s", outerHtml)
-					strMeta, tMeta = tryYmdDate(content, opts)
-				}
-			} else { // modified date: override published_time
-				if inMap(attribute, propertyModified) || inMap(attribute, dateAttributes) {
-					log.Debug().Msgf("examining meta property for modified date: %s", outerHtml)
-					strMeta, tMeta = tryYmdDate(content, opts)
-				}
+			inModifiedProps := inMap(attribute, propertyModified)
+			inDateAttributes := inMap(attribute, dateAttributes)
+
+			if (opts.UseOriginalDate && inDateAttributes) ||
+				(!opts.UseOriginalDate && (inModifiedProps || inDateAttributes)) {
+				log.Debug().Msgf("examining meta property for publish date: %s", outerHtml)
+				strMeta, tMeta = tryYmdDate(content, opts)
 			}
 		} else if name != "" && content != "" { // Name attribute
 			name = strings.ToLower(name)
@@ -411,14 +408,8 @@ func examineMetaElements(doc *html.Node, opts Options) (string, time.Time) {
 			strMeta, tMeta = tryYmdDate(content, opts)
 		} else if itemProp != "" { // Item scope
 			attribute := strings.ToLower(itemProp)
-			if strIn(attribute, "datecreated", "datepublished", "pubyear") {
-				log.Debug().Msgf("examining meta itemprop: %s", outerHtml)
-				if dateTime != "" {
-					strMeta, tMeta = tryYmdDate(dateTime, opts)
-				} else if content != "" {
-					strMeta, tMeta = tryYmdDate(content, opts)
-				}
-			} else if attribute == "datemodified" && !opts.UseOriginalDate { // override publish date
+			if strIn(attribute, "datecreated", "datepublished", "pubyear") ||
+				(attribute == "datemodified" && !opts.UseOriginalDate) {
 				log.Debug().Msgf("examining meta itemprop: %s", outerHtml)
 				if dateTime != "" {
 					strMeta, tMeta = tryYmdDate(dateTime, opts)
@@ -489,14 +480,12 @@ func examineAbbrElements(doc *html.Node, opts Options) (string, time.Time) {
 			}
 			log.Debug().Msgf("data-utime found: %d", candidate)
 
-			if opts.UseOriginalDate {
-				// Look for original date
+			if opts.UseOriginalDate { // Look for original date
 				if refValue == 0 || candidate < refValue {
 					refValue = candidate
 					refString = dataUtime
 				}
-			} else {
-				// Look for newest (i.e. largest time delta)
+			} else { // Look for newest (i.e. largest time delta)
 				if candidate > refValue {
 					refValue = candidate
 					refString = dataUtime
@@ -505,35 +494,33 @@ func examineAbbrElements(doc *html.Node, opts Options) (string, time.Time) {
 		}
 
 		// Handle class
-		if class != "" {
-			if strIn(class, "published", "date-published", "time-published") {
-				text := normalizeSpaces(etreeText(elem))
-				title := strings.TrimSpace(dom.GetAttribute(elem, "title"))
+		if class != "" && strIn(class, "published", "date-published", "time-published") {
+			text := normalizeSpaces(etreeText(elem))
+			title := strings.TrimSpace(dom.GetAttribute(elem, "title"))
 
-				// Other attributes
-				if title != "" {
-					tryText := title
-					log.Debug().Msgf("abbr published-title found: %s", tryText)
+			// Other attributes
+			if title != "" {
+				tryText := title
+				log.Debug().Msgf("abbr published-title found: %s", tryText)
 
-					if opts.UseOriginalDate {
-						_, attempt := tryYmdDate(tryText, opts)
-						if !attempt.IsZero() {
-							return tryText, attempt
-						}
-					} else {
-						refString, refValue = compareReference(refString, refValue, tryText, opts)
-						if refValue > 0 {
-							break
-						}
+				if opts.UseOriginalDate {
+					_, attempt := tryYmdDate(tryText, opts)
+					if !attempt.IsZero() {
+						return tryText, attempt
+					}
+				} else {
+					refString, refValue = compareReference(refString, refValue, tryText, opts)
+					if refValue > 0 {
+						break
 					}
 				}
+			}
 
-				// Dates, not times of the day
-				if len(text) > 10 {
-					tryText := strings.TrimPrefix(text, "am ")
-					log.Debug().Msgf("abbr published found: %s", tryText)
-					refString, refValue = compareReference(refString, refValue, tryText, opts)
-				}
+			// Dates, not times of the day
+			if len(text) > 10 {
+				tryText := strings.TrimPrefix(text, "am ")
+				log.Debug().Msgf("abbr published found: %s", tryText)
+				refString, refValue = compareReference(refString, refValue, tryText, opts)
 			}
 		}
 	}
@@ -704,7 +691,7 @@ func searchPage(htmlString string, opts Options) (string, time.Time) {
 	}
 
 	// Handle YYYY-MM-DD/DD-MM-YYYY, normalize candidates first
-	candidates := plausibleYearFilterx(htmlString, rxSelectYmdPattern, rxSelectYmdYear, false, opts)
+	candidates := plausibleYearFilter(htmlString, rxSelectYmdPattern, rxSelectYmdYear, false, opts)
 	candidates = normalizeCandidates(candidates, opts)
 
 	rawString, bestMatch = selectCandidate(candidates, rxYmdPattern, rxYmdYear, opts)
@@ -721,7 +708,7 @@ func searchPage(htmlString string, opts Options) (string, time.Time) {
 	}
 
 	// Handle DD?/MM?/YYYY, normalize candidates first
-	candidates = plausibleYearFilterx(htmlString, rxSlashesPattern, rxSlashesYear, true, opts)
+	candidates = plausibleYearFilter(htmlString, rxSlashesPattern, rxSlashesYear, true, opts)
 	candidates = normalizeCandidates(candidates, opts)
 
 	rawString, bestMatch = selectCandidate(candidates, rxYmdPattern, rxYmdYear, opts)
@@ -747,7 +734,7 @@ func searchPage(htmlString string, opts Options) (string, time.Time) {
 	}
 
 	// Second option
-	candidates = plausibleYearFilterx(htmlString, rxMmYyyyPattern, rxMmYyyyYear, false, opts)
+	candidates = plausibleYearFilter(htmlString, rxMmYyyyPattern, rxMmYyyyYear, false, opts)
 
 	// Revert DD-MM-YYYY patterns before sorting
 	uniquePatterns := []string{}
@@ -841,7 +828,7 @@ func tryExpression(expression string, opts Options) (string, time.Time) {
 
 // searchPattern runs chained candidate filtering and selection.
 func searchPattern(htmlString string, rxPattern, rxCatchPattern, rxYearPattern *regexp.Regexp, opts Options) (string, []string) {
-	candidates := plausibleYearFilterx(htmlString, rxPattern, rxYearPattern, false, opts)
+	candidates := plausibleYearFilter(htmlString, rxPattern, rxYearPattern, false, opts)
 	return selectCandidate(candidates, rxCatchPattern, rxYearPattern, opts)
 }
 
