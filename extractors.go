@@ -189,12 +189,9 @@ func fastParse(s string, opts Options) time.Time {
 		day, _ := strconv.Atoi(parts[1])
 		month, _ := strconv.Atoi(parts[2])
 		year, _ := strconv.Atoi(parts[3])
-		year = correctYear(year)
 
-		// If month is more than 12, swap it with the day
-		if month > 12 && day <= 12 {
-			day, month = month, day
-		}
+		year = correctYear(year)
+		day, month = trySwapValues(day, month)
 
 		// Make sure month is at most 12, because if not then it's not D-M-Y
 		dt, valid := validateDateParts(year, month, day, opts)
@@ -390,13 +387,9 @@ func extractIdiosyncrasy(rxIdiosyncrasy *regexp.Regexp, htmlString string, opts 
 		month, _ := strconv.Atoi(parts[groups[2]])
 		day, _ := strconv.Atoi(parts[groups[1]])
 
-		// Swap variables to switch to MM/DD/YY
-		if month > 12 {
-			day, month = month, day
-		}
-
-		// Append year if necessary
 		year = correctYear(year)
+		day, month = trySwapValues(day, month)
+
 		candidate, _ = validateDateParts(year, month, day, opts)
 	}
 
@@ -479,6 +472,7 @@ func regexParseMultilingual(s string, opts Options) time.Time {
 
 regex_finish:
 	year = correctYear(year)
+	day, month = trySwapValues(day, month)
 	dt, valid := validateDateParts(year, month, day, opts)
 	if valid {
 		log.Debug().Msgf("multilingual text found: %s", s)
@@ -498,6 +492,14 @@ func correctYear(year int) int {
 	}
 
 	return year
+}
+
+// trySwapValues swap day and month values if it seems feaaible.
+func trySwapValues(day, month int) (int, int) {
+	if month > 12 && day <= 12 {
+		day, month = month, day
+	}
+	return day, month
 }
 
 type jsonCapturedText struct {
