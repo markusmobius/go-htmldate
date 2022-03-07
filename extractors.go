@@ -129,7 +129,7 @@ func tryYmdDate(s string, opts Options) (string, time.Time) {
 		}
 
 		dt, _ := dps.Parse(cfg, s)
-		if !dt.IsZero() && validateDate(dt.Time, opts) {
+		if validateDate(dt.Time, opts) {
 			return s, dt.Time
 		}
 	}
@@ -206,7 +206,7 @@ func fastParse(s string, opts Options) time.Time {
 
 	// 5. Try the other regex pattern
 	dt := regexParse(s, opts)
-	if !dt.IsZero() {
+	if validateDate(dt, opts) {
 		log.Debug().Msgf("fast parse found regex date: %s", dt.Format("2006-01-02"))
 		return dt
 	}
@@ -340,7 +340,7 @@ func metaImgSearch(doc *html.Node, opts Options) (string, time.Time) {
 		content := strings.TrimSpace(dom.GetAttribute(elem, "content"))
 		if content != "" {
 			result := extractUrlDate(content, opts)
-			if !result.IsZero() {
+			if validateDate(result, opts) {
 				return content, result
 			}
 		}
@@ -386,7 +386,7 @@ func extractIdiosyncrasy(rxIdiosyncrasy *regexp.Regexp, htmlString string, opts 
 		candidate, _ = validateDateParts(year, month, day, opts)
 	}
 
-	if candidate.IsZero() {
+	if !validateDate(candidate, opts) {
 		return "", timeZero
 	}
 
