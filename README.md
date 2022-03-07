@@ -33,7 +33,7 @@ and extensive mode is negligible, so might as well use the extensive mode.
 
 ## Status
 
-This package is stable enough for use and up to date with the original `htmldate` commit [980a35d][2].
+This package is stable enough for use and up to date with the original `htmldate` commit [a1c2d60][2].
 However, since time extraction is a brand new feature which doesn't exist in the original, use it with
 care. So far it works quite nicely on most news sites that I've tried, but it still needs more testing.
 
@@ -106,8 +106,8 @@ PC (Intel i7-8550U @ 4.000GHz, RAM 16 GB):
 
 |         Package         | Precision | Recall | Accuracy | F-Score | Speed (s) |
 | :---------------------: | :-------: | :----: | :------: | :-----: | :-------: |
-|   `go-htmldate` fast    |   0.839   | 0.915  |  0.781   |  0.876  |   1.432   |
-| `go-htmldate` extensive |   0.823   | 0.993  |  0.818   |  0.900  |   3.197   |
+|   `go-htmldate` fast    |   0.842   | 0.915  |  0.783   |  0.877  |   1.429   |
+| `go-htmldate` extensive |   0.825   | 0.993  |  0.820   |  0.901  |   3.035   |
 
 So, from the table above, this port has a similar performance with the original `htmldate`.
 
@@ -130,7 +130,7 @@ Like the original, `go-htmldate` is distributed under the [GNU General Public Li
 
 [0]: https://github.com/adbar/htmldate
 [1]: https://github.com/adbar
-[2]: https://github.com/adbar/htmldate/commit/980a35d4857742ad434558773a2d56b13573c575
+[2]: https://github.com/adbar/htmldate/commit/a1c2d606fae448899fb3cdae2ab822f81f567a0e
 [3]: https://github.com/scrapinghub/dateparser
 [ref-badge]: https://pkg.go.dev/badge/github.com/markusmobius/go-htmldate.svg
 [ref-link]: https://pkg.go.dev/github.com/markusmobius/go-htmldate

@@ -77,7 +77,7 @@ func Test_HtmlDate(t *testing.T) {
 	str = `<html><head><meta property="dc:created" content="2017-09-01"/></head><body></body></html>`
 	checkString(str, "2017-09-01", useOriginalDate)
 
-	str = `<html><head><meta http-equiv="date" content="2017-09-01"/></head><body></body></html>`
+	str = `<html><head><meta property="og:published_time" content="2017-09-01"/></head><body></body></html>`
 	checkString(str, "2017-09-01", useOriginalDate)
 
 	str = `<html><head><meta name="last-modified" content="2017-09-01"/></head><body></body></html>`
@@ -126,6 +126,21 @@ func Test_HtmlDate(t *testing.T) {
 	str = `<html><head><meta http-equiv="last-modified" content="2018-02-05"/></head><body></body></html>`
 	checkString(str, "2018-02-05")
 
+	str = `<html><head><meta http-equiv="date" content="2017-09-01"/></head><body></body></html>`
+	checkString(str, "2017-09-01", useOriginalDate)
+
+	str = `<html><head><meta http-equiv="last-modified" content="2018-10-01"/><meta http-equiv="date" content="2017-09-01"/></head><body></body></html>`
+	checkString(str, "2017-09-01", useOriginalDate)
+
+	str = `<html><head><meta http-equiv="last-modified" content="2018-10-01"/><meta http-equiv="date" content="2017-09-01"/></head><body></body></html>`
+	checkString(str, "2018-10-01")
+
+	str = `<html><head><meta http-equiv="date" content="2017-09-01"/><meta http-equiv="last-modified" content="2018-10-01"/></head><body></body></html>`
+	checkString(str, "2017-09-01", useOriginalDate)
+
+	str = `<html><head><meta http-equiv="date" content="2017-09-01"/><meta http-equiv="last-modified" content="2018-10-01"/></head><body></body></html>`
+	checkString(str, "2018-10-01")
+
 	str = `<html><head><meta name="Publish_Date" content="02.02.2004"/></head><body></body></html>`
 	checkString(str, "2004-02-02")
 
@@ -161,6 +176,18 @@ func Test_HtmlDate(t *testing.T) {
 
 	str = `<html><body><footer class="article-footer"><p class="byline">Veröffentlicht am <time class="updated" datetime="2019-01-03T14:56:51+00:00"></time></p></footer></body></html>`
 	checkString(str, "2019-01-03")
+
+	str = `<html><body><time datetime="2011-09-27" class="entry-date"></time><time datetime="2011-09-28" class="updated"></time></body></html>`
+	checkString(str, "2011-09-27", useOriginalDate)
+
+	// Problem here:
+	// str = `<html><body><time datetime="2011-09-27" class="entry-date"></time><time datetime="2011-09-28" class="updated"></time></body></html>`
+	// checkString(str, "2011-09-28")
+	// str = `<html><body><time datetime="2011-09-28" class="updated"></time><time datetime="2011-09-27" class="entry-date"></time></body></html>`
+	// checkString(str, "2011-09-27", useOriginalDate)
+
+	str = `<html><body><time datetime="2011-09-28" class="updated"></time><time datetime="2011-09-27" class="entry-date"></time></body></html>`
+	checkString(str, "2011-09-28")
 
 	// Removed from HTML5 https://www.w3schools.com/TAgs/att_time_datetime_pubdate.asp
 	str = `<html><body><time datetime="2011-09-28" pubdate="pubdate"></time></body></html>`
