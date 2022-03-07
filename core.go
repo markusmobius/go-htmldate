@@ -1,6 +1,6 @@
 // This file is part of go-htmldate, Go package for extracting publication dates from a web page.
 // Source available in <https://github.com/markusmobius/go-trafilatura>.
-// Copyright (C) 2021 Markus Mobius
+// Copyright (C) 2022 Markus Mobius
 //
 // This program is free software: you can redistribute it and/or modify it under the terms of
 // the GNU General Public License as published by the Free Software Foundation, either version 3
