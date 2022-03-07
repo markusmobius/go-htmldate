@@ -33,7 +33,7 @@ and extensive mode is negligible, so might as well use the extensive mode.
 
 ## Status
 
-This package is stable enough for use and up to date with the original `htmldate` commit [a1c2d60][2].
+This package is stable enough for use and up to date with the original `htmldate` commit [752c0eb][2].
 However, since time extraction is a brand new feature which doesn't exist in the original, use it with
 care. So far it works quite nicely on most news sites that I've tried, but it still needs more testing.
 
@@ -99,10 +99,12 @@ clone this repository then run:
 go run scripts/comparison/*.go
 ```
 
-For the test, we use 500 documents which were selected from large collections of web pages in German.
-For the sake of completeness a few documents in other languages were added (mostly in English and French
-but also in other European languages, Chinese, Japanese and Arabic). Here is the result when tested in my
-PC (Intel i7-8550U @ 4.000GHz, RAM 16 GB):
+For the test, we use 500 documents which taken from two sources:
+
+- 225 documents from BBAW collection by Adrien Barbaresi and Lukas Kozmus.
+- 275 documents from [Data Culture Group][dcg] from Northeastern University for additional English news.
+
+Here is the result when tested in my PC (Intel i7-8550U @ 4.000GHz, RAM 16 GB):
 
 |         Package         | Precision | Recall | Accuracy | F-Score | Speed (s) |
 | :---------------------: | :-------: | :----: | :------: | :-----: | :-------: |
@@ -130,7 +132,7 @@ Like the original, `go-htmldate` is distributed under the [GNU General Public Li
 
 [0]: https://github.com/adbar/htmldate
 [1]: https://github.com/adbar
-[2]: https://github.com/adbar/htmldate/commit/a1c2d606fae448899fb3cdae2ab822f81f567a0e
-[3]: https://github.com/scrapinghub/dateparser
+[2]: https://github.com/adbar/htmldate/commit/752c0eb8412f36724a71cb7ad31f3d208524a667
+[dcg]: https://dataculturegroup.org
 [ref-badge]: https://pkg.go.dev/badge/github.com/markusmobius/go-htmldate.svg
 [ref-link]: https://pkg.go.dev/github.com/markusmobius/go-htmldate
