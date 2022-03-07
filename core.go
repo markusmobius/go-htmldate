@@ -742,7 +742,7 @@ func searchPage(htmlString string, opts Options) (string, time.Time) {
 	mapPatternRawString := make(map[string]string)
 
 	for _, candidate := range candidates {
-		parts := rxMyPattern.FindStringSubmatch(candidate.Patternz)
+		parts := rxMyPattern.FindStringSubmatch(candidate.Pattern)
 		if len(parts) < 3 {
 			continue
 		}
@@ -756,15 +756,15 @@ func searchPage(htmlString string, opts Options) (string, time.Time) {
 			mapPatternRawString[newPattern] = candidate.RawString
 		}
 
-		mapPatternCount[newPattern] += candidate.Occurences
+		mapPatternCount[newPattern] += candidate.Count
 	}
 
 	candidates = make([]yearCandidate, len(uniquePatterns))
 	for i, pattern := range uniquePatterns {
 		candidates[i] = yearCandidate{
-			Patternz:   pattern,
-			Occurences: mapPatternCount[pattern],
-			RawString:  mapPatternRawString[pattern],
+			Pattern:   pattern,
+			Count:     mapPatternCount[pattern],
+			RawString: mapPatternRawString[pattern],
 		}
 	}
 
@@ -832,10 +832,6 @@ func searchPattern(htmlString string, rxPattern, rxCatchPattern, rxYearPattern *
 
 // selectCandidate selects a candidate among the most frequent matches.
 func selectCandidate(candidates []yearCandidate, catchPattern, yearPattern *regexp.Regexp, opts Options) (string, []string) {
-	// Prepare variables
-	minYear := opts.MinDate.Year()
-	maxYear := opts.MaxDate.Year()
-
 	// Make sure candidates exist and less than `maxPossibleCandidates`
 	nCandidates := len(candidates)
 	if nCandidates == 0 || nCandidates >= maxPossibleCandidates {
@@ -845,7 +841,7 @@ func selectCandidate(candidates []yearCandidate, catchPattern, yearPattern *rege
 	// If there is only one candidates, check it immediately
 	if nCandidates == 1 {
 		for _, item := range candidates {
-			matches := catchPattern.FindStringSubmatch(item.Patternz)
+			matches := catchPattern.FindStringSubmatch(item.Pattern)
 			if len(matches) > 0 {
 				return item.RawString, matches
 			}
@@ -854,7 +850,7 @@ func selectCandidate(candidates []yearCandidate, catchPattern, yearPattern *rege
 
 	// Get 10 most frequent candidates
 	sort.SliceStable(candidates, func(a, b int) bool {
-		return candidates[a].Occurences > candidates[b].Occurences
+		return candidates[a].Count > candidates[b].Count
 	})
 
 	if len(candidates) > 10 {
@@ -866,54 +862,56 @@ func selectCandidate(candidates []yearCandidate, catchPattern, yearPattern *rege
 	// Sort and find probable candidates
 	if !opts.UseOriginalDate {
 		sort.SliceStable(candidates, func(a, b int) bool {
-			return candidates[a].Patternz > candidates[b].Patternz
+			return candidates[a].Pattern > candidates[b].Pattern
 		})
 	} else {
 		sort.SliceStable(candidates, func(a, b int) bool {
-			return candidates[a].Patternz < candidates[b].Patternz
+			return candidates[a].Pattern < candidates[b].Pattern
 		})
 	}
 
-	firstCandidate := candidates[0]
-	secondCandidate := candidates[1]
-	log.Debug().Msgf("best candidate: %v, %v", firstCandidate, secondCandidate)
+	candidate1 := candidates[0]
+	candidate2 := candidates[1]
+	log.Debug().Msgf("best candidate: %v, %v", candidate1, candidate2)
 
-	// If there are same number of occurences, use the first one
+	// Use plausability heuristics
+	year1Parts := yearPattern.FindStringSubmatch(candidate1.Pattern)
+	year2Parts := yearPattern.FindStringSubmatch(candidate2.Pattern)
+	if len(year1Parts) < 2 || len(year2Parts) < 2 {
+		return "", nil
+	}
+
+	year1, _ := strconv.Atoi(year1Parts[1])
+	year2, _ := strconv.Atoi(year2Parts[1])
+	_, year1isValid := validateDateParts(year1, 1, 1, opts)
+	_, year2isValid := validateDateParts(year2, 1, 1, opts)
+
 	var matches []string
 	var rawString string
 
-	if firstCandidate.Occurences == secondCandidate.Occurences {
-		rawString = firstCandidate.RawString
-		matches = catchPattern.FindStringSubmatch(firstCandidate.Patternz)
-	} else {
-		// Get year from the candidate
-		year1Parts := yearPattern.FindStringSubmatch(firstCandidate.Patternz)
-		year2Parts := yearPattern.FindStringSubmatch(secondCandidate.Patternz)
-		if len(year1Parts) < 2 || len(year2Parts) < 2 {
-			return "", nil
-		}
-
-		year1, _ := strconv.Atoi(year1Parts[1])
-		year2, _ := strconv.Atoi(year2Parts[1])
-
-		// Safety net: plausibility
-		if year1 < minYear || year1 > maxYear {
-			if year2 >= minYear && year2 <= maxYear {
-				rawString = secondCandidate.RawString
-				matches = catchPattern.FindStringSubmatch(secondCandidate.Patternz)
-			} else {
-				log.Debug().Msgf("no suitable candidate: %d %d", year1, year2)
-			}
-		}
-
-		// Safety net: newer date but up to 50% less frequent
-		if year2 != year1 && float64(secondCandidate.Occurences)/float64(firstCandidate.Occurences) > 0.5 {
-			rawString = secondCandidate.RawString
-			matches = catchPattern.FindStringSubmatch(secondCandidate.Patternz)
+	// Safety net: plausibility
+	if year1isValid && year2isValid {
+		if candidate1.Count == candidate2.Count {
+			// Same number of occurrences: always take top of the pile?
+			rawString = candidate1.RawString
+			matches = catchPattern.FindStringSubmatch(candidate1.Pattern)
+		} else if year2 != year1 && float64(candidate1.Count)/float64(candidate2.Count) > 0.5 {
+			// Safety net: newer date but up to 50% less frequent
+			rawString = candidate2.RawString
+			matches = catchPattern.FindStringSubmatch(candidate2.Pattern)
 		} else {
-			rawString = firstCandidate.RawString
-			matches = catchPattern.FindStringSubmatch(firstCandidate.Patternz)
+			// Not newer or hopefully not significant
+			rawString = candidate1.RawString
+			matches = catchPattern.FindStringSubmatch(candidate1.Pattern)
 		}
+	} else if !year1isValid && year2isValid {
+		rawString = candidate2.RawString
+		matches = catchPattern.FindStringSubmatch(candidate2.Pattern)
+	} else if year1isValid && !year2isValid {
+		rawString = candidate1.RawString
+		matches = catchPattern.FindStringSubmatch(candidate1.Pattern)
+	} else {
+		log.Debug().Msgf("no suitable candidate: %d %d", year1, year2)
 	}
 
 	return rawString, matches

@@ -840,8 +840,8 @@ func createCandidates(items ...string) []yearCandidate {
 	var candidates []yearCandidate
 	for _, item := range uniqueItems {
 		candidates = append(candidates, yearCandidate{
-			Patternz:   item,
-			Occurences: mapItemCount[item],
+			Pattern: item,
+			Count:   mapItemCount[item],
 		})
 	}
 

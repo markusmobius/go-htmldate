@@ -25,9 +25,9 @@ import (
 )
 
 type yearCandidate struct {
-	Patternz   string
-	Occurences int
-	RawString  string
+	Pattern   string
+	Count     int
+	RawString string
 }
 
 // validateDateParts checks if date parts can be used to generate a valid date
@@ -188,9 +188,9 @@ func plausibleYearFilter(htmlString string, rxPattern, rxYearPattern *regexp.Reg
 
 		// Save the valid matches
 		validOccurences = append(validOccurences, yearCandidate{
-			Patternz:   match,
-			Occurences: mapMatchCount[match],
-			RawString:  mapMatchRawString[match],
+			Pattern:   match,
+			Count:     mapMatchCount[match],
+			RawString: mapMatchRawString[match],
 		})
 	}
 
@@ -239,7 +239,7 @@ func normalizeCandidates(candidates []yearCandidate, opts Options) []yearCandida
 	mapPatternRawString := make(map[string]string)
 
 	for _, candidate := range candidates {
-		dt := fastParse(candidate.Patternz, opts)
+		dt := fastParse(candidate.Pattern, opts)
 		if dt.IsZero() {
 			continue
 		}
@@ -250,15 +250,15 @@ func normalizeCandidates(candidates []yearCandidate, opts Options) []yearCandida
 			mapPatternRawString[newPattern] = candidate.RawString
 		}
 
-		mapPatternCount[newPattern] += candidate.Occurences
+		mapPatternCount[newPattern] += candidate.Count
 	}
 
 	normalizedCandidates := make([]yearCandidate, len(uniquePatterns))
 	for i, pattern := range uniquePatterns {
 		normalizedCandidates[i] = yearCandidate{
-			Patternz:   pattern,
-			Occurences: mapPatternCount[pattern],
-			RawString:  mapPatternRawString[pattern],
+			Pattern:   pattern,
+			Count:     mapPatternCount[pattern],
+			RawString: mapPatternRawString[pattern],
 		}
 	}
 
