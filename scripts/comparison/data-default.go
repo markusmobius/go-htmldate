@@ -48,7 +48,7 @@ var defaultComparisonData = []comparisonEntry{
 		File:      "carta.info.html",
 		Date:      "2012-05-08",
 		Extensive: "2012-05-08",
-		Fast:      "None",
+		Fast:      "",
 	}, {
 		URL:       "https://500px.com/photo/26034451/spring-in-china-by-alexey-kruglov",
 		File:      "500px.com.spring.html",
@@ -66,7 +66,7 @@ var defaultComparisonData = []comparisonEntry{
 		File:      "creativecommons.org.html",
 		Date:      "2016-05-22",
 		Extensive: "2016-05-22",
-		Fast:      "None",
+		Fast:      "",
 	}, {
 		URL:       "https://en.blog.wordpress.com/",
 		File:      "blog.wordpress.com.html",
@@ -90,13 +90,13 @@ var defaultComparisonData = []comparisonEntry{
 		File:      "pixabay.com.tos.html",
 		Date:      "2017-08-09",
 		Extensive: "2017-08-09",
-		Fast:      "None",
+		Fast:      "",
 	}, {
 		URL:       "https://www.austria.info/",
 		File:      "austria.info.html",
 		Date:      "2017-09-07",
 		Extensive: "2017-09-07",
-		Fast:      "None",
+		Fast:      "",
 	}, {
 		URL:       "https://www.befifty.de/home/2017/7/12/unter-uns-montauk",
 		File:      "befifty.montauk.html",
@@ -174,7 +174,7 @@ var defaultComparisonData = []comparisonEntry{
 		File:      "weltwoche.ch.html",
 		Date:      "2019-01-23",
 		Extensive: "2019-01-23",
-		Fast:      "None",
+		Fast:      "",
 	}, {
 		URL:       "http://www.freundeskreis-videoclips.de/waehlen-sie-car-player-tipps-zur-auswahl-der-besten-car-cd-player/",
 		File:      "freundeskreis-videoclips.de.html",
@@ -234,7 +234,7 @@ var defaultComparisonData = []comparisonEntry{
 		File:      "pbrunst.de.html",
 		Date:      "2011-12-03",
 		Extensive: "2010-06-01",
-		Fast:      "None",
+		Fast:      "",
 	}, {
 		URL:       "http://www.stuttgart.de/",
 		File:      "stuttgart.de.html",
@@ -276,7 +276,7 @@ var defaultComparisonData = []comparisonEntry{
 		File:      "wienbadminton.at.html",
 		Date:      "2018-05-06",
 		Extensive: "2018-05-06",
-		Fast:      "None",
+		Fast:      "",
 	}, {
 		URL:       "https://blog.wikimedia.org/2018/06/28/interactive-maps-now-in-your-language/",
 		File:      "blog.wikimedia.interactivemaps.html",
@@ -318,7 +318,7 @@ var defaultComparisonData = []comparisonEntry{
 		File:      "revolutionpermanente.fr.antonin.html",
 		Date:      "2019-06-13",
 		Extensive: "2019-06-13",
-		Fast:      "None",
+		Fast:      "",
 	}, {
 		URL:       "http://www.wara-enforcement.org/guinee-un-braconnier-delephant-interpelle-et-condamne-a-la-peine-maximale/",
 		File:      "wara-enforcement.org.guinee.html",
@@ -330,7 +330,7 @@ var defaultComparisonData = []comparisonEntry{
 		File:      "ebene11.com.autocad.html",
 		Date:      "2017-01-12",
 		Extensive: "2017-01-12",
-		Fast:      "None",
+		Fast:      "",
 	}, {
 		URL:       "https://www.acredis.com/schoenheitsoperationen/augenlidstraffung/",
 		File:      "acredis.com.augenlidstraffung.html",
@@ -342,7 +342,7 @@ var defaultComparisonData = []comparisonEntry{
 		File:      "hertie-school.org.leyen.html",
 		Date:      "2019-12-02",
 		Extensive: "2019-03-27",
-		Fast:      "None",
+		Fast:      "",
 	}, {
 		URL:       "https://www.adac.de/rund-ums-fahrzeug/tests/kindersicherheit/kindersitztest-2018/",
 		File:      "adac.de.kindersitztest.html",
@@ -558,7 +558,7 @@ var defaultComparisonData = []comparisonEntry{
 		File:      "prof-pc.de.html",
 		Date:      "2017-09-10",
 		Extensive: "2017-09-10",
-		Fast:      "None",
+		Fast:      "",
 	}, {
 		URL:       "https://mobilsicher.de/aktuelles/apple-kippt-verschluesselungsplaene-fuer-icloud",
 		File:      "mobilsicher.de.icloud.html",
@@ -768,7 +768,7 @@ var defaultComparisonData = []comparisonEntry{
 		File:      "qualisys.eu.gefahrstoff.html",
 		Date:      "2019-12-19",
 		Extensive: "2019-12-19",
-		Fast:      "None",
+		Fast:      "",
 	}, {
 		URL:       "http://www.xinhuanet.com/local/2020-02/19/c_1125597921.htm",
 		File:      "xinhuanet.com.c_1125597921.htm",
@@ -918,7 +918,7 @@ var defaultComparisonData = []comparisonEntry{
 		File:      "parcoabruzzo.it.58354.html",
 		Date:      "2020-01-14",
 		Extensive: "2020-01-01",
-		Fast:      "None",
+		Fast:      "",
 	}, {
 		URL:       "https://www.timesofisrael.com/state-of-washington-swears-in-first-native-american-jewish-supreme-court-justice/",
 		File:      "timesofisrael.com.washington.html",
@@ -1530,7 +1530,7 @@ var defaultComparisonData = []comparisonEntry{
 		File:      "nhk.or.jp.k100.html",
 		Date:      "2019-06-24",
 		Extensive: "2022-03-04",
-		Fast:      "None",
+		Fast:      "",
 	}, {
 		URL:       "https://security.googleblog.com/2020/05/enhanced-safe-browsing-protection-now.html",
 		File:      "security.googleblog.com.protection.html",
@@ -1608,7 +1608,7 @@ var defaultComparisonData = []comparisonEntry{
 		File:      "archive.org.stol.it.berlusconi.html",
 		Date:      "2012-02-14",
 		Extensive: "2012-02-11",
-		Fast:      "None",
+		Fast:      "",
 	}, {
 		URL:       "https://web.archive.org/web/20130217080612/http://tv-orange.de/2012/08/future-of-hope-island-befreit-sich-von-den-bankstern-der-film/",
 		File:      "archive.org.tv-orange.de.future.html",
@@ -1638,7 +1638,7 @@ var defaultComparisonData = []comparisonEntry{
 		File:      "wordsmith.org.maudlin.html",
 		Date:      "2009-04-07",
 		Extensive: "2009-04-07",
-		Fast:      "None",
+		Fast:      "",
 	}, {
 		URL:       "https://strangemachines.io/articles/performant-python",
 		File:      "strangemachines.io.performant.html",
@@ -1716,13 +1716,13 @@ var defaultComparisonData = []comparisonEntry{
 		File:      "bdzv.de.eliasson.html",
 		Date:      "2020-04-24",
 		Extensive: "2020-04-24",
-		Fast:      "None",
+		Fast:      "",
 	}, {
 		URL:       "https://www.thelocal.se/20200428/meet-the-swede-who-tattooed-a-state-epidemiologists-face-on-his-arm",
 		File:      "thelocal.se.tattooed.html",
 		Date:      "2020-04-28",
 		Extensive: "2020-04-28",
-		Fast:      "None",
+		Fast:      "",
 	}, {
 		URL:       "https://pythonspeed.com/articles/pipenv-docker/",
 		File:      "pythonspeed.com.docker.html",
