@@ -395,7 +395,7 @@ func examineMetaElements(doc *html.Node, opts Options) (string, time.Time) {
 			} else if inMap(name, dateAttributes) { // date
 				log.Debug().Msgf("examining meta name: %s", outerHtml)
 				strMeta, tMeta = tryYmdDate(content, opts)
-			} else if strIn(name, "lastmodified", "last-modified", "lastmod") { // modified
+			} else if strIn(name, modifiedAttrKeys...) { // modified
 				log.Debug().Msgf("examining meta name: %s", outerHtml)
 				if !opts.UseOriginalDate {
 					strMeta, tMeta = tryYmdDate(content, opts)
@@ -408,7 +408,7 @@ func examineMetaElements(doc *html.Node, opts Options) (string, time.Time) {
 			strMeta, tMeta = tryYmdDate(content, opts)
 		} else if itemProp != "" { // Item scope
 			attribute := strings.ToLower(itemProp)
-			if strIn(attribute, "datecreated", "datepublished", "pubyear") ||
+			if strIn(attribute, importantItemPropAttrs...) ||
 				(attribute == "datemodified" && !opts.UseOriginalDate) {
 				log.Debug().Msgf("examining meta itemprop: %s", outerHtml)
 				if dateTime != "" {
@@ -494,7 +494,7 @@ func examineAbbrElements(doc *html.Node, opts Options) (string, time.Time) {
 		}
 
 		// Handle class
-		if class != "" && strIn(class, "published", "date-published", "time-published") {
+		if class != "" && strIn(class, importantClassAttrs...) {
 			text := normalizeSpaces(etreeText(elem))
 			title := strings.TrimSpace(dom.GetAttribute(elem, "title"))
 

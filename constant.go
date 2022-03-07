@@ -156,6 +156,12 @@ var propertyModified = sliceToMap(
 	"og:article:modified_time", "og:updated_time", "og:modified_time",
 	"release_date", "updated_time")
 
+var (
+	modifiedAttrKeys       = []string{"lastmodified", "last-modified", "lastmod"}
+	importantClassAttrs    = []string{"published", "date-published", "time-published"}
+	importantItemPropAttrs = []string{"datecreated", "datepublished", "pubyear"}
+)
+
 func sliceToMap(strings ...string) map[string]struct{} {
 	result := make(map[string]struct{})
 	for _, s := range strings {
