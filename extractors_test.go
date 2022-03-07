@@ -104,6 +104,10 @@ func Test_fastParse(t *testing.T) {
 	assert.Equal(t, "2020-01-01", parse("2020.01"))
 	assert.Equal(t, "1998-01-01", parse("1998-01"))
 	assert.Equal(t, "1998-10-10", parse("10.10.98"))
+	assert.Equal(t, "2004-12-12", parse("abcd 20041212 efgh"))
+	assert.Equal(t, "2004-02-12", parse("abcd 2004-2-12 efgh"))
+	assert.Equal(t, "2004-02-01", parse("abcd 2004-2 efgh"))
+	assert.Equal(t, "2004-02-01", parse("abcd 2004-2 efgh"))
 	assert.Equal(t, "", parse("2020.13"))
 	assert.Equal(t, "", parse("12122004"))
 	assert.Equal(t, "", parse("1212-20-04"))
@@ -111,6 +115,7 @@ func Test_fastParse(t *testing.T) {
 	assert.Equal(t, "", parse("36/14/2016"))
 	assert.Equal(t, "", parse("2019 28 meh"))
 	assert.Equal(t, "", parse("January 12 1098"))
+	assert.Equal(t, "", parse("abcd 32. Januar 2020 efgh"))
 }
 
 func Test_regexParse(t *testing.T) {

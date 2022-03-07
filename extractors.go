@@ -141,7 +141,7 @@ func tryYmdDate(s string, opts Options) (string, time.Time) {
 // In the original Python library, this function is named `custom_parse`, but I
 // renamed it to `fastParse` because I think it's more suitable to its purpose.
 func fastParse(s string, opts Options) time.Time {
-	// 1. Try YYYYMMDD first
+	// 1. Try YYYYMMDD without regex first
 	// This also handle '201709011234' which not covered by dateparser
 	if len(s) >= 8 && isDigit(s[:8]) {
 		year, _ := strconv.Atoi(s[:4])
@@ -154,8 +154,22 @@ func fastParse(s string, opts Options) time.Time {
 		}
 	}
 
+	// 1.b. Try YYYYMMDD with regex
+	parts := rxYmdNoSepPattern.FindStringSubmatch(s)
+	if len(parts) == 2 {
+		text := parts[1]
+		year, _ := strconv.Atoi(text[:4])
+		month, _ := strconv.Atoi(text[4:6])
+		day, _ := strconv.Atoi(text[6:8])
+
+		if dt, valid := validateDateParts(year, month, day, opts); valid {
+			log.Debug().Msgf("fast parse found Y-M-D without separator: %s", s[:8])
+			return dt
+		}
+	}
+
 	// 2. Try Y-M-D pattern since it's the one used in ISO-8601
-	parts := rxYmdPattern.FindStringSubmatch(s)
+	parts = rxYmdPattern.FindStringSubmatch(s)
 	if len(parts) == 4 {
 		year, _ := strconv.Atoi(parts[1])
 		month, _ := strconv.Atoi(parts[2])
