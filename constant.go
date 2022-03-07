@@ -133,17 +133,23 @@ var monthNumber = map[string]int{
 
 var dateAttributes = sliceToMap(
 	"article.created", "article_date_original",
-	"article.published", "created", "cxenseparse:recs:publishtime",
-	"date", "date_published", "dc.date", "dc.date.created",
-	"dc.date.issued", "dcterms.date", "gentime",
+	"article.published", "article:published_time",
+	"bt:pubdate", "citation_date", "citation_publication_date",
+	"created", "cxenseparse:recs:publishtime",
+	"date", "date_published",
+	"datecreated", "dateposted", "datepublished",
+	// Dublin Core: https://wiki.whatwg.org/wiki/MetaExtensions
+	"dc.date", "dc.created", "dc.date.created",
+	"dc.date.issued", "dc.date.publication",
+	"dcterms.created", "dcterms.date",
+	"dcterms.issued", "dc:created", "dc:date",
+	"gentime",
+	// Open Graph: https://opengraphprotocol.org/
+	"og:published_time", "og:article:published_time",
 	"originalpublicationdate", "parsely-pub-date",
 	"pubdate", "publishdate", "publish_date",
-	"published-date", "publication_date", "sailthru.date",
-	"timestamp", "citation_publication_date",
-	"article:published_time", "bt:pubdate", "datecreated",
-	"dateposted", "datepublished", "dc:created", "dc:date",
-	"og:article:published_time", "og:published_time", "og:pubdate",
-	"sailthru.date", "rnews:datepublished")
+	"published-date", "publication_date", "rnews:datepublished",
+	"sailthru.date", "shareaholic:article_published_time", "timestamp")
 
 var propertyModified = sliceToMap(
 	"article:modified_time", "datemodified", "modified_time",
