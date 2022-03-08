@@ -126,6 +126,12 @@ func Test_HtmlDate(t *testing.T) {
 	str = `<html><head><meta http-equiv="last-modified" content="2018-02-05"/></head><body></body></html>`
 	checkString(str, "2018-02-05")
 
+	str = `<html><head><meta name="lastmodified" content="2018-02-05"/></head><body></body></html>`
+	checkString(str, "2018-02-05", useOriginalDate)
+
+	str = `<html><head><meta name="lastmodified" content="2018-02-05"/></head><body></body></html>`
+	checkString(str, "2018-02-05")
+
 	str = `<html><head><meta http-equiv="date" content="2017-09-01"/></head><body></body></html>`
 	checkString(str, "2017-09-01", useOriginalDate)
 
@@ -695,12 +701,31 @@ func Test_selectCandidate(t *testing.T) {
 	rxCatch := regexp.MustCompile(`([0-9]{4})-([0-9]{2})-([0-9]{2})`)
 	opts := Options{MinDate: defaultMinDate, MaxDate: defaultMaxDate}
 
-	// Candidate exist
-	candidates := createCandidates("2016-12-23", "2016-12-23", "2016-12-23",
-		"2016-12-23", "2017-08-11", "2016-07-12", "2017-11-28")
+	// Nonsense
+	candidates := createCandidates("20208956", "20208956", "20208956",
+		"19018956", "209561", "22020895607-12", "2-28")
 	_, result := selectCandidate(candidates, rxCatch, rxYear, opts)
-	assert.NotEmpty(t, result)
+	assert.Empty(t, result)
+
+	// Plausible
+	candidates = createCandidates("2016-12-23", "2016-12-23", "2016-12-23",
+		"2016-12-23", "2017-08-11", "2016-07-12", "2017-11-28")
+	_, result = selectCandidate(candidates, rxCatch, rxYear, opts)
 	assert.Equal(t, "2017-11-28", result[0])
+
+	opts.UseOriginalDate = true
+	_, result = selectCandidate(candidates, rxCatch, rxYear, opts)
+	assert.Equal(t, "2016-07-12", result[0])
+
+	// Mix plausible and implausible
+	candidates = createCandidates("2116-12-23", "2116-12-23", "2116-12-23",
+		"2017-08-11", "2017-08-11")
+	_, result = selectCandidate(candidates, rxCatch, rxYear, opts)
+	assert.Equal(t, "2017-08-11", result[0])
+
+	opts.UseOriginalDate = false
+	_, result = selectCandidate(candidates, rxCatch, rxYear, opts)
+	assert.Equal(t, "2017-08-11", result[0])
 
 	// Candidates not exist
 	candidates = createCandidates("20208956", "20208956", "20208956",
@@ -754,6 +779,10 @@ func Test_searchPage(t *testing.T) {
 
 	_, dt = searchPage(`<html><body><p>It could be 2015-04-30 or 2003-11-24.</p></body></html>`, opts)
 	assert.Equal(t, "2015-04-30", format(dt))
+
+	useOriginal := mergeOpts(Options{UseOriginalDate: true}, opts)
+	_, dt = searchPage(`<html><body><p>It could be 2015-04-30 or 2003-11-24.</p></body></html>`, useOriginal)
+	assert.Equal(t, "2003-11-24", format(dt))
 
 	_, dt = searchPage(`<html><body><p>It could be 03/03/2077 or 03/03/2013.</p></body></html>`, opts)
 	assert.Equal(t, "2013-03-03", format(dt))
