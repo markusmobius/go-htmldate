@@ -153,10 +153,6 @@ func runHtmlDate(doc *html.Node, extensive bool) (string, error) {
 func evaluateResult(result string, entry comparisonEntry) evaluationResult {
 	var ev evaluationResult
 
-	if result == "" && entry.Date == "" {
-		ev.TrueNegatives++
-	}
-
 	switch {
 	case result == "" && entry.Date == "":
 		ev.TrueNegatives++

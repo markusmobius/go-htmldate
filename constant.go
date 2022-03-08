@@ -157,9 +157,11 @@ var propertyModified = sliceToMap(
 	"release_date", "updated_time")
 
 var (
-	modifiedAttrKeys       = []string{"lastmodified", "last-modified", "lastmod"}
-	importantClassAttrs    = []string{"published", "date-published", "time-published"}
-	importantItemPropAttrs = []string{"datecreated", "datepublished", "pubyear"}
+	modifiedAttrKeys = []string{"lastmodified", "last-modified", "lastmod"}
+	classAttrKeys    = []string{"published", "date-published", "time-published"}
+	itemPropAttrKeys = []string{"datecreated", "datepublished", "pubyear", "datemodified", "dateupdate"}
+	itemPropOriginal = itemPropAttrKeys[:3]
+	itemPropModified = itemPropAttrKeys[3:]
 )
 
 func sliceToMap(strings ...string) map[string]struct{} {

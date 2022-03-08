@@ -159,6 +159,15 @@ func Test_HtmlDate(t *testing.T) {
 	str = `<html><head><meta itemprop="DateModified" datetime="2018-02-06"/></head><body></body></html>`
 	checkString(str, "2018-02-06")
 
+	str = `<html><head><meta name="DC.Issued" content="2021-07-13"/></head><body></body></html>`
+	checkString(str, "2021-07-13")
+
+	str = `<html><head><meta itemprop="dateUpdate" datetime="2018-02-06"/></head><body></body></html>`
+	checkString(str, "2018-02-06", useOriginalDate)
+
+	str = `<html><head><meta itemprop="dateUpdate" datetime="2018-02-06"/></head><body></body></html>`
+	checkString(str, "2018-02-06")
+
 	// Time in document body
 	url = "https://www.facebook.com/visitaustria/"
 	checkMockFile(url, "2017-10-08")

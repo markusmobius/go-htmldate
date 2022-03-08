@@ -408,13 +408,25 @@ func examineMetaElements(doc *html.Node, opts Options) (string, time.Time) {
 			strMeta, tMeta = tryYmdDate(content, opts)
 		} else if itemProp != "" { // Item scope
 			attribute := strings.ToLower(itemProp)
-			if strIn(attribute, importantItemPropAttrs...) ||
-				(attribute == "datemodified" && !opts.UseOriginalDate) {
+			if strIn(attribute, itemPropAttrKeys...) {
+				var strAttempt string
+				var tAttempt time.Time
 				log.Debug().Msgf("examining meta itemprop: %s", outerHtml)
+
 				if dateTime != "" {
-					strMeta, tMeta = tryYmdDate(dateTime, opts)
+					strAttempt, tAttempt = tryYmdDate(dateTime, opts)
 				} else if content != "" {
-					strMeta, tMeta = tryYmdDate(content, opts)
+					strAttempt, tAttempt = tryYmdDate(content, opts)
+				}
+
+				if !tAttempt.IsZero() {
+					if (strIn(attribute, itemPropOriginal...) && opts.UseOriginalDate) ||
+						(strIn(attribute, itemPropModified...) && !opts.UseOriginalDate) {
+						strMeta, tMeta = strAttempt, tAttempt
+					} else {
+						// TODO: put on hold, hurts precision
+						// strReserve, tReserve = strAttempt, tAttempt
+					}
 				}
 			} else if attribute == "copyrightyear" { // reserve with copyrightyear
 				log.Debug().Msgf("examining meta itemprop: %s", outerHtml)
@@ -494,7 +506,7 @@ func examineAbbrElements(doc *html.Node, opts Options) (string, time.Time) {
 		}
 
 		// Handle class
-		if class != "" && strIn(class, importantClassAttrs...) {
+		if class != "" && strIn(class, classAttrKeys...) {
 			text := normalizeSpaces(etreeText(elem))
 			title := strings.TrimSpace(dom.GetAttribute(elem, "title"))
 
