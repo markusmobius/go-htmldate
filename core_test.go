@@ -551,6 +551,24 @@ func Test_HtmlDate(t *testing.T) {
 	str = `<html><body><p><em>Last updated: 01/23/2021</em></p></body></html>`
 	checkString(str, "2021-01-23")
 
+	str = `<html><body><p><em>Last updated: 01/23/21</em></p></body></html>`
+	checkString(str, "2021-01-23")
+
+	str = `<html><body><p><em>Last updated: 1/23/21</em></p></body></html>`
+	checkString(str, "2021-01-23")
+
+	str = `<html><body><p><em>Last updated: 23/1/21</em></p></body></html>`
+	checkString(str, "2021-01-23")
+
+	str = `<html><body><p><em>Last updated: 23/01/21</em></p></body></html>`
+	checkString(str, "2021-01-23")
+
+	str = `<html><body><p><em>Last updated: 23/01/2021</em></p></body></html>`
+	checkString(str, "2021-01-23")
+
+	str = `<html><body><p><em>Last updated: 33/23/3033</em></p></body></html>`
+	checkString(str, "")
+
 	str = `<html><body><p><em>Published: 5/5/2020</em></p></body></html>`
 	checkString(str, "2020-05-05")
 
