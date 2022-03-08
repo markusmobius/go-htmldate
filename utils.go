@@ -33,7 +33,7 @@ func cleanDocument(doc *html.Node) *html.Node {
 	clone := dom.Clone(doc, true)
 
 	// Remove comments
-	removeHtmlCommentNode(clone)
+	// removeHtmlCommentNode(clone)
 
 	// Remove useless nodes
 	tagNames := []string{
