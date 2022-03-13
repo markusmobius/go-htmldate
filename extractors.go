@@ -273,16 +273,45 @@ func jsonSearch(doc *html.Node, opts Options) (string, time.Time) {
 		// Get the json text inside the script
 		jsonText := dom.TextContent(elem)
 		jsonText = strings.TrimSpace(jsonText)
+		log.Debug().Msgf("found JSON: %s", jsonText)
 
-		// Decode JSON text, assuming it is an object
-		data := map[string]interface{}{}
-		err := json.Unmarshal([]byte(jsonText), &data)
-		if err != nil {
+		// First, decode JSON text assuming it as array of object
+		var err error
+		arrayData := []map[string]interface{}{}
+		err = json.Unmarshal([]byte(jsonText), &arrayData)
+		if err == nil {
+			for _, data := range arrayData {
+				findDateTexts(data)
+			}
 			continue
 		}
 
-		// Find all dates recursively
-		findDateTexts(data)
+		// If it's not array, decode JSON text assuming it as an object
+		// There are some web pages whose JSON+LD contains additional trailing closing bracket
+		// which make JSON decoder failed. So, here if the JSON decoder failed we'll remove
+		// the last trailing bracket then try again.
+		objData := map[string]interface{}{}
+		for {
+			err = json.Unmarshal([]byte(jsonText), &objData)
+			if err == nil {
+				break
+			}
+
+			tmp := rxLastJsonBracket.ReplaceAllString(jsonText, "")
+			if tmp == jsonText {
+				break
+			}
+
+			jsonText = tmp
+		}
+
+		if err == nil {
+			findDateTexts(objData)
+			continue
+		}
+
+		// At this point JSON decoder has failed
+		log.Debug().Msgf("failed to decode JSON: %v", err)
 	}
 
 	// Parse date for each captured texts

@@ -109,7 +109,7 @@ Here is the result when tested in my PC (Intel i7-8550U @ 4.000GHz, RAM 16 GB):
 |         Package         | Precision | Recall | Accuracy | F-Score | Speed (s) |
 | :---------------------: | :-------: | :----: | :------: | :-----: | :-------: |
 |   `go-htmldate` fast    |   0.842   | 0.920  |  0.786   |  0.879  |   1.429   |
-| `go-htmldate` extensive |   0.827   | 0.993  |  0.822   |  0.902  |   3.035   |
+| `go-htmldate` extensive |   0.831   | 0.993  |  0.826   |  0.905  |   3.035   |
 
 So, from the table above, this port has a similar performance with the original `htmldate`.
 
