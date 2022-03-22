@@ -129,7 +129,7 @@ as good as the performance table above. However, it should be still good enough 
 
 ## Acknowledgements
 
-This package won't be exist without effort by Adrien Barbaresi, the author of the original Python package. He created `htmldate` as part of effort to build text databases for research. There are web pages for which neither the URL nor the server response provide a reliable way to find out when a document was published or modified. For more information:
+This package won't be exist without effort by Adrien Barbaresi, the author of the original Python package. He created `htmldate` as part of effort to build [text databases for research][k-web]. There are web pages for which neither the URL nor the server response provide a reliable way to find out when a document was published or modified. For more information:
 
 ```
 @article{barbaresi-2020-htmldate,
@@ -164,3 +164,4 @@ Like the original, `go-htmldate` is distributed under the [GNU General Public Li
 [paper-2]: https://hal.archives-ouvertes.fr/hal-02447264/document
 [paper-3]: https://hal.archives-ouvertes.fr/hal-01371704v2/document
 [wac-x]: https://www.sigwac.org.uk/wiki/WAC-X
+[k-web]: https://www.dwds.de/d/k-web
