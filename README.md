@@ -14,6 +14,7 @@ libraries should give similar performance and any improvements from the original
 - [Usage as CLI Application](#usage-as-cli-application)
 - [Performance](#performance)
 - [Additional Notes](#additional-notes)
+- [Acknowledgements](#acknowledgements)
 - [License](#license)
 
 ## Features
@@ -126,6 +127,28 @@ as good as the performance table above. However, it should be still good enough 
 > instead of the original, so ideally the performance test is done for modified date as well.
 > To be fair, collecting the modified date seems harder than collecting the original date though.
 
+## Acknowledgements
+
+This package won't be exist without effort by Adrien Barbaresi, the author of the original Python package. He created `htmldate` as part of effort to build text databases for research. There are web pages for which neither the URL nor the server response provide a reliable way to find out when a document was published or modified. For more information:
+
+```
+@article{barbaresi-2020-htmldate,
+  title = {{htmldate: A Python package to extract publication dates from web pages}},
+  author = "Barbaresi, Adrien",
+  journal = "Journal of Open Source Software",
+  volume = 5,
+  number = 51,
+  pages = 2439,
+  url = {https://doi.org/10.21105/joss.02439},
+  publisher = {The Open Journal},
+  year = 2020,
+}
+```
+
+- Barbaresi, A. ["htmldate: A Python package to extract publication dates from web pages"][paper-1], Journal of Open Source Software, 5(51), 2439, 2020. DOI: 10.21105/joss.02439
+- Barbaresi, A. ["Generic Web Content Extraction with Open-Source Software"][paper-2], Proceedings of KONVENS 2019, Kaleidoscope Abstracts, 2019.
+- Barbaresi, A. ["Efficient construction of metadata-enhanced web corpora"][paper-3], Proceedings of the [10th Web as Corpus Workshop (WAC-X)][wac-x], 2016.
+
 ## License
 
 Like the original, `go-htmldate` is distributed under the [GNU General Public License v3.0](LICENSE).
@@ -137,3 +160,7 @@ Like the original, `go-htmldate` is distributed under the [GNU General Public Li
 [dcg]: https://dataculturegroup.org
 [ref-badge]: https://pkg.go.dev/badge/github.com/markusmobius/go-htmldate.svg
 [ref-link]: https://pkg.go.dev/github.com/markusmobius/go-htmldate
+[paper-1]: https://doi.org/10.21105/joss.02439
+[paper-2]: https://hal.archives-ouvertes.fr/hal-02447264/document
+[paper-3]: https://hal.archives-ouvertes.fr/hal-01371704v2/document
+[wac-x]: https://www.sigwac.org.uk/wiki/WAC-X
