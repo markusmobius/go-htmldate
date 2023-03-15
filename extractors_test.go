@@ -77,6 +77,9 @@ func Test_tryYmdDate(t *testing.T) {
 	assert.Equal(t, "", try("14:35:10"))
 	assert.Equal(t, "", try("12:00 h"))
 	assert.Equal(t, "", try("2005-2006"))
+
+	// Mandarin
+	assert.Equal(t, "2022-02-25", try("发布时间: 2022-02-25 14:34"))
 }
 
 func Test_fastParse(t *testing.T) {
