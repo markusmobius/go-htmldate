@@ -114,14 +114,14 @@ func tryYmdDate(s string, opts Options) (string, time.Time) {
 		return s, timeZero
 	}
 
-	// Try to parse date
+	// Try to parse date using the faster method
 	parseResult := fastParse(s, opts)
 	if !parseResult.IsZero() {
 		return s, parseResult
 	}
 
+	// Use slow but extensive search, using dateparser
 	if !opts.SkipExtensiveSearch {
-		// Use dateparser to extensively parse the date
 		var cfg *dps.Configuration
 		if opts.DateParserConfig != nil {
 			cfg = opts.DateParserConfig
@@ -129,7 +129,7 @@ func tryYmdDate(s string, opts Options) (string, time.Time) {
 			cfg = externalDpsConfig
 		}
 
-		dt, _ := dps.Parse(cfg, s)
+		dt, _ := externalParser.Parse(cfg, s)
 		if validateDate(dt.Time, opts) {
 			return s, dt.Time
 		}

@@ -8,6 +8,7 @@ libraries should give similar performance and any improvements from the original
 
 ## Table of Contents
 
+- [Table of Contents](#table-of-contents)
 - [Features](#features)
 - [Status](#status)
 - [Usage as Go package](#usage-as-go-package)
@@ -34,7 +35,7 @@ and extensive mode is negligible, so might as well use the extensive mode.
 
 ## Status
 
-This package is stable enough for use and up to date with the original `htmldate` [v1.1.1][2] (commit [78c20b8][3]).
+This package is stable enough for use and up to date with the original `htmldate` (commit [a772d50][3]).
 However, since time extraction is a brand new feature which doesn't exist in the original, use it with
 care. So far it works quite nicely on most news sites that I've tried, but it still needs more testing.
 
@@ -156,7 +157,7 @@ Like the original, `go-htmldate` is distributed under the [GNU General Public Li
 [0]: https://github.com/adbar/htmldate
 [1]: https://github.com/adbar
 [2]: https://github.com/adbar/htmldate/tree/v1.1.1
-[3]: https://github.com/adbar/htmldate/commit/78c20b834826f3ea71107f4f64ee1d0038b0af77
+[3]: https://github.com/adbar/htmldate/commit/a772d50
 [dcg]: https://dataculturegroup.org
 [ref-badge]: https://pkg.go.dev/badge/github.com/markusmobius/go-htmldate.svg
 [ref-link]: https://pkg.go.dev/github.com/markusmobius/go-htmldate

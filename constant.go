@@ -30,10 +30,18 @@ var (
 	defaultMinDate = time.Date(1995, 1, 1, 0, 0, 0, 0, time.UTC)
 	defaultMaxDate = time.Now().AddDate(1, 0, 0)
 
+	externalParser = &dps.Parser{
+		ParserTypes: []dps.ParserType{
+			dps.CustomFormat,
+			dps.AbsoluteTime,
+		},
+	}
+
 	externalDpsConfig = &dps.Configuration{
-		DateOrder:           dps.DMY,
-		PreferredDayOfMonth: dps.First,
+		// DateOrder:           dps.DMY,
+		// PreferredDayOfMonth: dps.First,
 		PreferredDateSource: dps.Past,
+		StrictParsing:       true,
 	}
 )
 
