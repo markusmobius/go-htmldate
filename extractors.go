@@ -26,6 +26,7 @@ import (
 	"time"
 	"unicode/utf8"
 
+	htmlxpath "github.com/antchfx/htmlquery"
 	"github.com/go-shiori/dom"
 	dps "github.com/markusmobius/go-dateparser"
 	"golang.org/x/net/html"
@@ -35,7 +36,7 @@ import (
 // return the discarded elements as a list.
 func discardUnwanted(doc *html.Node) []*html.Node {
 	var discardedElements []*html.Node
-	for _, elem := range findElementsWithRule(doc, discardSelectorRule) {
+	for _, elem := range htmlxpath.Find(doc, discardXpathQuery) {
 		if elem.Parent != nil {
 			elem.Parent.RemoveChild(elem)
 			discardedElements = append(discardedElements, elem)

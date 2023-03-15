@@ -28,6 +28,7 @@ import (
 	"strings"
 	"time"
 
+	htmlxpath "github.com/antchfx/htmlquery"
 	"github.com/go-shiori/dom"
 	"github.com/rs/zerolog"
 	"golang.org/x/net/html"
@@ -162,7 +163,7 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 	// First try in pruned document
 	prunedDoc := dom.Clone(doc, true)
 	discarded := discardUnwanted(prunedDoc)
-	dateElements := findElementsWithRule(prunedDoc, dateSelectorRule)
+	dateElements := htmlxpath.Find(prunedDoc, dateXpathQuery)
 	rawString, dateResult := examineOtherElements(dateElements, opts)
 	if !dateResult.IsZero() {
 		return rawString, dateResult, nil
@@ -170,7 +171,7 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 
 	// Supply more expressions (other languages)
 	if !opts.SkipExtensiveSearch {
-		dateElements := findElementsWithRule(prunedDoc, additionalSelectorRule)
+		dateElements := htmlxpath.Find(prunedDoc, additionalXpathQuery)
 		rawString, dateResult := examineOtherElements(dateElements, opts)
 		if !dateResult.IsZero() {
 			return rawString, dateResult, nil
@@ -179,7 +180,7 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 
 	// Search in the discarded elements (currently: footers and archive.org banner)
 	for _, subTree := range discarded {
-		dateElements := findElementsWithRule(subTree, dateSelectorRule)
+		dateElements := htmlxpath.Find(subTree, dateXpathQuery)
 		rawString, dateResult := examineOtherElements(dateElements, opts)
 		if !dateResult.IsZero() {
 			return rawString, dateResult, nil
