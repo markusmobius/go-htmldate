@@ -212,6 +212,11 @@ func Test_HtmlDate(t *testing.T) {
 	str = `<html><body><time datetime="2011-09-28" class="entry-date"></time></body></html>`
 	checkString(str, "2011-09-28")
 
+	// Bug #54 in original Python library
+	// Their issues doesn't really affect us since our dateparser are different
+	str = `<html><body><time class="Feed-module--feed__item-meta-time--3t1fg" dateTime="November 29, 2020">November 2020</time></body></html>`
+	checkString(str, "2020-11-29")
+
 	// Precise pattern in document body
 	str = `<html><body><font size="2" face="Arial,Geneva,Helvetica">Bei <a href="../../sonstiges/anfrage.php"><b>Bestellungen</b></a> bitte Angabe der Titelnummer nicht vergessen!<br><br>Stand: 03.04.2019</font></body></html>`
 	checkString(str, "2019-04-03")
