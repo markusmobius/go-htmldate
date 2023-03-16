@@ -122,16 +122,9 @@ func tryYmdDate(s string, opts Options) (string, time.Time) {
 
 	// Use slow but extensive search, using dateparser
 	if !opts.SkipExtensiveSearch {
-		var cfg *dps.Configuration
-		if opts.DateParserConfig != nil {
-			cfg = opts.DateParserConfig
-		} else {
-			cfg = externalDpsConfig
-		}
-
-		dt, _ := externalParser.Parse(cfg, s)
-		if validateDate(dt.Time, opts) {
-			return s, dt.Time
+		dt := externalDateParser(s, opts)
+		if !dt.IsZero() {
+			return s, dt
 		}
 	}
 
@@ -224,6 +217,23 @@ func fastParse(s string, opts Options) time.Time {
 	}
 
 	log.Error().Msgf("failed to parse \"%s\"", s)
+	return timeZero
+}
+
+// externalDateParser uses go-dateparser package to extensively look for date.
+func externalDateParser(s string, opts Options) time.Time {
+	var cfg *dps.Configuration
+	if opts.DateParserConfig != nil {
+		cfg = opts.DateParserConfig
+	} else {
+		cfg = externalDpsConfig
+	}
+
+	dt, _ := externalParser.Parse(cfg, s)
+	if validateDate(dt.Time, opts) {
+		return dt.Time
+	}
+
 	return timeZero
 }
 

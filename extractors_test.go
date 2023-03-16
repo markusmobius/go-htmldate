@@ -19,10 +19,20 @@
 package htmldate
 
 import (
+	"strings"
 	"testing"
 
+	"github.com/go-shiori/dom"
 	"github.com/stretchr/testify/assert"
 )
+
+func Test_tryDiscard(t *testing.T) {
+	rawHtml := `<html><body><div id="wm-ipp">000</div><div>AAA</div></body></html>`
+	r := strings.NewReader(rawHtml)
+	doc, _ := dom.FastParse(r)
+	discarded := discardUnwanted(doc)
+	assert.Len(t, discarded, 1)
+}
 
 func Test_extractPartialUrlDate(t *testing.T) {
 	opts := Options{
@@ -119,6 +129,11 @@ func Test_fastParse(t *testing.T) {
 	assert.Equal(t, "", parse("2019 28 meh"))
 	assert.Equal(t, "", parse("January 12 1098"))
 	assert.Equal(t, "", parse("abcd 32. Januar 2020 efgh"))
+	// Plausible but impossible dates
+	assert.Equal(t, "2008-02-29", parse("February 29 2008"))
+	assert.Equal(t, "", parse("February 30 2008"))
+	assert.Equal(t, "2008-02-29", parse("XXTag, den 29. Februar 2008"))
+	assert.Equal(t, "", parse("XXTag, den 30. Februar 2008"))
 }
 
 func Test_regexParse(t *testing.T) {
@@ -268,4 +283,35 @@ func Test_regexParse(t *testing.T) {
 	assert.Equal(t, "1998-10-01", parse("1 Eki 1998"))
 	assert.Equal(t, "1998-11-01", parse("1 Kas 1998"))
 	assert.Equal(t, "1998-12-01", parse("1 Ara 1998"))
+}
+
+func Test_tryExternalDateParser(t *testing.T) {
+	opts := Options{
+		MinDate: defaultMinDate,
+		MaxDate: defaultMaxDate,
+	}
+
+	parse := func(s string) string {
+		dt := externalDateParser(s, opts)
+		if !dt.IsZero() {
+			return dt.Format("2006-01-02")
+		}
+		return ""
+	}
+
+	assert.Equal(t, "2020-01-01", parse("Wednesday, January 1st 2020"))
+	assert.Equal(t, "", parse("Random text with 2020"))
+
+	// https://github.com/scrapinghub/dateparser/issues/333
+	// assert.Equal(t, "0001-01-01", parse("1 January 0001"))
+
+	// https://github.com/scrapinghub/dateparser/issues/406
+	assert.Equal(t, "2018-12-04", parse("2018-04-12 17:20:03.12345678999a"))
+
+	// https://github.com/scrapinghub/dateparser/issues/685
+	assert.Equal(t, "", parse("12345678912 days"))
+
+	// https://github.com/scrapinghub/dateparser/issues/680
+	assert.Equal(t, "", parse("2.2250738585072011e-308"))
+	assert.Equal(t, "", parse("⁰⁴⁵₀₁₂"))
 }
