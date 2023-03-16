@@ -29,9 +29,7 @@ Just like the original, Go-HtmlDate has two mode: fast and extensive. The differ
 - In extensive mode, Go-HtmlDate will also collects all potential dates and uses a disambiguation
   algorithm to determines the best one to use.
 
-By default Go-HtmlDate will run in extensive mode, and usually there are no reasons to use the fast
-mode. This is because unlike in the original, in our Go port the extraction speed between the fast
-and extensive mode is negligible, so might as well use the extensive mode.
+By default Go-HtmlDate will run in extensive mode. You can disabled it by setting `SkipExtensiveSearch` in options to `true`.
 
 ## Status
 
