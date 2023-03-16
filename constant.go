@@ -165,8 +165,8 @@ var (
 
 const (
 	slowPrependXpath = `.//*`
-	fastPrependXpath = `.//*[(self::div or self::li or self::p or self::span)]`
-	// TODO: for fast, test [(self::a or self::div or self::li or self::p or self::span or self::ul)]
+	fastPrependXpath = `.//*[(self::b or self::div or self::em or self::font or self::i or self::li
+		or self::p or self::span or self::strong)]`
 
 	dateXpath = `
 		[contains(translate(@id, "D", "d"), 'date')
@@ -192,7 +192,7 @@ const (
 		or contains(@class, 'field-content')
 		or contains(@class, 'fa-clock-o') or contains(@class, 'fa-calendar')
 		or contains(@class, 'fecha') or contains(@class, 'parution')
-		or @id='footer' or @class='post-footer' or @class='footer']
+		or contains(@class, 'footer') or contains(@id, 'footer')]
 		|
 		.//footer|.//small`
 	// Further tests needed:
@@ -205,8 +205,7 @@ const (
 	// .//footer
 	// .//*[(self::div or self::section)][@id="footer" or @class="footer"]
 
-	freeTextXpath = `.//*[(self::div or self::em or self::font or
-		self::i or self::li or self::p or self::span or self::strong)]/text()`
+	freeTextXpath = fastPrependXpath + "/text()"
 )
 
 func sliceToMap(strings ...string) map[string]struct{} {

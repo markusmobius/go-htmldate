@@ -286,11 +286,7 @@ func Test_regexParse(t *testing.T) {
 }
 
 func Test_tryExternalDateParser(t *testing.T) {
-	opts := Options{
-		MinDate: defaultMinDate,
-		MaxDate: defaultMaxDate,
-	}
-
+	var opts Options
 	parse := func(s string) string {
 		dt := externalDateParser(s, opts)
 		if !dt.IsZero() {
@@ -304,6 +300,7 @@ func Test_tryExternalDateParser(t *testing.T) {
 
 	// https://github.com/scrapinghub/dateparser/issues/333
 	// assert.Equal(t, "0001-01-01", parse("1 January 0001"))
+	assert.Equal(t, "1900-01-01", parse("1 January 1900"))
 
 	// https://github.com/scrapinghub/dateparser/issues/406
 	assert.Equal(t, "2018-12-04", parse("2018-04-12 17:20:03.12345678999a"))
