@@ -436,66 +436,31 @@ func extractIdiosyncrasy(rxIdiosyncrasy *regexp.Regexp, htmlString string, opts 
 	return rawString, candidate
 }
 
-// regexParse is full-text parse using a series of regular expressions.
+// regexParse try full-text parse for date elements using a series of regular
+// expressions with particular emphasis on English, French, German and Turkish.
 func regexParse(s string, opts Options) time.Time {
-	dt := regexParseDe(s, opts)
-	if dt.IsZero() {
-		dt = regexParseMultilingual(s, opts)
-	}
-
-	return dt
-}
-
-// regexParseDe tries full-text parse for German date elements.
-func regexParseDe(s string, opts Options) time.Time {
-	parts := rxGermanTextSearch.FindStringSubmatch(s)
-	if len(parts) == 0 {
-		return timeZero
-	}
-
-	year, _ := strconv.Atoi(parts[3])
-	day, _ := strconv.Atoi(parts[1])
-	month, exist := monthNumber[parts[2]]
-	if !exist {
-		return timeZero
-	}
-
-	dt, valid := validateDateParts(year, month, day, opts)
-	if valid {
-		log.Debug().Msgf("German text found: %s", s)
-		return dt
-	}
-
-	return timeZero
-}
-
-// regexParseMultilingual tries full-text parse for English date elements.
-func regexParseMultilingual(s string, opts Options) time.Time {
 	var exist bool
 	var parts []string
 	var year, month, day int
 
-	// In original code they handle Month-Day-Year here.
-	// However, since it already handled by fastParser I don't repeat it here again.
-
-	// MMMM D YYYY pattern
-	parts = rxLongMdyPattern.FindStringSubmatch(s)
+	// Multilingual day-month-year pattern
+	parts = rxLongDmyPattern.FindStringSubmatch(s)
 	if len(parts) >= 4 {
-		month, exist = monthNumber[parts[1]]
+		month, exist = monthNumber[strings.ToLower(parts[2])]
 		if exist {
 			year, _ = strconv.Atoi(parts[3])
-			day, _ = strconv.Atoi(parts[2])
+			day, _ = strconv.Atoi(parts[1])
 			goto regex_finish
 		}
 	}
 
-	// D MMMM YYYY pattern
-	parts = rxLongDmyPattern.FindStringSubmatch(s)
+	// American English
+	parts = rxLongMdyPattern.FindStringSubmatch(s)
 	if len(parts) >= 4 {
-		month, exist = monthNumber[parts[2]]
+		month, exist = monthNumber[strings.ToLower(parts[1])]
 		if exist {
 			year, _ = strconv.Atoi(parts[3])
-			day, _ = strconv.Atoi(parts[1])
+			day, _ = strconv.Atoi(parts[2])
 			goto regex_finish
 		}
 	}
