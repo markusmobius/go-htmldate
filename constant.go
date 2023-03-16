@@ -170,38 +170,39 @@ const (
 	// .//*[(self::div or self::section)][@id="footer" or @class="footer"]
 
 	dateXpathQuery = `
-	.//*[contains(translate(@id, "D", "d"), 'date')
-    or contains(translate(@class, "D", "d"), 'date')
-    or contains(translate(@itemprop, "D", "d"), 'date')
-    or contains(translate(@id, "D", "d"), 'datum')
-    or contains(translate(@class, "D", "d"), 'datum')
-    or contains(@id, 'time') or contains(@class, 'time')
-    or @class='meta' or contains(translate(@id, "M", "m"), 'metadata')
-    or contains(translate(@class, "M", "m"), 'meta-')
-    or contains(translate(@class, "M", "m"), '-meta')
-    or contains(translate(@id, "M", "m"), '-meta')
-    or contains(translate(@class, "M", "m"), '_meta')
-    or contains(translate(@class, "M", "m"), 'postmeta')
-    or contains(@class, 'info') or contains(@class, 'post_detail')
-    or contains(@class, 'block-content')
-    or contains(@class, 'byline') or contains(@class, 'subline')
-    or contains(@class, 'posted') or contains(@class, 'submitted')
-    or contains(@class, 'created-post')
-    or contains(@id, 'publish') or contains(@class, 'publish')
-    or contains(@class, 'publication')
-    or contains(@class, 'author') or contains(@class, 'autor')
-    or contains(@class, 'field-content')
-    or contains(@class, 'fa-clock-o') or contains(@class, 'fa-calendar')
-    or contains(@class, 'fecha') or contains(@class, 'parution')
-    or @id='footer' or @class='post-footer' or @class='footer']
-    |
-    .//footer|.//small`
-
+		.//*[contains(translate(@id, "D", "d"), 'date')
+		or contains(translate(@class, "D", "d"), 'date')
+		or contains(translate(@itemprop, "D", "d"), 'date')
+		or contains(translate(@id, "D", "d"), 'datum')
+		or contains(translate(@class, "D", "d"), 'datum')
+		or contains(@id, 'time') or contains(@class, 'time')
+		or @class='meta' or contains(translate(@id, "M", "m"), 'metadata')
+		or contains(translate(@class, "M", "m"), 'meta-')
+		or contains(translate(@class, "M", "m"), '-meta')
+		or contains(translate(@id, "M", "m"), '-meta')
+		or contains(translate(@class, "M", "m"), '_meta')
+		or contains(translate(@class, "M", "m"), 'postmeta')
+		or contains(@class, 'info') or contains(@class, 'post_detail')
+		or contains(@class, 'block-content')
+		or contains(@class, 'byline') or contains(@class, 'subline')
+		or contains(@class, 'posted') or contains(@class, 'submitted')
+		or contains(@class, 'created-post')
+		or contains(@id, 'publish') or contains(@class, 'publish')
+		or contains(@class, 'publication')
+		or contains(@class, 'author') or contains(@class, 'autor')
+		or contains(@class, 'field-content')
+		or contains(@class, 'fa-clock-o') or contains(@class, 'fa-calendar')
+		or contains(@class, 'fecha') or contains(@class, 'parution')
+		or @id='footer' or @class='post-footer' or @class='footer']
+		|
+		.//footer|.//small`
 	// Further tests needed:
 	// or contains(@class, 'article')
 	// or contains(@class, 'footer') or contains(@id, 'footer')
 	// or contains(@id, 'lastmod') or contains(@class, 'updated')
 	// .//i|.//em|.//span
+
+	freeTextXpathQuery = `.//div/text()|.//p/text()`
 )
 
 func sliceToMap(strings ...string) map[string]struct{} {

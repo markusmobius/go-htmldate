@@ -236,20 +236,13 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 	if !opts.SkipExtensiveSearch {
 		log.Debug().Msg("extensive search started")
 
-		// Process div and p elements
-		// TODO: check all and decide according to original_date
+		// TODO: further tests & decide according to original_date
 		var refValue int64
 		var refString string
-		for _, elem := range dom.GetAllNodesWithTag(doc, "div", "p") {
-			for _, child := range dom.ChildNodes(elem) {
-				if child.Type != html.TextNode {
-					continue
-				}
-
-				text := normalizeSpaces(child.Data)
-				if nText := len(text); nText > 0 && nText < 80 {
-					refString, refValue = compareReference(refString, refValue, text, opts)
-				}
+		for _, segment := range htmlxpath.Find(doc, freeTextXpathQuery) {
+			text := normalizeSpaces(segment.Data)
+			if nText := len(text); nText > 6 && nText < 60 {
+				refString, refValue = compareReference(refString, refValue, text, opts)
 			}
 		}
 
