@@ -95,9 +95,13 @@ func extractPartialUrlDate(url string, opts Options) time.Time {
 	return date
 }
 
-// tryYmdDate tries to extract date which contains year, month and day using
+// tryDateExpr tries to extract date which contains year, month and day using
 // a series of heuristics and rules.
-func tryYmdDate(s string, opts Options) (string, time.Time) {
+func tryDateExpr(s string, opts Options) (string, time.Time) {
+	// Trim
+	s = normalizeSpaces(s)
+	s = strLimit(s, maxTextSize)
+
 	// If string less than 6 runes, stop
 	if utf8.RuneCountInString(s) < 6 {
 		return s, timeZero
@@ -127,7 +131,7 @@ func tryYmdDate(s string, opts Options) (string, time.Time) {
 			return s, timeZero
 		}
 
-		dt := externalDateParser(strLimit(s, maxStringSize), opts)
+		dt := externalDateParser(s, opts)
 		if !dt.IsZero() {
 			return s, dt
 		}

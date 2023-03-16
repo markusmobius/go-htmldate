@@ -46,7 +46,7 @@ var (
 )
 
 const (
-	maxStringSize         = 48
+	maxTextSize           = 48
 	maxPossibleCandidates = 150
 	defaultDateFormat     = "2006-1-2"
 )

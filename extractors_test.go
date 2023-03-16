@@ -52,7 +52,7 @@ func Test_extractPartialUrlDate(t *testing.T) {
 	assert.Equal(t, "", extract("https://testsite.org/2018/33/test"))
 }
 
-func Test_tryYmdDate(t *testing.T) {
+func Test_tryDateExpr(t *testing.T) {
 	// Helper function
 	opts := Options{
 		MinDate: defaultMinDate,
@@ -60,7 +60,7 @@ func Test_tryYmdDate(t *testing.T) {
 	}
 
 	try := func(s string) string {
-		_, dt := tryYmdDate(s, opts)
+		_, dt := tryDateExpr(s, opts)
 		if !dt.IsZero() {
 			return dt.Format("2006-01-02")
 		}
