@@ -526,7 +526,7 @@ func Test_HtmlDate(t *testing.T) {
 	checkURL(url, "2012-11-29")
 
 	url = "http://www.kreditwesen.org/widerstand-berlin/2012-11/keine-kurzung-bei-der-jugend-klubs-konnen-vorerst-aufatmen-bvv-beschliest-haushaltsplan/"
-	checkURL(url, "")
+	checkURL(url, "2012-11-01")
 
 	url = "http://www.kreditwesen.org/widerstand-berlin/6666-42-87/"
 	checkURL(url, "")

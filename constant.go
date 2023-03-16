@@ -60,7 +60,7 @@ var (
 	rxYmPattern       = regexp.MustCompile(`(?:\D|^)(\d{4})[\-/.](\d{1,2})(?:\D|$)`)
 	rxMyPattern       = regexp.MustCompile(`(?:\D|^)(\d{1,2})[\-/.](\d{4})(?:\D|$)`)
 
-	// "août" hurts performance?
+	// # TODO: check "août"
 	rxMonths = `` +
 		`January|February|March|April|May|June|July|August|September|October|November|December|` +
 		`Januari|Februari|Maret|Mei|Juni|Juli|Agustus|Oktober|Desember|` +
@@ -74,17 +74,17 @@ var (
 	rxLongDmyPattern = regexp.MustCompile(
 		`(?i)([0-9]{1,2})(?:st|nd|rd|th|\.)? (?:of )?(` + rxMonths + `),? ([0-9]{4})`)
 
-	rxCompleteUrl = regexp.MustCompile(`(?i)([0-9]{4})[/-]([0-9]{1,2})[/-]([0-9]{1,2})`)
-	rxPartialUrl  = regexp.MustCompile(`(?i)/([0-9]{4})/([0-9]{1,2})/`)
+	rxCompleteUrl = regexp.MustCompile(`(?i)\D([0-9]{4})[/_-]([0-9]{1,2})[/_-]([0-9]{1,2})(?:\D|$)`)
+	rxPartialUrl  = regexp.MustCompile(`(?i)\D([0-9]{4})[/_-]([0-9]{2})(?:\D|$)`)
 
 	rxTimestampPattern  = regexp.MustCompile(`(?i)([0-9]{4}-[0-9]{2}-[0-9]{2}|[0-9]{2}\.[0-9]{2}\.[0-9]{4}).[0-9]{2}:[0-9]{2}:[0-9]{2}`)
 	rxTextDatePattern   = regexp.MustCompile(`(?i)[.:,_/ -]|^\d+$`)
 	rxNoTextDatePattern = regexp.MustCompile(`(?i)^(?:\d{3,}\D+\d{3,}|\d{2}:\d{2}(:| )|\+\d{2}\D+|\D*\d{4}\D*$)`)
 
-	rxDiscardPattern = regexp.MustCompile(`(?i)[$€¥Ұ£¢₽₱฿#]|CNY|EUR|GBP|JPY|USD|http|\.(com|net|org)|IBAN`)
+	rxDiscardPattern = regexp.MustCompile(`(?i)[$€¥Ұ£¢₽₱฿#]|CNY|EUR|GBP|JPY|USD|http|\.(com|net|org)|IBAN|\+\d{2}\b`)
 	// TODO: further testing required:
-	// \d[,.]\d+
-	// |\+\d{2}\b|\b\d{5}\s
+	// \d[,.]\d+  // currency amounts
+	// # \b\d{5}\s  // postal codes
 
 	rxEnPattern = regexp.MustCompile(`(?i)(?:date[^0-9"]{0,20}|updated|published) *?(?:in)? *?:? *?([0-9]{1,4})[./]([0-9]{1,2})[./]([0-9]{2,4})`)
 	rxDePattern = regexp.MustCompile(`(?i)(?:Datum|Stand): ?([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{2,4})`)
