@@ -757,11 +757,12 @@ func Test_selectCandidate(t *testing.T) {
 	_, result = selectCandidate(candidates, rxCatch, rxYear, opts)
 	assert.Equal(t, "2017-08-11", result[0])
 
-	// Candidates not exist
-	candidates = createCandidates("20208956", "20208956", "20208956",
-		"19018956", "209561", "22020895607-12", "2-28")
+	// Taking date present twice, corner case
+	candidates = createCandidates("2016-12-23", "2016-12-23", "2017-08-11",
+		"2017-08-11", "2017-08-11")
 	_, result = selectCandidate(candidates, rxCatch, rxYear, opts)
-	assert.Empty(t, result)
+	assert.Equal(t, "2016-12-23", result[0])
+
 }
 
 func Test_searchPage(t *testing.T) {
