@@ -133,6 +133,7 @@ var monthNumber = map[string]int{
 var dateAttributes = sliceToMap(
 	"article.created", "article_date_original",
 	"article.published", "article:published_time",
+	"article:publicationdate",
 	"bt:pubdate", "citation_date", "citation_publication_date",
 	"created", "cxenseparse:recs:publishtime",
 	"date", "date_published",
