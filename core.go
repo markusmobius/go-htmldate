@@ -169,15 +169,6 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 		return rawString, dateResult, nil
 	}
 
-	// Supply more expressions (other languages)
-	if !opts.SkipExtensiveSearch {
-		dateElements := htmlxpath.Find(prunedDoc, additionalXpathQuery)
-		rawString, dateResult := examineOtherElements(dateElements, opts)
-		if !dateResult.IsZero() {
-			return rawString, dateResult, nil
-		}
-	}
-
 	// Search in the discarded elements (currently: footers and archive.org banner)
 	for _, subTree := range discarded {
 		dateElements := htmlxpath.Find(subTree, dateXpathQuery)
