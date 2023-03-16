@@ -172,8 +172,7 @@ var (
 
 const (
 	slowPrependXpath = `.//*`
-	fastPrependXpath = `.//*[(self::b or self::div or self::em or self::font or self::i or self::li
-		or self::p or self::span or self::strong)]`
+	fastPrependXpath = `.//*[(self::div or self::li or self::p or self::span)]`
 
 	dateXpath = `
 		[contains(translate(@id, "D", "d"), 'date')
