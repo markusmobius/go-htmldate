@@ -160,10 +160,17 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 	}
 
 	// Use selectors + text content
+	var finalDateXpath string
+	if !opts.SkipExtensiveSearch {
+		finalDateXpath = slowPrependXpath + dateXpath
+	} else {
+		finalDateXpath = fastPrependXpath + dateXpath
+	}
+
 	// First try in pruned document
 	prunedDoc := dom.Clone(doc, true)
 	discardUnwanted(prunedDoc)
-	dateElements := htmlxpath.Find(prunedDoc, dateXpathQuery)
+	dateElements := htmlxpath.Find(prunedDoc, finalDateXpath)
 	rawString, dateResult := examineOtherElements(dateElements, opts)
 	if !dateResult.IsZero() {
 		return rawString, dateResult, nil
@@ -239,7 +246,7 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 		// TODO: further tests & decide according to original_date
 		var refValue int64
 		var refString string
-		for _, segment := range htmlxpath.Find(doc, freeTextXpathQuery) {
+		for _, segment := range htmlxpath.Find(doc, freeTextXpath) {
 			text := normalizeSpaces(segment.Data)
 			if nText := len(text); nText > 6 && nText < 60 {
 				refString, refValue = compareReference(refString, refValue, text, opts)

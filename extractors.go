@@ -36,7 +36,7 @@ import (
 // return the discarded elements as a list.
 func discardUnwanted(doc *html.Node) []*html.Node {
 	var discardedElements []*html.Node
-	for _, elem := range htmlxpath.Find(doc, discardXpathQuery) {
+	for _, elem := range htmlxpath.Find(doc, discardXpath) {
 		if elem.Parent != nil {
 			elem.Parent.RemoveChild(elem)
 			discardedElements = append(discardedElements, elem)

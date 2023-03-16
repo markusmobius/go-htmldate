@@ -303,8 +303,11 @@ func Test_HtmlDate(t *testing.T) {
 	checkMockFile(url, "2017-10-09")
 
 	// In document body
+	// url = "https://github.com/adbar/htmldate"
+	// checkMockFile(url, "2019-01-01")
+
 	url = "https://github.com/adbar/htmldate"
-	checkMockFile(url, "2019-01-01")
+	checkMockFile(url, "2016-07-12", useOriginalDate)
 
 	url = "https://en.blog.wordpress.com/"
 	checkMockFile(url, "2017-08-30")

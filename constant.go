@@ -164,13 +164,12 @@ var (
 )
 
 const (
-	// archive.org banner
-	discardXpathQuery = `.//div[@id="wm-ipp-base" or @id="wm-ipp"]`
-	// .//footer
-	// .//*[(self::div or self::section)][@id="footer" or @class="footer"]
+	slowPrependXpath = `.//*`
+	fastPrependXpath = `.//*[(self::div or self::li or self::p or self::span)]`
+	// TODO: for fast, test [(self::a or self::div or self::li or self::p or self::span or self::ul)]
 
-	dateXpathQuery = `
-		.//*[contains(translate(@id, "D", "d"), 'date')
+	dateXpath = `
+		[contains(translate(@id, "D", "d"), 'date')
 		or contains(translate(@class, "D", "d"), 'date')
 		or contains(translate(@itemprop, "D", "d"), 'date')
 		or contains(translate(@id, "D", "d"), 'datum')
@@ -200,9 +199,14 @@ const (
 	// or contains(@class, 'article')
 	// or contains(@class, 'footer') or contains(@id, 'footer')
 	// or contains(@id, 'lastmod') or contains(@class, 'updated')
-	// .//i|.//em|.//span
 
-	freeTextXpathQuery = `.//div/text()|.//p/text()`
+	// archive.org banner
+	discardXpath = `.//div[@id="wm-ipp-base" or @id="wm-ipp"]`
+	// .//footer
+	// .//*[(self::div or self::section)][@id="footer" or @class="footer"]
+
+	freeTextXpath = `.//*[(self::div or self::em or self::font or
+		self::i or self::li or self::p or self::span or self::strong)]/text()`
 )
 
 func sliceToMap(strings ...string) map[string]struct{} {
