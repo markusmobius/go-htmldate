@@ -46,6 +46,7 @@ var (
 )
 
 const (
+	maxStringSize         = 48
 	maxPossibleCandidates = 150
 	defaultDateFormat     = "2006-1-2"
 )
@@ -77,8 +78,13 @@ var (
 	rxPartialUrl  = regexp.MustCompile(`(?i)/([0-9]{4})/([0-9]{1,2})/`)
 
 	rxTimestampPattern  = regexp.MustCompile(`(?i)([0-9]{4}-[0-9]{2}-[0-9]{2}|[0-9]{2}\.[0-9]{2}\.[0-9]{4}).[0-9]{2}:[0-9]{2}:[0-9]{2}`)
-	rxTextDatePattern   = regexp.MustCompile(`(?i)[.:,_/ -]|^[0-9]+$`)
-	rxNoTextDatePattern = regexp.MustCompile(`(?i)^(?:[0-9]{3,}\D+[0-9]{3,}|[0-9]{2}:[0-9]{2}(:| )|\+[0-9]{2}\D+|\D*[0-9]{4}\D*$)`)
+	rxTextDatePattern   = regexp.MustCompile(`(?i)[.:,_/ -]|^\d+$`)
+	rxNoTextDatePattern = regexp.MustCompile(`(?i)^(?:\d{3,}\D+\d{3,}|\d{2}:\d{2}(:| )|\+\d{2}\D+|\D*\d{4}\D*$)`)
+
+	rxDiscardPattern = regexp.MustCompile(`(?i)[$€¥Ұ£¢₽₱฿#]|CNY|EUR|GBP|JPY|USD|http|\.(com|net|org)|IBAN`)
+	// TODO: further testing required:
+	// \d[,.]\d+
+	// |\+\d{2}\b|\b\d{5}\s
 
 	rxEnPattern = regexp.MustCompile(`(?i)(?:date[^0-9"]{0,20}|updated|published) *?(?:in)? *?:? *?([0-9]{1,4})[./]([0-9]{1,2})[./]([0-9]{2,4})`)
 	rxDePattern = regexp.MustCompile(`(?i)(?:Datum|Stand): ?([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{2,4})`)

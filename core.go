@@ -629,7 +629,7 @@ func examineOtherElements(elements []*html.Node, opts Options) (string, time.Tim
 		// Simple length heuristics
 		if len(textContent) > 6 {
 			// Shorten and try the beginning of the string.
-			toExamine := strLimit(textContent, 48)
+			toExamine := strLimit(textContent, maxStringSize)
 			toExamine = rxLastNonDigits.ReplaceAllString(toExamine, "")
 
 			// Log the examined element
@@ -648,7 +648,7 @@ func examineOtherElements(elements []*html.Node, opts Options) (string, time.Tim
 		// Try link title (Blogspot)
 		titleAttr := strings.TrimSpace(dom.GetAttribute(elem, "title"))
 		if titleAttr != "" {
-			toExamine := strLimit(titleAttr, 48)
+			toExamine := strLimit(titleAttr, maxStringSize)
 			toExamine = rxLastNonDigits.ReplaceAllString(toExamine, "")
 			_, attempt = tryYmdDate(toExamine, opts)
 			if !attempt.IsZero() {
@@ -820,12 +820,9 @@ func compareReference(refString string, refValue int64, expression string, opts 
 func tryExpression(expression string, opts Options) (string, time.Time) {
 	// Trim expression
 	expression = normalizeSpaces(expression)
-	if expression == "" || getDigitCount(expression) < 4 {
-		return "", timeZero
-	}
 
 	// Try the beginning of the string
-	expression = strLimit(expression, 48)
+	expression = strLimit(expression, maxStringSize)
 	return tryYmdDate(expression, opts)
 }
 

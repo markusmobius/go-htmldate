@@ -19,7 +19,7 @@
 package htmldate
 
 import (
-	"io/ioutil"
+	"io"
 	"regexp"
 	"testing"
 	"time"
@@ -785,7 +785,7 @@ func Test_searchPage(t *testing.T) {
 	f := openMockFile("http://www.heimicke.de/chronik/zahlen-und-daten/")
 	defer f.Close()
 
-	bt, _ := ioutil.ReadAll(f)
+	bt, _ := io.ReadAll(f)
 	_, dt = searchPage(string(bt), opts)
 	assert.Equal(t, "2019-04-06", format(dt))
 

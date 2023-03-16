@@ -103,14 +103,14 @@ func tryYmdDate(s string, opts Options) (string, time.Time) {
 		return s, timeZero
 	}
 
-	// Count how many digit number in this string
+	// Formal constraint: 4 to 18 digits
 	nDigit := getDigitCount(s)
 	if nDigit < 4 || nDigit > 18 {
 		return s, timeZero
 	}
 
 	// Check if string only contains time/single year or digits and not a date
-	if !rxTextDatePattern.MatchString(s) || rxNoTextDatePattern.MatchString(s) {
+	if rxNoTextDatePattern.MatchString(s) {
 		return s, timeZero
 	}
 
@@ -122,7 +122,12 @@ func tryYmdDate(s string, opts Options) (string, time.Time) {
 
 	// Use slow but extensive search, using dateparser
 	if !opts.SkipExtensiveSearch {
-		dt := externalDateParser(s, opts)
+		// Additional filters to prevent computational cost
+		if !rxTextDatePattern.MatchString(s) || rxDiscardPattern.MatchString(s) {
+			return s, timeZero
+		}
+
+		dt := externalDateParser(strLimit(s, maxStringSize), opts)
 		if !dt.IsZero() {
 			return s, dt
 		}
@@ -148,7 +153,7 @@ func fastParse(s string, opts Options) time.Time {
 		}
 	}
 
-	// 1.b. Try YYYYMMDD with regex
+	// 2. Try YYYYMMDD with regex
 	parts := rxYmdNoSepPattern.FindStringSubmatch(s)
 	if len(parts) == 2 {
 		text := parts[1]
@@ -162,7 +167,7 @@ func fastParse(s string, opts Options) time.Time {
 		}
 	}
 
-	// 2. Try Y-M-D pattern since it's the one used in ISO-8601
+	// 3. Try Y-M-D pattern since it's the one used in ISO-8601
 	parts = rxYmdPattern.FindStringSubmatch(s)
 	if len(parts) == 4 {
 		year, _ := strconv.Atoi(parts[1])
@@ -177,7 +182,7 @@ func fastParse(s string, opts Options) time.Time {
 		}
 	}
 
-	// 3. Try the D-M-Y pattern since it's the most common date format in the world
+	// 4. Try the D-M-Y pattern since it's the most common date format in the world
 	parts = rxDmyPattern.FindStringSubmatch(s)
 	if len(parts) == 4 {
 		day, _ := strconv.Atoi(parts[1])
@@ -195,7 +200,7 @@ func fastParse(s string, opts Options) time.Time {
 		}
 	}
 
-	// 4. Try the Y-M pattern
+	// 5. Try the Y-M pattern
 	parts = rxYmPattern.FindStringSubmatch(s)
 	if len(parts) == 3 {
 		year, _ := strconv.Atoi(parts[1])
@@ -209,7 +214,7 @@ func fastParse(s string, opts Options) time.Time {
 		}
 	}
 
-	// 5. Try the other regex pattern
+	// 6. Try the other regex pattern
 	dt := regexParse(s, opts)
 	if validateDate(dt, opts) {
 		log.Debug().Msgf("fast parse found regex date: %s", dt.Format("2006-01-02"))
