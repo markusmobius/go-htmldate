@@ -35,7 +35,7 @@ and extensive mode is negligible, so might as well use the extensive mode.
 
 ## Status
 
-This package is stable enough for use and up to date with the original `htmldate` (commit [618c7bf][3]).
+This package is stable enough for use and up to date with the original `htmldate` (commit [917cc5d][3]).
 However, since time extraction is a brand new feature which doesn't exist in the original, use it with
 care. So far it works quite nicely on most news sites that I've tried, but it still needs more testing.
 
@@ -157,7 +157,7 @@ Like the original, `go-htmldate` is distributed under the [GNU General Public Li
 [0]: https://github.com/adbar/htmldate
 [1]: https://github.com/adbar
 [2]: https://github.com/adbar/htmldate/tree/v1.1.1
-[3]: https://github.com/adbar/htmldate/commit/618c7bf
+[3]: https://github.com/adbar/htmldate/commit/917cc5d
 [dcg]: https://dataculturegroup.org
 [ref-badge]: https://pkg.go.dev/badge/github.com/markusmobius/go-htmldate.svg
 [ref-link]: https://pkg.go.dev/github.com/markusmobius/go-htmldate

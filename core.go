@@ -162,21 +162,22 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 	// Use selectors + text content
 	// First try in pruned document
 	prunedDoc := dom.Clone(doc, true)
-	discarded := discardUnwanted(prunedDoc)
+	discardUnwanted(prunedDoc)
 	dateElements := htmlxpath.Find(prunedDoc, dateXpathQuery)
 	rawString, dateResult := examineOtherElements(dateElements, opts)
 	if !dateResult.IsZero() {
 		return rawString, dateResult, nil
 	}
 
+	// TODO: for now, we'll stop searching in discarded elements
 	// Search in the discarded elements (currently: footers and archive.org banner)
-	for _, subTree := range discarded {
-		dateElements := htmlxpath.Find(subTree, dateXpathQuery)
-		rawString, dateResult := examineOtherElements(dateElements, opts)
-		if !dateResult.IsZero() {
-			return rawString, dateResult, nil
-		}
-	}
+	// for _, subTree := range discarded {
+	// 	dateElements := htmlxpath.Find(subTree, dateXpathQuery)
+	// 	rawString, dateResult := examineOtherElements(dateElements, opts)
+	// 	if !dateResult.IsZero() {
+	// 		return rawString, dateResult, nil
+	// 	}
+	// }
 
 	// Try <time> elements
 	rawString, timeResult := examineTimeElements(prunedDoc, opts)
