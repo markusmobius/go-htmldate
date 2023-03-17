@@ -1,10 +1,8 @@
 # Go-HtmlDate [![Go Reference][ref-badge]][ref-link]
 
-Go-HtmlDate is a Go package and command-line tool to extract the original and updated publication dates
-of web pages. This package is based on [`htmldate`][0], a Python package by [Adrien Barbaresi][1].
+Go-HtmlDate is a Go package and command-line tool to extract the original and updated publication dates of web pages. This package is based on [`htmldate`][0], a Python package by [Adrien Barbaresi][1].
 
-The structure of this package is arranged following the structure of original Python code. This way, both
-libraries should give similar performance and any improvements from the original can be ported easily.
+The structure of this package is arranged following the structure of original Python code. This way, both libraries should give similar performance and any improvements from the original can be ported easily.
 
 ## Table of Contents
 
@@ -33,14 +31,11 @@ By default Go-HtmlDate will run in extensive mode. You can disabled it by settin
 
 ## Status
 
-This package is stable enough for use and up to date with the original `htmldate` (commit [5b0c3f7][3]).
-However, since time extraction is a brand new feature which doesn't exist in the original, use it with
-care. So far it works quite nicely on most news sites that I've tried, but it still needs more testing.
+This package is stable enough for use and up to date with the original `htmldate` [v1.4.1][2] (commit [d8f8220][3]). However, since time extraction is a brand new feature which doesn't exist in the original, use it with care. So far it works quite nicely on most news sites that I've tried, but it still needs more testing.
 
 When time extraction is enabled, there a some behaviors that I'd like to note:
 
-- If time is not found or not specified in the web page, the time will be set into `00:00:00` (it will
-  only returns the date).
+- If time is not found or not specified in the web page, the time will be set into `00:00:00` (it will only returns the date).
 - If timezone is not found or not specified in the web page, the timezone will be set into `time.UTC`.
 
 In future I hope we could improve the comparison script to check the accuracy for time extraction as well.
@@ -92,8 +87,7 @@ Flags:
 
 ## Performance
 
-Here we compare the extraction performance between the fast and extensive mode. To reproduce this test,
-clone this repository then run:
+Here we compare the extraction performance between the fast and extensive mode. To reproduce this test, clone this repository then run:
 
 ```
 go run scripts/comparison/*.go
@@ -115,16 +109,11 @@ So, from the table above, this port has a similar performance with the original 
 
 ## Additional Notes
 
-Despite the impressive score above, there is a little caveat: the performance test is only used to
-measure the accuracy of publish date extraction, and **not** the modified date. This issue is occured in
-the original `htmldate` as well since we use the comparison data from there.
+Despite the impressive score above, there is a little caveat: the performance test is only used to measure the accuracy of publish date extraction, and **not** the modified date. This issue is occured in the original `htmldate` as well since we use the comparison data from there.
 
-With that said, if you use this package for extracting the modified date, the performance might not be
-as good as the performance table above. However, it should be still good enough to use.
+With that said, if you use this package for extracting the modified date, the performance might not be as good as the performance table above. However, it should be still good enough to use.
 
-> The weird thing is the default behavior for original `htmldate` is to extract the modified date
-> instead of the original, so ideally the performance test is done for modified date as well.
-> To be fair, collecting the modified date seems harder than collecting the original date though.
+> The weird thing is the default behavior for original `htmldate` is to extract the modified date instead of the original, so ideally the performance test is done for modified date as well. To be fair, collecting the modified date seems harder than collecting the original date though.
 
 ## Acknowledgements
 
@@ -154,8 +143,8 @@ Like the original, `go-htmldate` is distributed under the [GNU General Public Li
 
 [0]: https://github.com/adbar/htmldate
 [1]: https://github.com/adbar
-[2]: https://github.com/adbar/htmldate/tree/v1.1.1
-[3]: https://github.com/adbar/htmldate/commit/5b0c3f7
+[2]: https://github.com/adbar/htmldate/tree/v1.4.1
+[3]: https://github.com/adbar/htmldate/commit/d8f8220
 [dcg]: https://dataculturegroup.org
 [ref-badge]: https://pkg.go.dev/badge/github.com/markusmobius/go-htmldate.svg
 [ref-link]: https://pkg.go.dev/github.com/markusmobius/go-htmldate

@@ -379,17 +379,7 @@ func examineMetaElements(doc *html.Node, opts Options) (string, time.Time) {
 		httpEquiv := strings.TrimSpace(dom.GetAttribute(elem, "http-equiv"))
 		outerHtml := dom.OuterHTML(elem)
 
-		if property != "" && content != "" { // Property attribute
-			attribute := strings.ToLower(property)
-			inModifiedProps := inMap(attribute, propertyModified)
-			inDateAttributes := inMap(attribute, dateAttributes)
-
-			if (opts.UseOriginalDate && inDateAttributes) ||
-				(!opts.UseOriginalDate && (inModifiedProps || inDateAttributes)) {
-				log.Debug().Msgf("examining meta property for publish date: %s", outerHtml)
-				strMeta, tMeta = tryDateExpr(content, opts)
-			}
-		} else if name != "" && content != "" { // Name attribute
+		if name != "" && content != "" { // Name attribute first: the most frequent
 			name = strings.ToLower(name)
 			if name == "og:url" { // url
 				strMeta = content
@@ -405,9 +395,16 @@ func examineMetaElements(doc *html.Node, opts Options) (string, time.Time) {
 					strReserve, tReserve = tryDateExpr(content, opts)
 				}
 			}
-		} else if strings.ToLower(pubDate) == "pubdate" { // Publish date
-			log.Debug().Msgf("examining meta pubdate: %s", outerHtml)
-			strMeta, tMeta = tryDateExpr(content, opts)
+		} else if property != "" && content != "" { // Property attribute
+			attribute := strings.ToLower(property)
+			inModifiedProps := inMap(attribute, propertyModified)
+			inDateAttributes := inMap(attribute, dateAttributes)
+
+			if (opts.UseOriginalDate && inDateAttributes) ||
+				(!opts.UseOriginalDate && (inModifiedProps || inDateAttributes)) {
+				log.Debug().Msgf("examining meta property for publish date: %s", outerHtml)
+				strMeta, tMeta = tryDateExpr(content, opts)
+			}
 		} else if itemProp != "" { // Item scope
 			attribute := strings.ToLower(itemProp)
 			if inMap(attribute, itemPropAttrKeys) {
@@ -440,6 +437,9 @@ func examineMetaElements(doc *html.Node, opts Options) (string, time.Time) {
 					}
 				}
 			}
+		} else if strings.ToLower(pubDate) == "pubdate" { // Publish date, relatively rare
+			log.Debug().Msgf("examining meta pubdate: %s", outerHtml)
+			strMeta, tMeta = tryDateExpr(content, opts)
 		} else if httpEquiv != "" && content != "" { // http-equiv, rare http://www.standardista.com/html5/http-equiv-the-meta-attribute-explained/
 			attribute := strings.ToLower(httpEquiv)
 			if attribute == "date" {
@@ -505,10 +505,7 @@ func examineAbbrElements(doc *html.Node, opts Options) (string, time.Time) {
 					refString = dataUtime
 				}
 			}
-		}
-
-		// Handle class
-		if class != "" && inMap(class, attrPublishClasses) {
+		} else if class != "" && inMap(class, attrPublishClasses) { // Handle class
 			text := normalizeSpaces(etreeText(elem))
 			title := strings.TrimSpace(dom.GetAttribute(elem, "title"))
 
@@ -528,10 +525,7 @@ func examineAbbrElements(doc *html.Node, opts Options) (string, time.Time) {
 						break
 					}
 				}
-			}
-
-			// Dates, not times of the day
-			if len(text) > 10 {
+			} else if len(text) > 10 { // Dates, not times of the day
 				tryText := strings.TrimPrefix(text, "am ")
 				log.Debug().Msgf("abbr published found: %s", tryText)
 				refString, refValue = compareReference(refString, refValue, tryText, opts)
