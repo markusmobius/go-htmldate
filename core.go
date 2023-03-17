@@ -1,5 +1,5 @@
 // This file is part of go-htmldate, Go package for extracting publication dates from a web page.
-// Source available in <https://github.com/markusmobius/go-trafilatura>.
+// Source available in <https://github.com/markusmobius/go-htmldate>.
 // Copyright (C) 2022 Markus Mobius
 //
 // This program is free software: you can redistribute it and/or modify it under the terms of
@@ -28,6 +28,7 @@ import (
 	"strings"
 	"time"
 
+	htmlxpath "github.com/antchfx/htmlquery"
 	"github.com/go-shiori/dom"
 	"github.com/rs/zerolog"
 	"golang.org/x/net/html"
@@ -132,8 +133,8 @@ func FromDocument(doc *html.Node, opts Options) (Result, error) {
 
 // findDate extract publish date from the specified html document.
 func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
-	// Check URL
-	if opts.URL != "" {
+	// If not deferred, check URL first
+	if !opts.DeferUrlExtractor && opts.URL != "" {
 		urlDate := extractUrlDate(opts.URL, opts)
 		if !urlDate.IsZero() {
 			return opts.URL, urlDate, nil
@@ -152,6 +153,14 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 		return rawString, jsonResult, nil
 	}
 
+	// If deferred, process URL here (may be moved even further down if necessary)
+	if opts.DeferUrlExtractor && opts.URL != "" {
+		urlDate := extractUrlDate(opts.URL, opts)
+		if !urlDate.IsZero() {
+			return opts.URL, urlDate, nil
+		}
+	}
+
 	// Try <abbr> elements
 	rawString, abbrResult := examineAbbrElements(doc, opts)
 	if !abbrResult.IsZero() {
@@ -159,32 +168,31 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 	}
 
 	// Use selectors + text content
+	var finalDateXpath string
+	if !opts.SkipExtensiveSearch {
+		finalDateXpath = slowPrependXpath + dateXpath
+	} else {
+		finalDateXpath = fastPrependXpath + dateXpath
+	}
+
 	// First try in pruned document
 	prunedDoc := dom.Clone(doc, true)
-	discarded := discardUnwanted(prunedDoc)
-	dateElements := findElementsWithRule(prunedDoc, dateSelectorRule)
+	discardUnwanted(prunedDoc)
+	dateElements := htmlxpath.Find(prunedDoc, finalDateXpath)
 	rawString, dateResult := examineOtherElements(dateElements, opts)
 	if !dateResult.IsZero() {
 		return rawString, dateResult, nil
 	}
 
-	// Supply more expressions (other languages)
-	if !opts.SkipExtensiveSearch {
-		dateElements := findElementsWithRule(prunedDoc, additionalSelectorRule)
-		rawString, dateResult := examineOtherElements(dateElements, opts)
-		if !dateResult.IsZero() {
-			return rawString, dateResult, nil
-		}
-	}
-
+	// TODO: for now, we'll stop searching in discarded elements
 	// Search in the discarded elements (currently: footers and archive.org banner)
-	for _, subTree := range discarded {
-		dateElements := findElementsWithRule(subTree, dateSelectorRule)
-		rawString, dateResult := examineOtherElements(dateElements, opts)
-		if !dateResult.IsZero() {
-			return rawString, dateResult, nil
-		}
-	}
+	// for _, subTree := range discarded {
+	// 	dateElements := htmlxpath.Find(subTree, dateXpathQuery)
+	// 	rawString, dateResult := examineOtherElements(dateElements, opts)
+	// 	if !dateResult.IsZero() {
+	// 		return rawString, dateResult, nil
+	// 	}
+	// }
 
 	// Try <time> elements
 	rawString, timeResult := examineTimeElements(prunedDoc, opts)
@@ -218,7 +226,7 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 	// Try title elements
 	for _, titleElem := range dom.GetAllNodesWithTag(doc, "title", "h1") {
 		textContent := normalizeSpaces(dom.TextContent(titleElem))
-		_, attempt := tryYmdDate(textContent, opts)
+		_, attempt := tryDateExpr(textContent, opts)
 		if !attempt.IsZero() {
 			log.Debug().Msgf("found date in title: %s", textContent)
 			return textContent, attempt, nil
@@ -243,20 +251,14 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 	if !opts.SkipExtensiveSearch {
 		log.Debug().Msg("extensive search started")
 
-		// Process div and p elements
-		// TODO: check all and decide according to original_date
+		// TODO: further tests & decide according to original_date
 		var refValue int64
 		var refString string
-		for _, elem := range dom.GetAllNodesWithTag(doc, "div", "p") {
-			for _, child := range dom.ChildNodes(elem) {
-				if child.Type != html.TextNode {
-					continue
-				}
-
-				text := normalizeSpaces(child.Data)
-				if nText := len(text); nText > 0 && nText < 80 {
-					refString, refValue = compareReference(refString, refValue, text, opts)
-				}
+		for _, segment := range htmlxpath.Find(doc, freeTextXpath) {
+			// Basic filter: minimum could be 8 or 9
+			text := normalizeSpaces(segment.Data)
+			if nText := len(text); nText > 6 && nText < maxTextSize {
+				refString, refValue = compareReference(refString, refValue, text, opts)
 			}
 		}
 
@@ -377,7 +379,23 @@ func examineMetaElements(doc *html.Node, opts Options) (string, time.Time) {
 		httpEquiv := strings.TrimSpace(dom.GetAttribute(elem, "http-equiv"))
 		outerHtml := dom.OuterHTML(elem)
 
-		if property != "" && content != "" { // Property attribute
+		if name != "" && content != "" { // Name attribute first: the most frequent
+			name = strings.ToLower(name)
+			if name == "og:url" { // url
+				strMeta = content
+				tMeta = extractUrlDate(content, opts)
+			} else if inMap(name, dateAttributes) { // date
+				log.Debug().Msgf("examining meta name: %s", outerHtml)
+				strMeta, tMeta = tryDateExpr(content, opts)
+			} else if inMap(name, attrModifiedNames) { // modified
+				log.Debug().Msgf("examining meta name: %s", outerHtml)
+				if !opts.UseOriginalDate {
+					strMeta, tMeta = tryDateExpr(content, opts)
+				} else {
+					strReserve, tReserve = tryDateExpr(content, opts)
+				}
+			}
+		} else if property != "" && content != "" { // Property attribute
 			attribute := strings.ToLower(property)
 			inModifiedProps := inMap(attribute, propertyModified)
 			inDateAttributes := inMap(attribute, dateAttributes)
@@ -385,43 +403,24 @@ func examineMetaElements(doc *html.Node, opts Options) (string, time.Time) {
 			if (opts.UseOriginalDate && inDateAttributes) ||
 				(!opts.UseOriginalDate && (inModifiedProps || inDateAttributes)) {
 				log.Debug().Msgf("examining meta property for publish date: %s", outerHtml)
-				strMeta, tMeta = tryYmdDate(content, opts)
+				strMeta, tMeta = tryDateExpr(content, opts)
 			}
-		} else if name != "" && content != "" { // Name attribute
-			name = strings.ToLower(name)
-			if name == "og:url" { // url
-				strMeta = content
-				tMeta = extractUrlDate(content, opts)
-			} else if inMap(name, dateAttributes) { // date
-				log.Debug().Msgf("examining meta name: %s", outerHtml)
-				strMeta, tMeta = tryYmdDate(content, opts)
-			} else if strIn(name, modifiedAttrKeys...) { // modified
-				log.Debug().Msgf("examining meta name: %s", outerHtml)
-				if !opts.UseOriginalDate {
-					strMeta, tMeta = tryYmdDate(content, opts)
-				} else {
-					strReserve, tReserve = tryYmdDate(content, opts)
-				}
-			}
-		} else if strings.ToLower(pubDate) == "pubdate" { // Publish date
-			log.Debug().Msgf("examining meta pubdate: %s", outerHtml)
-			strMeta, tMeta = tryYmdDate(content, opts)
 		} else if itemProp != "" { // Item scope
 			attribute := strings.ToLower(itemProp)
-			if strIn(attribute, itemPropAttrKeys...) {
+			if inMap(attribute, itemPropAttrKeys) {
 				var strAttempt string
 				var tAttempt time.Time
 				log.Debug().Msgf("examining meta itemprop: %s", outerHtml)
 
 				if dateTime != "" {
-					strAttempt, tAttempt = tryYmdDate(dateTime, opts)
+					strAttempt, tAttempt = tryDateExpr(dateTime, opts)
 				} else if content != "" {
-					strAttempt, tAttempt = tryYmdDate(content, opts)
+					strAttempt, tAttempt = tryDateExpr(content, opts)
 				}
 
 				if !tAttempt.IsZero() {
-					if (strIn(attribute, itemPropOriginal...) && opts.UseOriginalDate) ||
-						(strIn(attribute, itemPropModified...) && !opts.UseOriginalDate) {
+					if (inMap(attribute, itemPropOriginal) && opts.UseOriginalDate) ||
+						(inMap(attribute, itemPropModified) && !opts.UseOriginalDate) {
 						strMeta, tMeta = strAttempt, tAttempt
 					} else {
 						// TODO: put on hold, hurts precision
@@ -438,21 +437,24 @@ func examineMetaElements(doc *html.Node, opts Options) (string, time.Time) {
 					}
 				}
 			}
+		} else if strings.ToLower(pubDate) == "pubdate" { // Publish date, relatively rare
+			log.Debug().Msgf("examining meta pubdate: %s", outerHtml)
+			strMeta, tMeta = tryDateExpr(content, opts)
 		} else if httpEquiv != "" && content != "" { // http-equiv, rare http://www.standardista.com/html5/http-equiv-the-meta-attribute-explained/
 			attribute := strings.ToLower(httpEquiv)
 			if attribute == "date" {
 				log.Debug().Msgf("examining meta httpequiv: %s", outerHtml)
 				if opts.UseOriginalDate {
-					strMeta, tMeta = tryYmdDate(content, opts)
+					strMeta, tMeta = tryDateExpr(content, opts)
 				} else {
-					strReserve, tReserve = tryYmdDate(content, opts)
+					strReserve, tReserve = tryDateExpr(content, opts)
 				}
 			} else if attribute == "last-modified" {
 				log.Debug().Msgf("examining meta httpequiv: %s", outerHtml)
 				if !opts.UseOriginalDate {
-					strMeta, tMeta = tryYmdDate(content, opts)
+					strMeta, tMeta = tryDateExpr(content, opts)
 				} else {
-					strReserve, tReserve = tryYmdDate(content, opts)
+					strReserve, tReserve = tryDateExpr(content, opts)
 				}
 			}
 		}
@@ -503,10 +505,7 @@ func examineAbbrElements(doc *html.Node, opts Options) (string, time.Time) {
 					refString = dataUtime
 				}
 			}
-		}
-
-		// Handle class
-		if class != "" && strIn(class, classAttrKeys...) {
+		} else if class != "" && inMap(class, attrPublishClasses) { // Handle class
 			text := normalizeSpaces(etreeText(elem))
 			title := strings.TrimSpace(dom.GetAttribute(elem, "title"))
 
@@ -516,7 +515,7 @@ func examineAbbrElements(doc *html.Node, opts Options) (string, time.Time) {
 				log.Debug().Msgf("abbr published-title found: %s", tryText)
 
 				if opts.UseOriginalDate {
-					_, attempt := tryYmdDate(tryText, opts)
+					_, attempt := tryDateExpr(tryText, opts)
 					if !attempt.IsZero() {
 						return tryText, attempt
 					}
@@ -526,10 +525,7 @@ func examineAbbrElements(doc *html.Node, opts Options) (string, time.Time) {
 						break
 					}
 				}
-			}
-
-			// Dates, not times of the day
-			if len(text) > 10 {
+			} else if len(text) > 10 { // Dates, not times of the day
 				tryText := strings.TrimPrefix(text, "am ")
 				log.Debug().Msgf("abbr published found: %s", tryText)
 				refString, refValue = compareReference(refString, refValue, tryText, opts)
@@ -594,7 +590,7 @@ func examineTimeElements(doc *html.Node, opts Options) (string, time.Time) {
 
 			// Analyze attribute
 			if shortcutFlag {
-				_, attempt := tryYmdDate(dateTime, opts)
+				_, attempt := tryDateExpr(dateTime, opts)
 				if !attempt.IsZero() {
 					return dateTime, attempt
 				}
@@ -631,12 +627,12 @@ func examineOtherElements(elements []*html.Node, opts Options) (string, time.Tim
 	var attempt time.Time
 	for _, elem := range elements {
 		// Trim text content
-		textContent := normalizeSpaces(dom.TextContent(elem))
+		text := normalizeSpaces(dom.TextContent(elem))
 
-		// Simple length heuristics
-		if len(textContent) > 6 {
+		// Simple length heuristic
+		if len(text) > 6 { // Could be 8 or 9
 			// Shorten and try the beginning of the string.
-			toExamine := strLimit(textContent, 48)
+			toExamine := strLimit(text, maxTextSize)
 			toExamine = rxLastNonDigits.ReplaceAllString(toExamine, "")
 
 			// Log the examined element
@@ -646,7 +642,7 @@ func examineOtherElements(elements []*html.Node, opts Options) (string, time.Tim
 			log.Debug().Msgf("analyzing HTML: %s (%s)", elemHTML, toExamine)
 
 			// Attempt to extract date
-			_, attempt = tryYmdDate(toExamine, opts)
+			_, attempt = tryDateExpr(toExamine, opts)
 			if !attempt.IsZero() {
 				return toExamine, attempt
 			}
@@ -655,9 +651,9 @@ func examineOtherElements(elements []*html.Node, opts Options) (string, time.Tim
 		// Try link title (Blogspot)
 		titleAttr := strings.TrimSpace(dom.GetAttribute(elem, "title"))
 		if titleAttr != "" {
-			toExamine := strLimit(titleAttr, 48)
+			toExamine := strLimit(titleAttr, maxTextSize)
 			toExamine = rxLastNonDigits.ReplaceAllString(toExamine, "")
-			_, attempt = tryYmdDate(toExamine, opts)
+			_, attempt = tryDateExpr(toExamine, opts)
 			if !attempt.IsZero() {
 				return toExamine, attempt
 			}
@@ -737,11 +733,9 @@ func searchPage(htmlString string, opts Options) (string, time.Time) {
 	if len(bestMatch) >= 3 {
 		str := fmt.Sprintf("%s-%s-1", bestMatch[1], bestMatch[2])
 		dt, err := time.Parse("2006-1-2", str)
-		if err == nil && validateDate(dt, opts) {
-			if copYear == 0 || dt.Year() >= copYear {
-				log.Debug().Msgf("date found for pattern \"%s\": %s", rxYyyyMmPattern.String(), str)
-				return rawString, dt
-			}
+		if err == nil && validateDate(dt, opts) && (copYear == 0 || dt.Year() >= copYear) {
+			log.Debug().Msgf("date found for pattern \"%s\": %s", rxYyyyMmPattern.String(), str)
+			return rawString, dt
 		}
 	}
 
@@ -754,13 +748,13 @@ func searchPage(htmlString string, opts Options) (string, time.Time) {
 	mapPatternRawString := make(map[string]string)
 
 	for _, candidate := range candidates {
-		parts := rxMyPattern.FindStringSubmatch(candidate.Pattern)
-		if len(parts) < 3 {
+		parts := rxFindNamedStringSubmatch(rxYmPattern, candidate.Pattern)
+		if len(parts) == 0 {
 			continue
 		}
 
-		year, _ := strconv.Atoi(parts[2])
-		month, _ := strconv.Atoi(parts[1])
+		year, _ := strconv.Atoi(parts["year"])
+		month, _ := strconv.Atoi(parts["month"])
 		newPattern := fmt.Sprintf("%04d-%02d-01", year, month)
 
 		if _, exist := mapPatternCount[newPattern]; !exist {
@@ -786,7 +780,14 @@ func searchPage(htmlString string, opts Options) (string, time.Time) {
 		return rawString, result
 	}
 
-	// Catch all
+	// TODO: Try full-blown text regex on all HTML?
+	dt := regexParse(htmlString, opts)
+	if validateDate(dt, opts) && (copYear == 0 || dt.Year() >= copYear) {
+		log.Debug().Msg("regex result on HTML: " + dt.String())
+		return htmlString, dt
+	}
+
+	// Catch all: copyright mention
 	if copYear != 0 {
 		log.Debug().Msg("using copyright year as default")
 		return copRawString, time.Date(copYear, 1, 1, 0, 0, 0, 0, time.UTC)
@@ -810,7 +811,7 @@ func searchPage(htmlString string, opts Options) (string, time.Time) {
 // compareReference compares candidate to current date reference
 // (includes date validation and older/newer test)
 func compareReference(refString string, refValue int64, expression string, opts Options) (string, int64) {
-	newRefString, attempt := tryExpression(expression, opts)
+	newRefString, attempt := tryDateExpr(expression, opts)
 	if attempt.IsZero() {
 		return refString, refValue
 	}
@@ -821,19 +822,6 @@ func compareReference(refString string, refValue int64, expression string, opts 
 	}
 
 	return refString, refValue
-}
-
-// tryExpression checks if the text string could be a valid date expression.
-func tryExpression(expression string, opts Options) (string, time.Time) {
-	// Trim expression
-	expression = normalizeSpaces(expression)
-	if expression == "" || getDigitCount(expression) < 4 {
-		return "", timeZero
-	}
-
-	// Try the beginning of the string
-	expression = strLimit(expression, 48)
-	return tryYmdDate(expression, opts)
 }
 
 // searchPattern runs chained candidate filtering and selection.

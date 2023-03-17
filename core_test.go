@@ -1,5 +1,5 @@
 // This file is part of go-htmldate, Go package for extracting publication dates from a web page.
-// Source available in <https://github.com/markusmobius/go-trafilatura>.
+// Source available in <https://github.com/markusmobius/go-htmldate>.
 // Copyright (C) 2022 Markus Mobius
 //
 // This program is free software: you can redistribute it and/or modify it under the terms of
@@ -19,7 +19,7 @@
 package htmldate
 
 import (
-	"io/ioutil"
+	"io"
 	"regexp"
 	"testing"
 	"time"
@@ -212,6 +212,11 @@ func Test_HtmlDate(t *testing.T) {
 	str = `<html><body><time datetime="2011-09-28" class="entry-date"></time></body></html>`
 	checkString(str, "2011-09-28")
 
+	// Bug #54 in original Python library
+	// Their issues doesn't really affect us since our dateparser are different
+	str = `<html><body><time class="Feed-module--feed__item-meta-time--3t1fg" dateTime="November 29, 2020">November 2020</time></body></html>`
+	checkString(str, "2020-11-29")
+
 	// Precise pattern in document body
 	str = `<html><body><font size="2" face="Arial,Geneva,Helvetica">Bei <a href="../../sonstiges/anfrage.php"><b>Bestellungen</b></a> bitte Angabe der Titelnummer nicht vergessen!<br><br>Stand: 03.04.2019</font></body></html>`
 	checkString(str, "2019-04-03")
@@ -303,8 +308,11 @@ func Test_HtmlDate(t *testing.T) {
 	checkMockFile(url, "2017-10-09")
 
 	// In document body
+	// url = "https://github.com/adbar/htmldate"
+	// checkMockFile(url, "2019-01-01")
+
 	url = "https://github.com/adbar/htmldate"
-	checkMockFile(url, "2019-01-01")
+	checkMockFile(url, "2016-07-12", useOriginalDate)
 
 	url = "https://en.blog.wordpress.com/"
 	checkMockFile(url, "2017-08-30")
@@ -461,6 +469,15 @@ func Test_HtmlDate(t *testing.T) {
 	checkMockFile(url, "", skipExtensiveSearch)
 	checkMockFile(url, "2021-07-13")
 
+	// Min date
+	str = `<html><meta><meta property="article:published_time" content="1991-01-02T01:01:00+01:00"></meta><body></body></html>`
+	checkString(str, "", Options{MinDate: time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC)})
+	checkString(str, "1991-01-02", Options{MinDate: time.Date(1990, 1, 1, 0, 0, 0, 0, time.UTC)})
+
+	// Wild text in body
+	str = `<html><body>Wed, 19 Oct 2022 14:24:05 +0000</body></html>`
+	checkString(str, "2022-10-19")
+
 	// =========================================================
 	// Tests below these point should return an approximate date
 	// =========================================================
@@ -523,7 +540,7 @@ func Test_HtmlDate(t *testing.T) {
 	checkURL(url, "2012-11-29")
 
 	url = "http://www.kreditwesen.org/widerstand-berlin/2012-11/keine-kurzung-bei-der-jugend-klubs-konnen-vorerst-aufatmen-bvv-beschliest-haushaltsplan/"
-	checkURL(url, "")
+	checkURL(url, "2012-11-01")
 
 	url = "http://www.kreditwesen.org/widerstand-berlin/6666-42-87/"
 	checkURL(url, "")
@@ -637,6 +654,33 @@ func Test_HtmlDate(t *testing.T) {
 
 	url = "https://www.revolutionpermanente.fr/Antonin-Bernanos-en-prison-depuis-pres-de-deux-mois-en-raison-de-son-militantisme"
 	checkMockFile(url, "2019-06-13")
+
+	// ==================================================
+	// Tests below these point are for deferred URL dates
+	// ==================================================
+
+	str = `<!doctype html>
+	<html lang="en-CA" class="no-js">
+	
+	<head>
+		<link rel="canonical" href="https://www.fool.ca/2022/10/20/3-stable-stocks-id-buy-if-the-market-tanks-further/" />
+		<meta property="article:published_time" content="2022-10-20T18:45:00+00:00" />
+		<meta property="article:modified_time" content="2022-10-20T18:35:08+00:00" />
+		<script type="application/ld+json" class="yoast-schema-graph">{"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://www.fool.ca/2022/10/20/3-stable-stocks-id-buy-if-the-market-tanks-further/#webpage","url":"https://www.fool.ca/2022/10/20/3-stable-stocks-id-buy-if-the-market-tanks-further/","name":"3 Stable Stocks I'd Buy if the Market Tanks Further | The Motley Fool Canada","isPartOf":{"@id":"https://www.fool.ca/#website"},"datePublished":"2022-10-20T18:45:00+00:00","dateModified":"2022-10-20T18:35:08+00:00","description":"Dividend aristocrats contain stable stocks that any investor should consider, but these three offer the best chance at future growth as well.","breadcrumb":{"@id":"https://www.fool.ca/2022/10/20/3-stable-stocks-id-buy-if-the-market-tanks-further/#breadcrumb"},"inLanguage":"en-CA"},{"@type":"NewsArticle","@id":"https://www.fool.ca/2022/10/20/3-stable-stocks-id-buy-if-the-market-tanks-further/#article","isPartOf":{"@id":"https://www.fool.ca/2022/10/20/3-stable-stocks-id-buy-if-the-market-tanks-further/#webpage"},"author":{"@id":"https://www.fool.ca/#/schema/person/e0d452bd1e82135f310295e7dc650aca"},"headline":"3 Stable Stocks I&#8217;d Buy if the Market Tanks Further","datePublished":"2022-10-20T18:45:00+00:00","dateModified":"2022-10-20T18:35:08+00:00"}]}</script>
+	</head>
+	
+	<body class="post-template-default single single-post postid-1378278 single-format-standard mega-menu-main-menu-2020 mega-menu-footer-2020" data-has-main-nav="true"> <span class="posted-on">Published <time class="entry-date published" datetime="2022-10-20T14:45:00-04:00">October 20, 2:45 pm EDT</time></span> </body>
+	
+	</html>`
+
+	opts := Options{ExtractTime: true}
+	opts.DeferUrlExtractor = true
+	res := extractFromString(str, opts)
+	assert.Equal(t, "2022-10-20 18:45", res.Format("2006-01-02 15:04"))
+
+	opts.DeferUrlExtractor = false
+	res = extractFromString(str)
+	assert.Equal(t, "2022-10-20 00:00", res.Format("2006-01-02 15:04"))
 }
 
 func Test_findTime(t *testing.T) {
@@ -754,11 +798,12 @@ func Test_selectCandidate(t *testing.T) {
 	_, result = selectCandidate(candidates, rxCatch, rxYear, opts)
 	assert.Equal(t, "2017-08-11", result[0])
 
-	// Candidates not exist
-	candidates = createCandidates("20208956", "20208956", "20208956",
-		"19018956", "209561", "22020895607-12", "2-28")
+	// Taking date present twice, corner case
+	candidates = createCandidates("2016-12-23", "2016-12-23", "2017-08-11",
+		"2017-08-11", "2017-08-11")
 	_, result = selectCandidate(candidates, rxCatch, rxYear, opts)
-	assert.Empty(t, result)
+	assert.Equal(t, "2016-12-23", result[0])
+
 }
 
 func Test_searchPage(t *testing.T) {
@@ -781,7 +826,7 @@ func Test_searchPage(t *testing.T) {
 	f := openMockFile("http://www.heimicke.de/chronik/zahlen-und-daten/")
 	defer f.Close()
 
-	bt, _ := ioutil.ReadAll(f)
+	bt, _ := io.ReadAll(f)
 	_, dt = searchPage(string(bt), opts)
 	assert.Equal(t, "2019-04-06", format(dt))
 
