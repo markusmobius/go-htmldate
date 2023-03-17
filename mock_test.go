@@ -92,8 +92,10 @@ func extractFromURL(url string, customOpts ...Options) Result {
 
 func mergeOpts(opt1, opt2 Options) Options {
 	opt1.EnableLog = opt1.EnableLog || opt2.EnableLog
+	opt1.ExtractTime = opt1.ExtractTime || opt2.ExtractTime
 	opt1.UseOriginalDate = opt1.UseOriginalDate || opt2.UseOriginalDate
 	opt1.SkipExtensiveSearch = opt1.SkipExtensiveSearch || opt2.SkipExtensiveSearch
+	opt1.DeferUrlExtractor = opt1.DeferUrlExtractor || opt2.DeferUrlExtractor
 
 	if opt2.URL != "" {
 		opt1.URL = opt2.URL

@@ -650,6 +650,33 @@ func Test_HtmlDate(t *testing.T) {
 
 	url = "https://www.revolutionpermanente.fr/Antonin-Bernanos-en-prison-depuis-pres-de-deux-mois-en-raison-de-son-militantisme"
 	checkMockFile(url, "2019-06-13")
+
+	// ==================================================
+	// Tests below these point are for deferred URL dates
+	// ==================================================
+
+	str = `<!doctype html>
+	<html lang="en-CA" class="no-js">
+	
+	<head>
+		<link rel="canonical" href="https://www.fool.ca/2022/10/20/3-stable-stocks-id-buy-if-the-market-tanks-further/" />
+		<meta property="article:published_time" content="2022-10-20T18:45:00+00:00" />
+		<meta property="article:modified_time" content="2022-10-20T18:35:08+00:00" />
+		<script type="application/ld+json" class="yoast-schema-graph">{"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://www.fool.ca/2022/10/20/3-stable-stocks-id-buy-if-the-market-tanks-further/#webpage","url":"https://www.fool.ca/2022/10/20/3-stable-stocks-id-buy-if-the-market-tanks-further/","name":"3 Stable Stocks I'd Buy if the Market Tanks Further | The Motley Fool Canada","isPartOf":{"@id":"https://www.fool.ca/#website"},"datePublished":"2022-10-20T18:45:00+00:00","dateModified":"2022-10-20T18:35:08+00:00","description":"Dividend aristocrats contain stable stocks that any investor should consider, but these three offer the best chance at future growth as well.","breadcrumb":{"@id":"https://www.fool.ca/2022/10/20/3-stable-stocks-id-buy-if-the-market-tanks-further/#breadcrumb"},"inLanguage":"en-CA"},{"@type":"NewsArticle","@id":"https://www.fool.ca/2022/10/20/3-stable-stocks-id-buy-if-the-market-tanks-further/#article","isPartOf":{"@id":"https://www.fool.ca/2022/10/20/3-stable-stocks-id-buy-if-the-market-tanks-further/#webpage"},"author":{"@id":"https://www.fool.ca/#/schema/person/e0d452bd1e82135f310295e7dc650aca"},"headline":"3 Stable Stocks I&#8217;d Buy if the Market Tanks Further","datePublished":"2022-10-20T18:45:00+00:00","dateModified":"2022-10-20T18:35:08+00:00"}]}</script>
+	</head>
+	
+	<body class="post-template-default single single-post postid-1378278 single-format-standard mega-menu-main-menu-2020 mega-menu-footer-2020" data-has-main-nav="true"> <span class="posted-on">Published <time class="entry-date published" datetime="2022-10-20T14:45:00-04:00">October 20, 2:45 pm EDT</time></span> </body>
+	
+	</html>`
+
+	opts := Options{ExtractTime: true}
+	opts.DeferUrlExtractor = true
+	res := extractFromString(str, opts)
+	assert.Equal(t, "2022-10-20 18:45", res.Format("2006-01-02 15:04"))
+
+	opts.DeferUrlExtractor = false
+	res = extractFromString(str)
+	assert.Equal(t, "2022-10-20 00:00", res.Format("2006-01-02 15:04"))
 }
 
 func Test_findTime(t *testing.T) {

@@ -50,6 +50,10 @@ type Options struct {
 	// so use as necessary.
 	SkipExtensiveSearch bool
 
+	// DeferUrlExtractor specify whether to use URL extractor only as backup to
+	// prioritize full expressions.
+	DeferUrlExtractor bool
+
 	// DateParserConfig is configuration for the external `dateparser`. Only used extensive search
 	// is enabled (`SkipExtensiveSearch=false`).
 	DateParserConfig *dps.Configuration
