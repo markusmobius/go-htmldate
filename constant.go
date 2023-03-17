@@ -142,10 +142,10 @@ var monthNumber = map[string]int{
 }
 
 var dateAttributes = sliceToMap(
-	"article.created", "article_date_original",
+	"article.created", "article_date_original", "article:post_date",
 	"article.published", "article:published_time",
-	"article:publicationdate",
-	"bt:pubdate", "citation_date", "citation_publication_date",
+	"article:publicationdate", "bt:pubdate",
+	"citation_date", "citation_publication_date", "content_create_date",
 	"created", "cxenseparse:recs:publishtime",
 	"date", "date_created", "date_published",
 	"datecreated", "dateposted", "datepublished",
@@ -154,13 +154,16 @@ var dateAttributes = sliceToMap(
 	"dc.date.issued", "dc.date.publication",
 	"dcterms.created", "dcterms.date",
 	"dcterms.issued", "dc:created", "dc:date",
-	"displaydate", "doc_date", "gentime",
+	"displaydate", "doc_date", "field-name-post-date", "gentime",
+	"meta", // too loose?
 	// Open Graph: https://opengraphprotocol.org/
 	"og:published_time", "og:article:published_time",
 	"originalpublicationdate", "parsely-pub-date",
 	"pubdate", "publishdate", "publish_date",
-	"published-date", "publication_date", "rnews:datepublished",
-	"sailthru.date", "shareaholic:article_published_time", "timestamp")
+	"published-date", "publication_date",
+	"rbpubdate", "release_date", "rnews:datepublished",
+	"sailthru.date", "shareaholic:article_published_time", "timestamp",
+	"twt-published-at", "video:release_date", "vr:published_time")
 
 var propertyModified = sliceToMap(
 	"article:modified_time", "datemodified",

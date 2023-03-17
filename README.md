@@ -33,7 +33,7 @@ By default Go-HtmlDate will run in extensive mode. You can disabled it by settin
 
 ## Status
 
-This package is stable enough for use and up to date with the original `htmldate` (commit [3549b91][3]).
+This package is stable enough for use and up to date with the original `htmldate` (commit [be8245c][3]).
 However, since time extraction is a brand new feature which doesn't exist in the original, use it with
 care. So far it works quite nicely on most news sites that I've tried, but it still needs more testing.
 
@@ -64,7 +64,7 @@ Now you can use Trafilatura to extract date of a web page. For basic usage you c
 
 ## Usage as CLI Application
 
-To use CLI, you need to build it from source. Make sure you use `go >= 1.16` then run following commands :
+To use CLI, you need to build it from source. Make sure you use `go >= 1.20` then run following commands :
 
 ```
 go install github.com/markusmobius/go-htmldate/cmd/go-htmldate@master
@@ -155,7 +155,7 @@ Like the original, `go-htmldate` is distributed under the [GNU General Public Li
 [0]: https://github.com/adbar/htmldate
 [1]: https://github.com/adbar
 [2]: https://github.com/adbar/htmldate/tree/v1.1.1
-[3]: https://github.com/adbar/htmldate/commit/3549b91
+[3]: https://github.com/adbar/htmldate/commit/be8245c
 [dcg]: https://dataculturegroup.org
 [ref-badge]: https://pkg.go.dev/badge/github.com/markusmobius/go-htmldate.svg
 [ref-link]: https://pkg.go.dev/github.com/markusmobius/go-htmldate
