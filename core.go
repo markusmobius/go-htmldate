@@ -247,8 +247,9 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 		var refValue int64
 		var refString string
 		for _, segment := range htmlxpath.Find(doc, freeTextXpath) {
+			// Basic filter: minimum could be 8 or 9
 			text := normalizeSpaces(segment.Data)
-			if nText := len(text); nText > 6 && nText < 60 {
+			if nText := len(text); nText > 6 && nText < maxTextSize {
 				refString, refValue = compareReference(refString, refValue, text, opts)
 			}
 		}
@@ -624,12 +625,12 @@ func examineOtherElements(elements []*html.Node, opts Options) (string, time.Tim
 	var attempt time.Time
 	for _, elem := range elements {
 		// Trim text content
-		textContent := normalizeSpaces(dom.TextContent(elem))
+		text := normalizeSpaces(dom.TextContent(elem))
 
-		// Simple length heuristics
-		if len(textContent) > 6 {
+		// Simple length heuristic
+		if len(text) > 6 { // Could be 8 or 9
 			// Shorten and try the beginning of the string.
-			toExamine := strLimit(textContent, maxTextSize)
+			toExamine := strLimit(text, maxTextSize)
 			toExamine = rxLastNonDigits.ReplaceAllString(toExamine, "")
 
 			// Log the examined element
