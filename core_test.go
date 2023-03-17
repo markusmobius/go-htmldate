@@ -474,6 +474,10 @@ func Test_HtmlDate(t *testing.T) {
 	checkString(str, "", Options{MinDate: time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC)})
 	checkString(str, "1991-01-02", Options{MinDate: time.Date(1990, 1, 1, 0, 0, 0, 0, time.UTC)})
 
+	// Wild text in body
+	str = `<html><body>Wed, 19 Oct 2022 14:24:05 +0000</body></html>`
+	checkString(str, "2022-10-19")
+
 	// =========================================================
 	// Tests below these point should return an approximate date
 	// =========================================================

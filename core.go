@@ -787,11 +787,11 @@ func searchPage(htmlString string, opts Options) (string, time.Time) {
 	}
 
 	// TODO: Try full-blown text regex on all HTML?
-	// dt := regexParse(htmlString, opts)
-	// if validateDate(dt, opts) && (copYear == 0 || dt.Year() >= copYear) {
-	// 	log.Debug().Msg("regex result on HTML: " + dt.String())
-	// 	return htmlString, dt
-	// }
+	dt := regexParse(htmlString, opts)
+	if validateDate(dt, opts) && (copYear == 0 || dt.Year() >= copYear) {
+		log.Debug().Msg("regex result on HTML: " + dt.String())
+		return htmlString, dt
+	}
 
 	// Catch all: copyright mention
 	if copYear != 0 {
