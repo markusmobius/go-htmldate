@@ -146,7 +146,7 @@ func tryDateExpr(s string, opts Options) (string, time.Time) {
 func fastParse(s string, opts Options) time.Time {
 	// 1. Try YYYYMMDD without regex first
 	// This also handle '201709011234' which not covered by dateparser
-	if len(s) >= 8 && isDigit(s[:8]) {
+	if len(s) >= 8 && isDigit(s[4:8]) {
 		year, _ := strconv.Atoi(s[:4])
 		month, _ := strconv.Atoi(s[4:6])
 		day, _ := strconv.Atoi(s[6:8])
