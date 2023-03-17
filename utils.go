@@ -20,6 +20,7 @@ package htmldate
 
 import (
 	"bytes"
+	"regexp"
 	"strings"
 	"unicode"
 
@@ -151,6 +152,20 @@ func strLimit(s string, limit int) string {
 func normalizeSpaces(s string) string {
 	s = strings.Join(strings.Fields(s), " ")
 	return strings.TrimSpace(s)
+}
+
+func rxFindNamedStringSubmatch(rx *regexp.Regexp, s string) map[string]string {
+	names := rx.SubexpNames()
+	result := make(map[string]string)
+	matches := rx.FindStringSubmatch(s)
+
+	for i, match := range matches {
+		if match != "" {
+			result[names[i]] = match
+		}
+	}
+
+	return result
 }
 
 // isLeapYear check if year is leap year.

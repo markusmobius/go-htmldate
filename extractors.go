@@ -171,54 +171,39 @@ func fastParse(s string, opts Options) time.Time {
 		}
 	}
 
-	// 3. Try Y-M-D pattern since it's the one used in ISO-8601
-	parts = rxYmdPattern.FindStringSubmatch(s)
-	if len(parts) == 4 {
-		year, _ := strconv.Atoi(parts[1])
-		month, _ := strconv.Atoi(parts[2])
-		day, _ := strconv.Atoi(parts[3])
-
-		// Make sure month is at most 12, because if not then it's not YMD
-		dt, valid := validateDateParts(year, month, day, opts)
-		if valid {
-			log.Debug().Msgf("fast parse found Y-M-D date: %s", parts[0])
-			return dt
-		}
-	}
-
-	// 4. Try the D-M-Y pattern since it's the most common date format in the world
-	parts = rxDmyPattern.FindStringSubmatch(s)
-	if len(parts) == 4 {
-		day, _ := strconv.Atoi(parts[1])
-		month, _ := strconv.Atoi(parts[2])
-		year, _ := strconv.Atoi(parts[3])
+	// 3. Try the very common YMD, Y-M-D, and D-M-Y patterns
+	namedParts := rxFindNamedStringSubmatch(rxYmdPattern, s)
+	if len(namedParts) != 0 {
+		year, _ := strconv.Atoi(namedParts["year"])
+		month, _ := strconv.Atoi(namedParts["month"])
+		day, _ := strconv.Atoi(namedParts["day"])
 
 		year = correctYear(year)
 		day, month = trySwapValues(day, month)
 
-		// Make sure month is at most 12, because if not then it's not D-M-Y
+		// Make sure month is at most 12, because if not then it's not YMD
 		dt, valid := validateDateParts(year, month, day, opts)
 		if valid {
-			log.Debug().Msgf("fast parse found D-M-Y date: %s", parts[0])
+			log.Debug().Msgf("fast parse found Y-M-D date: %s", namedParts[""])
 			return dt
 		}
 	}
 
-	// 5. Try the Y-M pattern
-	parts = rxYmPattern.FindStringSubmatch(s)
-	if len(parts) == 3 {
-		year, _ := strconv.Atoi(parts[1])
-		month, _ := strconv.Atoi(parts[2])
+	// 4. Try the Y-M and M-Y patterns
+	namedParts = rxFindNamedStringSubmatch(rxYmPattern, s)
+	if len(namedParts) != 0 {
+		year, _ := strconv.Atoi(namedParts["year"])
+		month, _ := strconv.Atoi(namedParts["month"])
 
 		// Make sure month is at most 12, because if not then it's not D-M-Y
 		dt, valid := validateDateParts(year, month, 1, opts)
 		if valid {
-			log.Debug().Msgf("fast parse found Y-M date: %s", parts[0])
+			log.Debug().Msgf("fast parse found Y-M date: %s", namedParts[""])
 			return dt
 		}
 	}
 
-	// 6. Try the other regex pattern
+	// 5. Try the other regex pattern
 	dt := regexParse(s, opts)
 	if validateDate(dt, opts) {
 		log.Debug().Msgf("fast parse found regex date: %s", dt.Format("2006-01-02"))
@@ -459,32 +444,18 @@ func extractIdiosyncrasy(rxIdiosyncrasy *regexp.Regexp, htmlString string, opts 
 // expressions with particular emphasis on English, French, German and Turkish.
 func regexParse(s string, opts Options) time.Time {
 	var exist bool
-	var parts []string
 	var year, month, day int
 
-	// Multilingual day-month-year pattern
-	parts = rxLongDmyPattern.FindStringSubmatch(s)
-	if len(parts) >= 4 {
-		month, exist = monthNumber[strings.ToLower(parts[2])]
+	// Multilingual day-month-year pattern + American English patterns
+	parts := rxFindNamedStringSubmatch(rxLongTextPattern, s)
+	if len(parts) != 0 {
+		month, exist = monthNumber[strings.ToLower(parts["month"])]
 		if exist {
-			year, _ = strconv.Atoi(parts[3])
-			day, _ = strconv.Atoi(parts[1])
-			goto regex_finish
+			year, _ = strconv.Atoi(parts["year"])
+			day, _ = strconv.Atoi(parts["day"])
 		}
 	}
 
-	// American English
-	parts = rxLongMdyPattern.FindStringSubmatch(s)
-	if len(parts) >= 4 {
-		month, exist = monthNumber[strings.ToLower(parts[1])]
-		if exist {
-			year, _ = strconv.Atoi(parts[3])
-			day, _ = strconv.Atoi(parts[2])
-			goto regex_finish
-		}
-	}
-
-regex_finish:
 	year = correctYear(year)
 	day, month = trySwapValues(day, month)
 	dt, valid := validateDateParts(year, month, day, opts)

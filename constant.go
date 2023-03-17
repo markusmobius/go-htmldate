@@ -55,12 +55,16 @@ var (
 	rxLastNonDigits = regexp.MustCompile(`\D+$`)
 
 	rxYmdNoSepPattern = regexp.MustCompile(`(?:\D|^)(\d{8})(?:\D|$)`)
-	rxYmdPattern      = regexp.MustCompile(`(?:\D|^)(\d{4})[\-/.](\d{1,2})[\-/.](\d{1,2})(?:\D|$)`)
-	rxDmyPattern      = regexp.MustCompile(`(?:\D|^)(\d{1,2})[\-/.](\d{1,2})[\-/.](\d{2,4})(?:\D|$)`)
-	rxYmPattern       = regexp.MustCompile(`(?:\D|^)(\d{4})[\-/.](\d{1,2})(?:\D|$)`)
-	rxMyPattern       = regexp.MustCompile(`(?:\D|^)(\d{1,2})[\-/.](\d{4})(?:\D|$)`)
+	rxYmdPattern      = regexp.MustCompile(`(?i)` +
+		`(?:\D|^)(?P<year>\d{4})[\-/.](?P<month>\d{1,2})[\-/.](?P<day>\d{1,2})(?:\D|$)` +
+		`|` +
+		`(?:\D|^)(?P<day>\d{1,2})[\-/.](?P<month>\d{1,2})[\-/.](?P<year>\d{2,4})(?:\D|$)`)
+	rxYmPattern = regexp.MustCompile(`(?i)` +
+		`(?:\D|^)(?P<year>\d{4})[\-/.](?P<month>\d{1,2})(?:\D|$)` +
+		`|` +
+		`(?:\D|^)(?P<month>\d{1,2})[\-/.](?P<year>\d{4})(?:\D|$)`)
 
-	// # TODO: check "août"
+	// TODO: check "août"
 	rxMonths = `` +
 		`January|February|March|April|May|June|July|August|September|October|November|December|` +
 		`Januari|Februari|Maret|Mei|Juni|Juli|Agustus|Oktober|Desember|` +
@@ -69,10 +73,10 @@ var (
 		`janvier|février|mars|avril|mai|juin|juillet|aout|septembre|octobre|novembre|décembre|` +
 		`Ocak|Şubat|Mart|Nisan|Mayıs|Haziran|Temmuz|Ağustos|Eylül|Ekim|Kasım|Aralık|` +
 		`Oca|Şub|Mar|Nis|Haz|Tem|Ağu|Eyl|Eki|Kas|Ara`
-	rxLongMdyPattern = regexp.MustCompile(
-		`(?i)(` + rxMonths + `)\s([0-9]{1,2})(?:st|nd|rd|th)?,? ([0-9]{4})`)
-	rxLongDmyPattern = regexp.MustCompile(
-		`(?i)([0-9]{1,2})(?:st|nd|rd|th|\.)? (?:of )?(` + rxMonths + `),? ([0-9]{4})`)
+	rxLongTextPattern = regexp.MustCompile(`(?i)` +
+		`(?P<month>` + rxMonths + `)\s(?P<day>[0-9]{1,2})(?:st|nd|rd|th)?,? (?P<year>[0-9]{4})` +
+		`|` +
+		`(?P<day>[0-9]{1,2})(?:st|nd|rd|th|\.)? (?:of )?(?P<month>` + rxMonths + `),? (?P<year>[0-9]{4})`)
 
 	rxCompleteUrl = regexp.MustCompile(`(?i)\D([0-9]{4})[/_-]([0-9]{1,2})[/_-]([0-9]{1,2})(?:\D|$)`)
 	rxPartialUrl  = regexp.MustCompile(`(?i)\D([0-9]{4})[/_-]([0-9]{2})(?:\D|$)`)
@@ -89,7 +93,8 @@ var (
 	rxEnPattern = regexp.MustCompile(`(?i)(?:date[^0-9"]{0,20}|updated|published) *?(?:in)? *?:? *?([0-9]{1,4})[./]([0-9]{1,2})[./]([0-9]{2,4})`)
 	rxDePattern = regexp.MustCompile(`(?i)(?:Datum|Stand): ?([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{2,4})`)
 	rxTrPattern = regexp.MustCompile(`(?i)` +
-		`(?:güncellen?me|yayı(?:m|n)lan?ma) *?(?:tarihi)? *?:? *?([0-9]{1,2})[./]([0-9]{1,2})[./]([0-9]{2,4})|` +
+		`(?:güncellen?me|yayı(?:m|n)lan?ma) *?(?:tarihi)? *?:? *?([0-9]{1,2})[./]([0-9]{1,2})[./]([0-9]{2,4})` +
+		`|` +
 		`([0-9]{1,2})[./]([0-9]{1,2})[./]([0-9]{2,4}) *?(?:'de|'da|'te|'ta|’de|’da|’te|’ta|tarihinde) *(?:güncellendi|yayı(?:m|n)landı)`)
 
 	// Extensive search patterns

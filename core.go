@@ -748,13 +748,13 @@ func searchPage(htmlString string, opts Options) (string, time.Time) {
 	mapPatternRawString := make(map[string]string)
 
 	for _, candidate := range candidates {
-		parts := rxMyPattern.FindStringSubmatch(candidate.Pattern)
-		if len(parts) < 3 {
+		parts := rxFindNamedStringSubmatch(rxYmPattern, candidate.Pattern)
+		if len(parts) == 0 {
 			continue
 		}
 
-		year, _ := strconv.Atoi(parts[2])
-		month, _ := strconv.Atoi(parts[1])
+		year, _ := strconv.Atoi(parts["year"])
+		month, _ := strconv.Atoi(parts["month"])
 		newPattern := fmt.Sprintf("%04d-%02d-01", year, month)
 
 		if _, exist := mapPatternCount[newPattern]; !exist {
