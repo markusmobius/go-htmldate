@@ -397,7 +397,7 @@ func examineMetaElements(doc *html.Node, opts Options) (string, time.Time) {
 			} else if inMap(name, dateAttributes) { // date
 				log.Debug().Msgf("examining meta name: %s", outerHtml)
 				strMeta, tMeta = tryDateExpr(content, opts)
-			} else if strIn(name, modifiedAttrKeys...) { // modified
+			} else if inMap(name, attrModifiedNames) { // modified
 				log.Debug().Msgf("examining meta name: %s", outerHtml)
 				if !opts.UseOriginalDate {
 					strMeta, tMeta = tryDateExpr(content, opts)
