@@ -142,44 +142,90 @@ var monthNumber = map[string]int{
 }
 
 var dateAttributes = sliceToMap(
-	"analyticsattributes.articledate", "article.created",
-	"article_date_original", "article:post_date",
-	"article.published", "article:published", "article:published_time",
-	"article:publicationdate", "bt:pubdate",
-	"citation_date", "citation_publication_date", "content_create_date",
-	"created", "cxenseparse:recs:publishtime",
-	"date", "date_created", "date_published",
-	"datecreated", "dateposted", "datepublished",
+	"analyticsattributes.articledate",
+	"article.created",
+	"article_date_original",
+	"article:post_date",
+	"article.published",
+	"article:published",
+	"article:published_time",
+	"article:publicationdate",
+	"bt:pubdate",
+	"citation_date",
+	"citation_publication_date",
+	"content_create_date",
+	"created",
+	"cxenseparse:recs:publishtime",
+	"date",
+	"date_created",
+	"date_published",
+	"datecreated",
+	"dateposted",
+	"datepublished",
 	// Dublin Core: https://wiki.whatwg.org/wiki/MetaExtensions
-	"dc.date", "dc.created", "dc.date.created",
-	"dc.date.issued", "dc.date.publication", "dcsext.articlefirstpublished",
-	"dcterms.created", "dcterms.date",
-	"dcterms.issued", "dc:created", "dc:date",
-	"displaydate", "doc_date", "field-name-post-date", "gentime",
-	"mediator_published_time", "meta", // too loose?
+	"dc.date",
+	"dc.created",
+	"dc.date.created",
+	"dc.date.issued",
+	"dc.date.publication",
+	"dcsext.articlefirstpublished",
+	"dcterms.created",
+	"dcterms.date",
+	"dcterms.issued",
+	"dc:created",
+	"dc:date",
+	"displaydate",
+	"doc_date",
+	"field-name-post-date",
+	"gentime",
+	"mediator_published_time",
+	"meta", // too loose?
 	// Open Graph: https://opengraphprotocol.org/
-	"og:published_time", "og:article:published_time",
-	"originalpublicationdate", "parsely-pub-date", "pdate",
-	"ptime", "pubdate", "publishdate", "publish_date", "publish-date",
-	"published-date", "publication_date",
-	"rbpubdate", "release_date", "rnews:datepublished",
-	"sailthru.date", "shareaholic:article_published_time", "timestamp",
-	"twt-published-at", "video:release_date", "vr:published_time")
+	"og:published_time",
+	"og:article:published_time",
+	"originalpublicationdate",
+	"parsely-pub-date",
+	"pdate",
+	"ptime",
+	"pubdate",
+	"publishdate",
+	"publish_date",
+	"publish-date",
+	"published-date",
+	"publication_date",
+	"rbpubdate",
+	"release_date",
+	"rnews:datepublished",
+	"sailthru.date",
+	"shareaholic:article_published_time",
+	"timestamp",
+	"twt-published-at",
+	"video:release_date",
+	"vr:published_time")
 
 var propertyModified = sliceToMap(
-	"article:modified", "article:modified_time",
-	"datemodified", "dc.modified", "dcterms.modified",
-	"lastmodified", "modified_time",
-	"og:article:modified_time", "og:updated_time", "og:modified_time",
-	"release_date", "revision_date", "updated_time")
-
-var attrModifiedNames = sliceToMap("lastmod", "lastmodified", "last-modified", "modified", "utime")
+	"article:modified",
+	"article:modified_time",
+	"datemodified",
+	"dc.modified",
+	"dcterms.modified",
+	"lastmodified",
+	"modified_time",
+	"og:article:modified_time",
+	"og:updated_time",
+	"og:modified_time",
+	"release_date",
+	"revision_date",
+	"updated_time")
 
 var (
-	classAttrKeys    = []string{"published", "date-published", "time-published"}
-	itemPropAttrKeys = []string{"datecreated", "datepublished", "pubyear", "datemodified", "dateupdate"}
-	itemPropOriginal = itemPropAttrKeys[:3]
-	itemPropModified = itemPropAttrKeys[3:]
+	attrModifiedNames  = sliceToMap("lastmod", "lastmodified", "last-modified", "modified", "utime")
+	attrPublishClasses = sliceToMap("published", "date-published", "time-published")
+
+	listItemPropAttrs = []string{"datecreated", "datepublished", "pubyear", "datemodified", "dateupdate"}
+	itemPropAttrKeys  = sliceToMap(listItemPropAttrs...)
+	itemPropOriginal  = sliceToMap(listItemPropAttrs[:3]...)
+	itemPropModified  = sliceToMap(listItemPropAttrs[3:]...)
 )
 
 const (

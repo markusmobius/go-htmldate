@@ -410,7 +410,7 @@ func examineMetaElements(doc *html.Node, opts Options) (string, time.Time) {
 			strMeta, tMeta = tryDateExpr(content, opts)
 		} else if itemProp != "" { // Item scope
 			attribute := strings.ToLower(itemProp)
-			if strIn(attribute, itemPropAttrKeys...) {
+			if inMap(attribute, itemPropAttrKeys) {
 				var strAttempt string
 				var tAttempt time.Time
 				log.Debug().Msgf("examining meta itemprop: %s", outerHtml)
@@ -422,8 +422,8 @@ func examineMetaElements(doc *html.Node, opts Options) (string, time.Time) {
 				}
 
 				if !tAttempt.IsZero() {
-					if (strIn(attribute, itemPropOriginal...) && opts.UseOriginalDate) ||
-						(strIn(attribute, itemPropModified...) && !opts.UseOriginalDate) {
+					if (inMap(attribute, itemPropOriginal) && opts.UseOriginalDate) ||
+						(inMap(attribute, itemPropModified) && !opts.UseOriginalDate) {
 						strMeta, tMeta = strAttempt, tAttempt
 					} else {
 						// TODO: put on hold, hurts precision
@@ -508,7 +508,7 @@ func examineAbbrElements(doc *html.Node, opts Options) (string, time.Time) {
 		}
 
 		// Handle class
-		if class != "" && strIn(class, classAttrKeys...) {
+		if class != "" && inMap(class, attrPublishClasses) {
 			text := normalizeSpaces(etreeText(elem))
 			title := strings.TrimSpace(dom.GetAttribute(elem, "title"))
 
