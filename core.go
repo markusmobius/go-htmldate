@@ -778,7 +778,7 @@ func searchPage(htmlString string, opts Options) (string, time.Time) {
 		return rawString, result
 	}
 
-	// Catch all
+	// Catch all: copyright mention
 	if copYear != 0 {
 		log.Debug().Msg("using copyright year as default")
 		return copRawString, time.Date(copYear, 1, 1, 0, 0, 0, 0, time.UTC)

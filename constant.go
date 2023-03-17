@@ -147,14 +147,14 @@ var dateAttributes = sliceToMap(
 	"article:publicationdate",
 	"bt:pubdate", "citation_date", "citation_publication_date",
 	"created", "cxenseparse:recs:publishtime",
-	"date", "date_published",
+	"date", "date_created", "date_published",
 	"datecreated", "dateposted", "datepublished",
 	// Dublin Core: https://wiki.whatwg.org/wiki/MetaExtensions
 	"dc.date", "dc.created", "dc.date.created",
 	"dc.date.issued", "dc.date.publication",
 	"dcterms.created", "dcterms.date",
 	"dcterms.issued", "dc:created", "dc:date",
-	"gentime",
+	"displaydate", "doc_date", "gentime",
 	// Open Graph: https://opengraphprotocol.org/
 	"og:published_time", "og:article:published_time",
 	"originalpublicationdate", "parsely-pub-date",
@@ -163,9 +163,11 @@ var dateAttributes = sliceToMap(
 	"sailthru.date", "shareaholic:article_published_time", "timestamp")
 
 var propertyModified = sliceToMap(
-	"article:modified_time", "datemodified", "modified_time",
+	"article:modified_time", "datemodified",
+	"dc.modified", "dcterms.modified",
+	"lastmodified", "modified_time",
 	"og:article:modified_time", "og:updated_time", "og:modified_time",
-	"release_date", "updated_time")
+	"release_date", "revision_date", "updated_time")
 
 var (
 	modifiedAttrKeys = []string{"lastmodified", "last-modified", "lastmod"}
