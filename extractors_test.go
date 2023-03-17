@@ -196,6 +196,7 @@ func Test_regexParse(t *testing.T) {
 	assert.Equal(t, "1998-08-01", parse("August 1, 1998"))
 	assert.Equal(t, "1998-09-01", parse("September 1, 1998"))
 	assert.Equal(t, "1998-10-01", parse("Oktober 1, 1998"))
+	assert.Equal(t, "1998-10-01", parse("1. Okt. 1998"))
 	assert.Equal(t, "1998-11-01", parse("November 1, 1998"))
 	assert.Equal(t, "1998-12-01", parse("Dezember 1, 1998"))
 	assert.Equal(t, "1998-01-01", parse("Ocak 1, 1998"))

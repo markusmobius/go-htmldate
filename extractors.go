@@ -449,7 +449,9 @@ func regexParse(s string, opts Options) time.Time {
 	// Multilingual day-month-year pattern + American English patterns
 	parts := rxFindNamedStringSubmatch(rxLongTextPattern, s)
 	if len(parts) != 0 {
-		month, exist = monthNumber[strings.ToLower(parts["month"])]
+		monthName := strings.ToLower(parts["month"])
+		monthName = strings.Trim(monthName, ".")
+		month, exist = monthNumber[monthName]
 		if exist {
 			year, _ = strconv.Atoi(parts["year"])
 			day, _ = strconv.Atoi(parts["day"])
