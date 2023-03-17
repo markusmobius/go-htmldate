@@ -731,11 +731,9 @@ func searchPage(htmlString string, opts Options) (string, time.Time) {
 	if len(bestMatch) >= 3 {
 		str := fmt.Sprintf("%s-%s-1", bestMatch[1], bestMatch[2])
 		dt, err := time.Parse("2006-1-2", str)
-		if err == nil && validateDate(dt, opts) {
-			if copYear == 0 || dt.Year() >= copYear {
-				log.Debug().Msgf("date found for pattern \"%s\": %s", rxYyyyMmPattern.String(), str)
-				return rawString, dt
-			}
+		if err == nil && validateDate(dt, opts) && (copYear == 0 || dt.Year() >= copYear) {
+			log.Debug().Msgf("date found for pattern \"%s\": %s", rxYyyyMmPattern.String(), str)
+			return rawString, dt
 		}
 	}
 

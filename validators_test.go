@@ -26,21 +26,26 @@ import (
 )
 
 func Test_validateDate(t *testing.T) {
-	fnValidate := func(s string, format ...string) bool {
-		dateFormat := defaultDateFormat
-		if len(format) > 0 && format[0] != "" {
-			dateFormat = format[0]
-		}
-
-		dt, err := time.Parse(dateFormat, s)
+	fnValidateFormat := func(s, format string, customOpts ...Options) bool {
+		dt, err := time.Parse(format, s)
 		if err != nil {
 			return false
 		}
 
-		return validateDate(dt, Options{
+		opts := Options{
 			MinDate: defaultMinDate,
 			MaxDate: defaultMaxDate,
-		})
+		}
+
+		if len(customOpts) > 0 {
+			opts = mergeOpts(opts, customOpts[0])
+		}
+
+		return validateDate(dt, opts)
+	}
+
+	fnValidate := func(s string, customOpts ...Options) bool {
+		return fnValidateFormat(s, defaultDateFormat, customOpts...)
 	}
 
 	assert.True(t, fnValidate("2016-01-01"))
@@ -51,6 +56,26 @@ func Test_validateDate(t *testing.T) {
 	assert.False(t, fnValidate("1992-07-30"))
 	assert.False(t, fnValidate("1901-12-98"))
 	assert.False(t, fnValidate("202-01"))
-	assert.False(t, fnValidate("1922", "2006"))
-	assert.True(t, fnValidate("2004", "2006"))
+	assert.False(t, fnValidateFormat("1922", "2006"))
+	assert.True(t, fnValidateFormat("2004", "2006"))
+
+	// Check max and min date
+	opts := Options{MinDate: time.Date(1990, 1, 1, 0, 0, 0, 0, time.UTC)}
+	assert.True(t, fnValidate("1991-01-02", opts))
+
+	opts = Options{MinDate: time.Date(1992, 1, 1, 0, 0, 0, 0, time.UTC)}
+	assert.False(t, fnValidate("1991-01-02", opts))
+
+	opts = Options{MaxDate: time.Date(1990, 1, 1, 0, 0, 0, 0, time.UTC)}
+	assert.False(t, fnValidate("1991-01-02", opts))
+
+	assert.True(t, fnValidate("1991-01-02", Options{
+		MinDate: time.Date(1990, 1, 1, 0, 0, 0, 0, time.UTC),
+		MaxDate: time.Date(1995, 1, 1, 0, 0, 0, 0, time.UTC),
+	}))
+
+	assert.False(t, fnValidate("1991-01-02", Options{
+		MinDate: time.Date(1990, 1, 1, 0, 0, 0, 0, time.UTC),
+		MaxDate: time.Date(1990, 12, 31, 0, 0, 0, 0, time.UTC),
+	}))
 }

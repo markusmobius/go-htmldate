@@ -469,6 +469,11 @@ func Test_HtmlDate(t *testing.T) {
 	checkMockFile(url, "", skipExtensiveSearch)
 	checkMockFile(url, "2021-07-13")
 
+	// Min date
+	str = `<html><meta><meta property="article:published_time" content="1991-01-02T01:01:00+01:00"></meta><body></body></html>`
+	checkString(str, "", Options{MinDate: time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC)})
+	checkString(str, "1991-01-02", Options{MinDate: time.Date(1990, 1, 1, 0, 0, 0, 0, time.UTC)})
+
 	// =========================================================
 	// Tests below these point should return an approximate date
 	// =========================================================
