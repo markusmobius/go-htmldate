@@ -365,7 +365,21 @@ func timestampSearch(htmlString string, opts Options) (string, time.Time) {
 
 // idiosyncrasiesSearch looks for author-written dates throughout the web page.
 func idiosyncrasiesSearch(htmlString string, opts Options) (string, time.Time) {
-	return extractIdiosyncrasy(rxIdiosyncracyPattern, htmlString, opts)
+	// TODO: do it all in one go
+	// return extractIdiosyncrasy(rxIdiosyncracyPattern, htmlString, opts)
+
+	// Do it in order of DE-EN-TR
+	rawString, result := extractIdiosyncrasy(rxDePattern, htmlString, opts)
+
+	if result.IsZero() {
+		rawString, result = extractIdiosyncrasy(rxEnPattern, htmlString, opts)
+	}
+
+	if result.IsZero() {
+		rawString, result = extractIdiosyncrasy(rxTrPattern, htmlString, opts)
+	}
+
+	return rawString, result
 }
 
 // metaImgSearch looks for url in <meta> image elements.
