@@ -28,8 +28,8 @@ import (
 	"strings"
 	"time"
 
-	htmlxpath "github.com/antchfx/htmlquery"
 	"github.com/go-shiori/dom"
+	"github.com/markusmobius/go-htmldate/internal/selector"
 	"github.com/rs/zerolog"
 	"golang.org/x/net/html"
 )
@@ -168,17 +168,17 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 	}
 
 	// Use selectors + text content
-	var finalDateXpath string
+	var dateSelector selector.Rule
 	if !opts.SkipExtensiveSearch {
-		finalDateXpath = slowPrependXpath + dateXpath
+		dateSelector = selector.SlowDate
 	} else {
-		finalDateXpath = fastPrependXpath + dateXpath
+		dateSelector = selector.FastDate
 	}
 
 	// First try in pruned document
 	prunedDoc := dom.Clone(doc, true)
 	discardUnwanted(prunedDoc)
-	dateElements := htmlxpath.Find(prunedDoc, finalDateXpath)
+	dateElements := selector.QueryAll(prunedDoc, dateSelector)
 	rawString, dateResult := examineOtherElements(dateElements, opts)
 	if !dateResult.IsZero() {
 		return rawString, dateResult, nil
@@ -254,7 +254,7 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 		// TODO: further tests & decide according to original_date
 		var refValue int64
 		var refString string
-		for _, segment := range htmlxpath.Find(doc, freeTextXpath) {
+		for _, segment := range selector.QueryAllTextNodes(doc, selector.FreeText) {
 			// Basic filter: minimum could be 8 or 9
 			text := normalizeSpaces(segment.Data)
 			if nText := len(text); nText > 6 && nText < maxTextSize {

@@ -3,7 +3,6 @@ module github.com/markusmobius/go-htmldate
 go 1.20
 
 require (
-	github.com/antchfx/htmlquery v1.3.0
 	github.com/go-shiori/dom v0.0.0-20210627111528-4e4722cd0d65
 	github.com/markusmobius/go-dateparser v0.0.0-20230417135501-2020c2f4c042
 	github.com/rs/zerolog v1.29.1
@@ -14,11 +13,9 @@ require (
 
 require (
 	github.com/andybalholm/cascadia v1.3.1 // indirect
-	github.com/antchfx/xpath v1.2.4 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/elliotchance/pie/v2 v2.5.2 // indirect
 	github.com/gogs/chardet v0.0.0-20211120154057-b7413eaefb8f // indirect
-	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/hablullah/go-hijri v1.0.2 // indirect
 	github.com/hablullah/go-juliandays v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
