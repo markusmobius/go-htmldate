@@ -20,7 +20,6 @@ package htmldate
 
 import (
 	"encoding/json"
-	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -28,6 +27,7 @@ import (
 
 	"github.com/go-shiori/dom"
 	dps "github.com/markusmobius/go-dateparser"
+	"github.com/markusmobius/go-htmldate/internal/regexp"
 	"github.com/markusmobius/go-htmldate/internal/selector"
 	"golang.org/x/net/html"
 )

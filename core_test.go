@@ -20,10 +20,10 @@ package htmldate
 
 import (
 	"io"
-	"regexp"
 	"testing"
 	"time"
 
+	"github.com/markusmobius/go-htmldate/internal/regexp"
 	"github.com/stretchr/testify/assert"
 )
 
