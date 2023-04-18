@@ -12,6 +12,7 @@ The structure of this package is arranged following the structure of original Py
 - [Usage as Go package](#usage-as-go-package)
 - [Usage as CLI Application](#usage-as-cli-application)
 - [Performance](#performance)
+- [Comparison with Original](#comparison-with-original)
 - [Additional Notes](#additional-notes)
 - [Acknowledgements](#acknowledgements)
 - [License](#license)
@@ -87,6 +88,25 @@ Flags:
 
 ## Performance
 
+This library heavily uses regular expression for various purposes. Unfortunately, as commonly known, Go's regular expression is pretty slow. This is because:
+
+- The regex engine in other language usually implemented in C, while in Go it's implemented from scratch in Go language. As expected, C implementation is still faster than Go's.
+- Since Go is usually used for web service, its regex is designed to finish in time linear to the length of the input, which useful for protecting server from ReDoS attack. However, this comes with performance cost.
+
+If you want to parse a huge amount of data, it would be preferrable to have a better performance. So, this package provides C++ [`re2`][re2] as an alternative regex engine using binding from [go-re2]. To activate it, you can build your app using tag `re2_wasm` or `re2_cgo`, for example:
+
+```
+go build -tags re2_cgo .
+```
+
+When using `re2_wasm` tag, it will make your app uses `re2` that packaged as WebAssembly module so it should be runnable even without cgo. However, if your input is too small, it might be even slower than using Go's standard regex engine.
+
+When using `re2_cgo` tag, it will make your app uses `re2` library that wrapped using cgo. It's a lot faster than Go's standard regex and `re2_wasm`, however to use it cgo must be available and `re2` should be installed in your system.
+
+In my test, `re2_cgo` will always be faster, so when possible you might be better using it. Do note that this alternative regex engine is experimental, so use on your own risk.
+
+## Comparison with Original
+
 Here we compare the extraction performance between the fast and extensive mode. To reproduce this test, clone this repository then run:
 
 ```
@@ -100,12 +120,23 @@ For the test, we use 500 documents which taken from two sources:
 
 Here is the result when tested in my PC (Intel i7-8550U @ 4.000GHz, RAM 16 GB):
 
-|         Package         | Precision | Recall | Accuracy | F-Score | Speed (s) |
-| :---------------------: | :-------: | :----: | :------: | :-----: | :-------: |
-|   `go-htmldate` fast    |   0.850   | 0.927  |  0.798   |  0.888  |   2.451   |
-| `go-htmldate` extensive |   0.841   | 0.993  |  0.836   |  0.910  |   4.598   |
+|           Package           | Precision | Recall | Accuracy | F-Score |
+| :-------------------------: | :-------: | :----: | :------: | :-----: |
+|   `htmldate` v1.4.1 fast    |   0.856   | 0.921  |  0.798   |  0.888  |
+| `htmldate` v1.4.1 extensive |   0.847   | 0.991  |  0.840   |  0.913  |
+|     `go-htmldate` fast      |   0.850   | 0.927  |  0.798   |  0.887  |
+|   `go-htmldate` extensive   |   0.841   | 0.993  |  0.836   |  0.910  |
 
-So, from the table above, this port has a similar performance with the original `htmldate`.
+So, from the table above we can see that this port has a similar performance with the original `htmldate`.
+
+For the speed, our port is far faster than the original especially when `re2` regex engine is enabled:
+
+|            Name            | Fast (s) | Extensive (s) |
+| :------------------------: | :------: | :-----------: |
+|     `htmldate` v1.4.1      |  3.085   |     7.388     |
+|       `go-htmldate`        |  1.268   |     2.712     |
+| `go-htmldate` + `re2_wasm` |  0.371   |     0.966     |
+| `go-htmldate` + `re2_cgo`  |  0.270   |     0.808     |
 
 ## Additional Notes
 
@@ -153,3 +184,5 @@ Like the original, `go-htmldate` is distributed under the [GNU General Public Li
 [paper-3]: https://hal.archives-ouvertes.fr/hal-01371704v2/document
 [wac-x]: https://www.sigwac.org.uk/wiki/WAC-X
 [k-web]: https://www.dwds.de/d/k-web
+[re2]: https://github.com/google/re2
+[go-re2]: https://github.com/wasilibs/go-re2
