@@ -20,11 +20,11 @@ package htmldate
 
 import (
 	"bytes"
-	"regexp"
 	"strings"
 	"unicode"
 
 	"github.com/go-shiori/dom"
+	"github.com/markusmobius/go-htmldate/internal/regexp"
 	"golang.org/x/net/html"
 )
 

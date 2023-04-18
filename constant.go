@@ -19,10 +19,11 @@
 package htmldate
 
 import (
-	"regexp"
+	stdregex "regexp"
 	"time"
 
 	dps "github.com/markusmobius/go-dateparser"
+	"github.com/markusmobius/go-htmldate/internal/regexp"
 )
 
 var (
@@ -128,9 +129,9 @@ var (
 	rxSimplePattern      = regexp.MustCompile(`\D(199[0-9]|20[0-9]{2})\D`)
 
 	// Time patterns
-	rxTzCode     = regexp.MustCompile(`(?i)(?:\s|^)([-+])(\d{2})(?::?(\d{2}))?`)
-	rxIsoTime    = regexp.MustCompile(`(?i)(\d{2}):(\d{2})(?::(\d{2})(?:\.\d+)?)?(Z|[+-]\d{2}(?::?\d{2})?)`)
 	rxCommonTime = regexp.MustCompile(`(?i)(?:\D|^)(\d{1,2})(?::|\s*h\s*)(\d{1,2})(?::(\d{1,2})(?:\.\d+)?)?(?:\s*((?:a|p)\.?m\.?))?`)
+	rxTzCode     = stdregex.MustCompile(`(?i)(?:\s|^)([-+])(\d{2})(?::?(\d{2}))?`)
+	rxIsoTime    = stdregex.MustCompile(`(?i)(\d{2}):(\d{2})(?::(\d{2})(?:\.\d+)?)?(Z|[+-]\d{2}(?::?\d{2})?)`)
 
 	rxLastJsonBracket = regexp.MustCompile(`(?i)\s*\}$`)
 )

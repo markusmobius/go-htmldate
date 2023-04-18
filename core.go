@@ -22,13 +22,13 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"regexp"
 	"sort"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/go-shiori/dom"
+	"github.com/markusmobius/go-htmldate/internal/regexp"
 	"github.com/markusmobius/go-htmldate/internal/selector"
 	"github.com/rs/zerolog"
 	"golang.org/x/net/html"
@@ -422,7 +422,7 @@ func examineMetaElements(doc *html.Node, opts Options) (string, time.Time) {
 					if (inMap(attribute, itemPropOriginal) && opts.UseOriginalDate) ||
 						(inMap(attribute, itemPropModified) && !opts.UseOriginalDate) {
 						strMeta, tMeta = strAttempt, tAttempt
-					} else {
+						// } else {
 						// TODO: put on hold, hurts precision
 						// strReserve, tReserve = strAttempt, tAttempt
 					}
