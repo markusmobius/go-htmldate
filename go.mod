@@ -20,8 +20,8 @@ require (
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/jalaali/go-jalaali v0.0.0-20210801064154-80525e88d958 // indirect
 	github.com/magefile/mage v1.15.0 // indirect
-	github.com/markusmobius/go-dateparser v1.1.0 // indirect
-	github.com/markusmobius/go-re2 v1.7.1 // indirect
+	github.com/markusmobius/go-dateparser v1.1.1 // indirect
+	github.com/markusmobius/go-re2 v1.7.3 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.18 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
