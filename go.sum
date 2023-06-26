@@ -205,6 +205,8 @@ github.com/markusmobius/go-dateparser v1.1.0 h1:Ro9yBS5trm04C6gKbNTPYS+mN6Gqo58k
 github.com/markusmobius/go-dateparser v1.1.0/go.mod h1:+qKl7ZLSFghHrrnDMS+Y7O8wSK3/qwXZ8mbKrVL1t7s=
 github.com/markusmobius/go-dateparser v1.1.1 h1:SUe1wSbamhfnBkHrD/YUVjeprwTuMw2AoRViv7oRo4E=
 github.com/markusmobius/go-dateparser v1.1.1/go.mod h1:4Mz2WaE7vDwf76d+GN6YiYVy1CEbr/d5IovJ/ycDt7o=
+github.com/markusmobius/go-dateparser v1.2.1 h1:mYRRdu3TzpAeE6fSl2Gn3arfxEtoTRvFOKlumlVsUtg=
+github.com/markusmobius/go-dateparser v1.2.1/go.mod h1:5xYsZ1h7iB3sE1BSu8bkjYpbFST7EU1/AFxcyO3mgYg=
 github.com/markusmobius/go-re2 v1.7.1 h1:peWOhnV5AUZZ0zEaaJEfKe1ywfPlunCRiyZTqfM8TpE=
 github.com/markusmobius/go-re2 v1.7.1/go.mod h1:Xu71iAfY3yAg0bHZ/wqMLfls9M4sUac+azmTyFkyoTs=
 github.com/markusmobius/go-re2 v1.7.3 h1:mknhMIggXz5VmZgcqqcnEZZgeBagzF1y+qc0k2t9F6Y=
@@ -279,6 +281,8 @@ github.com/wasilibs/go-re2 v1.0.0 h1:pvrqtMzZgTMHVPfXJrk4YZwiqIXOKdfo5aed6CzUAW4
 github.com/wasilibs/go-re2 v1.0.0/go.mod h1:8g69JapfgjSCx49dKOQij1dqA3sOvoH5NteaUy1X0SA=
 github.com/wasilibs/go-re2 v1.2.0 h1:EBE8PqqetncIYi4HyQiH3q73ZVWcrL2UATSm8+jL6Ng=
 github.com/wasilibs/go-re2 v1.2.0/go.mod h1:NdBnojD1uYA206Q0pBK/OKX12YZjIxg3fkvK75AbXIo=
+github.com/wasilibs/go-re2 v1.3.0 h1:LFhBNzoStM3wMie6rN2slD1cuYH2CGiHpvNL3UtcsMw=
+github.com/wasilibs/go-re2 v1.3.0/go.mod h1:AafrCXVvGRJJOImMajgJ2M7rVmWyisVK7sFshbxnVrg=
 github.com/wasilibs/nottinygc v0.2.0 h1:cXz2Ac9bVMLkpuOlUlPQMWowjw0K2cOErXZOFdAj7yE=
 github.com/yuin/goldmark v1.1.25/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 github.com/yuin/goldmark v1.1.27/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
