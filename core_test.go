@@ -309,8 +309,8 @@ func Test_HtmlDate(t *testing.T) {
 	checkMockFile(url, "2017-10-09")
 
 	// In document body
-	// url = "https://github.com/adbar/htmldate"
-	// checkMockFile(url, "2019-01-01")
+	url = "https://github.com/adbar/htmldate"
+	checkMockFile(url, "2017-11-28") // was '2019-01-01'
 
 	url = "https://github.com/adbar/htmldate"
 	checkMockFile(url, "2016-07-12", useOriginalDate)
@@ -508,7 +508,7 @@ func Test_HtmlDate(t *testing.T) {
 	checkMockFile(url, "2017-08-09")
 
 	url = "https://bayern.de/"
-	checkMockFile(url, "2017-10-06") // most probably 2017-10-06
+	checkMockFile(url, "2017-10-06")
 
 	url = "https://www.pferde-fuer-unsere-kinder.de/unsere-projekte/"
 	checkMockFile(url, "2016-07-20") // most probably 2016-07-15
@@ -634,7 +634,10 @@ func Test_HtmlDate(t *testing.T) {
 	checkString(str, "2016-07-12")
 
 	url = "https://www.gnu.org/licenses/gpl-3.0.en.html"
-	checkMockFile(url, "2016-11-18")
+	checkMockFile(url, "2016-11-18") // could also be: 29 June 2007
+
+	url = "https://netzpolitik.org/2016/die-cider-connection-abmahnungen-gegen-nutzer-von-creative-commons-bildern/"
+	checkMockFile(url, "2016-06-23") // was '2019-06-24'
 
 	url = "https://netzpolitik.org/2016/die-cider-connection-abmahnungen-gegen-nutzer-von-creative-commons-bildern/"
 	checkMockFile(url, "2016-06-23", useOriginalDate)
