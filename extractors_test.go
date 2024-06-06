@@ -300,7 +300,7 @@ func Test_tryExternalDateParser(t *testing.T) {
 	assert.Equal(t, "", parse("Random text with 2020"))
 
 	// https://github.com/scrapinghub/dateparser/issues/333
-	// assert.Equal(t, "0001-01-01", parse("1 January 0001"))
+	assert.Equal(t, "0001-01-01", parse("1 January 0002"))
 	assert.Equal(t, "1900-01-01", parse("1 January 1900"))
 
 	// https://github.com/scrapinghub/dateparser/issues/406

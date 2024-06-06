@@ -195,11 +195,12 @@ func Test_HtmlDate(t *testing.T) {
 	str = `<html><body><time datetime="2011-09-27" class="entry-date"></time><time datetime="2011-09-28" class="updated"></time></body></html>`
 	checkString(str, "2011-09-27", useOriginalDate)
 
-	// Problem here:
-	// str = `<html><body><time datetime="2011-09-27" class="entry-date"></time><time datetime="2011-09-28" class="updated"></time></body></html>`
-	// checkString(str, "2011-09-28")
-	// str = `<html><body><time datetime="2011-09-28" class="updated"></time><time datetime="2011-09-27" class="entry-date"></time></body></html>`
-	// checkString(str, "2011-09-27", useOriginalDate)
+	// Updated vs original in time elements
+	str = `<html><body><time datetime="2011-09-27" class="entry-date"></time><time datetime="2011-09-28" class="updated"></time></body></html>`
+	checkString(str, "2011-09-28")
+
+	str = `<html><body><time datetime="2011-09-28" class="updated"></time><time datetime="2011-09-27" class="entry-date"></time></body></html>`
+	checkString(str, "2011-09-27", useOriginalDate)
 
 	str = `<html><body><time datetime="2011-09-28" class="updated"></time><time datetime="2011-09-27" class="entry-date"></time></body></html>`
 	checkString(str, "2011-09-28")

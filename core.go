@@ -570,19 +570,19 @@ func examineTimeElements(doc *html.Node, opts Options) (string, time.Time) {
 		pubDate := strings.TrimSpace(dom.GetAttribute(elem, "pubdate"))
 
 		if len(dateTime) > 6 { // Go for datetime attribute
-			if strings.ToLower(pubDate) == "pubdate" { // Shortcut: time pubdate
-				log.Debug().Msgf("time pubdate found: %s", dateTime)
-				if opts.UseOriginalDate {
+			if strings.ToLower(pubDate) == "pubdate" && opts.UseOriginalDate { // Shortcut: time pubdate
+				shortcutFlag = true
+				log.Debug().Msgf("shortcut for time pubdate found: %s", dateTime)
+			} else if class != "" { // Shortcut: class attribute
+				classIsDateTime := strings.HasPrefix(class, "entry-date")
+				classIsDateTime = classIsDateTime || strings.HasPrefix(class, "entry-time")
+
+				if opts.UseOriginalDate && classIsDateTime {
 					shortcutFlag = true
-				}
-			} else if class != "" { // First choice: entry-date + datetime attribute
-				if strings.HasPrefix(class, "entry-date") || strings.HasPrefix(class, "entry-time") {
-					log.Debug().Msgf("time/datetime found: %s", dateTime)
-					if opts.UseOriginalDate {
-						shortcutFlag = true
-					}
-				} else if class == "updated" && !opts.UseOriginalDate {
-					log.Debug().Msgf("updated time/datetime found: %s", dateTime)
+					log.Debug().Msgf("shortcut for time/datetime found: %s", dateTime)
+				} else if !opts.UseOriginalDate && class == "updated" {
+					shortcutFlag = true
+					log.Debug().Msgf("shortcut for updated time/datetime found: %s", dateTime)
 				}
 			} else { // Datetime attribute
 				log.Debug().Msgf("time/datetime found: %s", dateTime)
@@ -596,9 +596,6 @@ func examineTimeElements(doc *html.Node, opts Options) (string, time.Time) {
 				}
 			} else {
 				refString, refValue = compareReference(refString, refValue, dateTime, opts)
-				if refValue > 0 {
-					break
-				}
 			}
 		} else if len(text) > 6 { // Bare text in element
 			log.Debug().Msgf("time/datetime found in text: %s", text)
