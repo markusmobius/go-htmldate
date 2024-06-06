@@ -159,6 +159,7 @@ var dateAttributes = sliceToMap(
 	"article:post_date",
 	"article.published",
 	"article:published",
+	"article:published_date",
 	"article:published_time",
 	"article:publicationdate",
 	"bt:pubdate",
@@ -183,6 +184,7 @@ var dateAttributes = sliceToMap(
 	"dcterms.created",
 	"dcterms.date",
 	"dcterms.issued",
+	"dc.date.issued",
 	"dc:created",
 	"dc:date",
 	"displaydate",
@@ -192,8 +194,15 @@ var dateAttributes = sliceToMap(
 	"mediator_published_time",
 	"meta", // too loose?
 	// Open Graph: https://opengraphprotocol.org/
+	"og:publish_date",
 	"og:published_time",
 	"og:article:published_time",
+	"og:article:published",
+	"og:article:published_time",
+	"og:datepublished",
+	"og:pubdate",
+	"og:published_time",
+	"og:question:published_time",
 	"originalpublicationdate",
 	"parsely-pub-date",
 	"pdate",
@@ -201,8 +210,12 @@ var dateAttributes = sliceToMap(
 	"pubdate",
 	"publishdate",
 	"publish_date",
+	"publish_time",
 	"publish-date",
 	"published-date",
+	"published_date",
+	"published_time",
+	"publisheddate",
 	"publication_date",
 	"rbpubdate",
 	"release_date",
@@ -216,21 +229,31 @@ var dateAttributes = sliceToMap(
 
 var propertyModified = sliceToMap(
 	"article:modified",
+	"article:modified_date",
 	"article:modified_time",
+	"article:post_modified",
+	"bt:moddate",
 	"datemodified",
 	"dc.modified",
 	"dcterms.modified",
 	"lastmodified",
 	"modified_time",
+	"modificationdate",
 	"og:article:modified_time",
-	"og:updated_time",
 	"og:modified_time",
+	"og:updated_time",
 	"release_date",
 	"revision_date",
 	"updated_time")
 
 var (
-	attrModifiedNames  = sliceToMap("lastmod", "lastmodified", "last-modified", "modified", "utime")
+	attrModifiedNames = sliceToMap(
+		"lastdate",
+		"lastmod",
+		"lastmodified",
+		"last-modified",
+		"modified",
+		"utime")
 	attrPublishClasses = sliceToMap("published", "date-published", "time-published")
 
 	listItemPropAttrs = []string{"datecreated", "datepublished", "pubyear", "datemodified", "dateupdate"}
