@@ -134,9 +134,10 @@ func FromDocument(doc *html.Node, opts Options) (Result, error) {
 // findDate extract publish date from the specified html document.
 func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 	// If not deferred, check URL first
-	if !opts.DeferUrlExtractor && opts.URL != "" {
-		urlDate := extractUrlDate(opts.URL, opts)
-		if !urlDate.IsZero() {
+	var urlDate time.Time
+	if opts.URL != "" {
+		urlDate = extractUrlDate(opts.URL, opts)
+		if !urlDate.IsZero() && !opts.DeferUrlExtractor {
 			return opts.URL, urlDate, nil
 		}
 	}
@@ -154,11 +155,8 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 	}
 
 	// If deferred, process URL here (may be moved even further down if necessary)
-	if opts.DeferUrlExtractor && opts.URL != "" {
-		urlDate := extractUrlDate(opts.URL, opts)
-		if !urlDate.IsZero() {
-			return opts.URL, urlDate, nil
-		}
+	if opts.DeferUrlExtractor && !urlDate.IsZero() {
+		return opts.URL, urlDate, nil
 	}
 
 	// Try <abbr> elements
