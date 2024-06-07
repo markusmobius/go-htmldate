@@ -57,13 +57,17 @@ var (
 
 	rxYmdNoSepPattern = regexp.MustCompile(`(?:\D|^)(\d{8})(?:\D|$)`)
 	rxYmdPattern      = regexp.MustCompile(`(?i)` +
-		`(?:\D|^)(?P<year>\d{4})[\-/.](?P<month>\d{1,2})[\-/.](?P<day>\d{1,2})(?:\D|$)` +
+		`(?:\D|^)(?:` +
+		`(?P<year>\d{4})[\-/.](?P<month>\d{1,2})[\-/.](?P<day>\d{1,2})` +
 		`|` +
-		`(?:\D|^)(?P<day>\d{1,2})[\-/.](?P<month>\d{1,2})[\-/.](?P<year>\d{2,4})(?:\D|$)`)
+		`(?P<day>\d{1,2})[\-/.](?P<month>\d{1,2})[\-/.](?P<year>\d{2,4})` +
+		`)(?:\D|$)`)
 	rxYmPattern = regexp.MustCompile(`(?i)` +
-		`(?:\D|^)(?P<year>\d{4})[\-/.](?P<month>\d{1,2})(?:\D|$)` +
+		`(?:\D|^)(?:` +
+		`(?P<year>\d{4})[\-/.](?P<month>\d{1,2})` +
 		`|` +
-		`(?:\D|^)(?P<month>\d{1,2})[\-/.](?P<year>\d{4})(?:\D|$)`)
+		`(?P<month>\d{1,2})[\-/.](?P<year>\d{4})` +
+		`)(?:\D|$)`)
 
 	// TODO: check "août"
 	rxMonths = `` +
@@ -86,7 +90,14 @@ var (
 	rxTextDatePattern   = regexp.MustCompile(`(?i)[.:,_/ -]|^\d+$`)
 	rxNoTextDatePattern = regexp.MustCompile(`(?i)^(?:\d{3,}\D+\d{3,}|\d{2}:\d{2}(:| )|\+\d{2}\D+|\D*\d{4}\D*$)`)
 
-	rxDiscardPattern = regexp.MustCompile(`(?i)[$€¥Ұ£¢₽₱฿#]|CNY|EUR|GBP|JPY|USD|http|\.(com|net|org)|IBAN|\+\d{2}\b`)
+	rxDiscardPattern = regexp.MustCompile(`(?i)` +
+		`[$€¥Ұ£¢₽₱฿#]|` + // currency symbols
+		`CNY|EUR|GBP|JPY|USD|` + // currency codes
+		`http|` + // protocols
+		`\.(com|net|org)|` + // TLDs
+		`IBAN|` + // bank accounts
+		`\+\d{2}(?:\z|[^\pL\pM\d_])` + // amounts/telephone numbers
+		``)
 	// TODO: further testing required:
 	// \d[,.]\d+  // currency amounts
 	// # \b\d{5}\s  // postal codes
@@ -137,20 +148,31 @@ var (
 )
 
 // English, French, German, Indonesian and Turkish dates cache
-var monthNumber = map[string]int{
-	"januar": 1, "jänner": 1, "january": 1, "januari": 1, "janvier": 1, "jan": 1, "ocak": 1, "oca": 1,
-	"februar": 2, "feber": 2, "february": 2, "februari": 2, "février": 2, "feb": 2, "şubat": 2, "şub": 2,
-	"märz": 3, "march": 3, "maret": 3, "mar": 3, "mär": 3, "mart": 3, "mars": 3,
-	"april": 4, "apr": 4, "avril": 4, "nisan": 4, "nis": 4,
-	"mai": 5, "may": 5, "mei": 5, "mayıs": 5,
-	"juni": 6, "june": 6, "juin": 6, "jun": 6, "haziran": 6, "haz": 6,
-	"juli": 7, "july": 7, "juillet": 7, "jul": 7, "temmuz": 7, "tem": 7,
-	"august": 8, "agustus": 8, "aug": 8, "ağustos": 8, "ağu": 8, "aout": 8, "août": 8,
-	"september": 9, "septembre": 9, "sep": 9, "eylül": 9, "eyl": 9,
-	"oktober": 10, "october": 10, "octobre": 10, "oct": 10, "okt": 10, "ekim": 10, "eki": 10,
-	"november": 11, "nov": 11, "kasım": 11, "kas": 11, "novembre": 11,
-	"dezember": 12, "december": 12, "desember": 12, "décembre": 12, "dec": 12, "dez": 12, "aralık": 12, "ara": 12,
-}
+var monthNumber = func() map[string]int {
+	var monthNames = [][]string{
+		{"jan", "januar", "jänner", "january", "januari", "janvier", "ocak", "oca"},
+		{"feb", "februar", "feber", "february", "februari", "février", "şubat", "şub"},
+		{"mar", "märz", "march", "maret", "mart", "mars"},
+		{"apr", "april", "avril", "nisan", "nis"},
+		{"may", "mai", "mei", "mayıs"},
+		{"jun", "juni", "june", "juin", "haziran", "haz"},
+		{"jul", "juli", "july", "juillet", "temmuz", "tem"},
+		{"aug", "august", "agustus", "ağustos", "ağu", "aout"},
+		{"sep", "september", "septembre", "eylül", "eyl"},
+		{"oct", "oktober", "october", "octobre", "okt", "ekim", "eki"},
+		{"nov", "november", "kasım", "kas", "novembre"},
+		{"dec", "dezember", "december", "desember", "décembre", "aralık", "ara"},
+	}
+
+	mapNameNumber := make(map[string]int)
+	for i, names := range monthNames {
+		for _, name := range names {
+			mapNameNumber[name] = i + 1
+		}
+	}
+
+	return mapNameNumber
+}()
 
 var dateAttributes = sliceToMap(
 	"analyticsattributes.articledate",

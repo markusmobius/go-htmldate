@@ -154,18 +154,20 @@ func normalizeSpaces(s string) string {
 	return strings.TrimSpace(s)
 }
 
-func rxFindNamedStringSubmatch(rx *regexp.Regexp, s string) map[string]string {
+func rxFindNamedStringSubmatch(rx *regexp.Regexp, s string) (map[string]string, string) {
 	names := rx.SubexpNames()
 	result := make(map[string]string)
 	matches := rx.FindStringSubmatch(s)
 
+	var lastMatchedName string
 	for i, match := range matches {
-		if match != "" {
+		if i > 0 && match != "" {
 			result[names[i]] = match
+			lastMatchedName = names[i]
 		}
 	}
 
-	return result
+	return result, lastMatchedName
 }
 
 // isLeapYear check if year is leap year.

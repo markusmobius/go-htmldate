@@ -367,13 +367,17 @@ func examineMetaElements(doc *html.Node, opts Options) (string, time.Time) {
 			continue
 		}
 
+		content := strings.TrimSpace(dom.GetAttribute(elem, "content"))
+		dateTime := strings.TrimSpace(dom.GetAttribute(elem, "datetime"))
+		if content == "" && dateTime == "" {
+			continue
+		}
+
 		// Fetch attributes
 		name := strings.TrimSpace(dom.GetAttribute(elem, "name"))
-		content := strings.TrimSpace(dom.GetAttribute(elem, "content"))
 		property := strings.TrimSpace(dom.GetAttribute(elem, "property"))
 		pubDate := strings.TrimSpace(dom.GetAttribute(elem, "pubdate"))
 		itemProp := strings.TrimSpace(dom.GetAttribute(elem, "itemprop"))
-		dateTime := strings.TrimSpace(dom.GetAttribute(elem, "datetime"))
 		httpEquiv := strings.TrimSpace(dom.GetAttribute(elem, "http-equiv"))
 		outerHtml := dom.OuterHTML(elem)
 
@@ -618,8 +622,6 @@ func examineOtherElements(elements []*html.Node, opts Options) (string, time.Tim
 		return "", timeZero
 	}
 
-	// Loop through the elements to analyze
-	var attempt time.Time
 	for _, elem := range elements {
 		// Trim text content
 		text := normalizeSpaces(dom.TextContent(elem))
@@ -637,7 +639,7 @@ func examineOtherElements(elements []*html.Node, opts Options) (string, time.Tim
 			log.Debug().Msgf("analyzing HTML: %s (%s)", elemHTML, toExamine)
 
 			// Attempt to extract date
-			_, attempt = tryDateExpr(toExamine, opts)
+			_, attempt := tryDateExpr(toExamine, opts)
 			if !attempt.IsZero() {
 				return toExamine, attempt
 			}
@@ -648,7 +650,7 @@ func examineOtherElements(elements []*html.Node, opts Options) (string, time.Tim
 		if titleAttr != "" {
 			toExamine := strLimit(titleAttr, maxTextSize)
 			toExamine = rxLastNonDigits.ReplaceAllString(toExamine, "")
-			_, attempt = tryDateExpr(toExamine, opts)
+			_, attempt := tryDateExpr(toExamine, opts)
 			if !attempt.IsZero() {
 				return toExamine, attempt
 			}
@@ -743,7 +745,7 @@ func searchPage(htmlString string, opts Options) (string, time.Time) {
 	mapPatternRawString := make(map[string]string)
 
 	for _, candidate := range candidates {
-		parts := rxFindNamedStringSubmatch(rxYmPattern, candidate.Pattern)
+		parts, _ := rxFindNamedStringSubmatch(rxYmPattern, candidate.Pattern)
 		if len(parts) == 0 {
 			continue
 		}
@@ -775,7 +777,8 @@ func searchPage(htmlString string, opts Options) (string, time.Time) {
 		return rawString, result
 	}
 
-	// TODO: Try full-blown text regex on all HTML?
+	// Try full-blown text regex on all HTML?
+	// TODO: find all candidates and disambiguate?
 	dt := regexParse(htmlString, opts)
 	if validateDate(dt, opts) && (copYear == 0 || dt.Year() >= copYear) {
 		log.Debug().Msg("regex result on HTML: " + dt.String())
@@ -788,7 +791,7 @@ func searchPage(htmlString string, opts Options) (string, time.Time) {
 		return copRawString, time.Date(copYear, 1, 1, 0, 0, 0, 0, time.UTC)
 	}
 
-	// 1 component, last try
+	// Last resort: 1 component
 	log.Debug().Msg("switching to one component")
 	rawString, bestMatch = searchPattern(htmlString, rxSimplePattern, rxYearPattern, rxYearPattern, opts)
 	if len(bestMatch) >= 2 {
@@ -835,15 +838,13 @@ func selectCandidate(candidates []yearCandidate, catchPattern, yearPattern *rege
 
 	// If there is only one candidates, check it immediately
 	if nCandidates == 1 {
-		for _, item := range candidates {
-			matches := catchPattern.FindStringSubmatch(item.Pattern)
-			if len(matches) > 0 {
-				return item.RawString, matches
-			}
+		matches := catchPattern.FindStringSubmatch(candidates[0].Pattern)
+		if len(matches) > 0 {
+			return candidates[0].RawString, matches
 		}
 	}
 
-	// Get 10 most frequent candidates
+	// Get most frequent candidates: use top 10?
 	sort.SliceStable(candidates, func(a, b int) bool {
 		return candidates[a].Count > candidates[b].Count
 	})
@@ -854,59 +855,84 @@ func selectCandidate(candidates []yearCandidate, catchPattern, yearPattern *rege
 
 	log.Debug().Msgf("top ten occurences: %v", candidates)
 
-	// Sort and find probable candidates
-	if !opts.UseOriginalDate {
-		sort.SliceStable(candidates, func(a, b int) bool {
-			return candidates[a].Pattern > candidates[b].Pattern
-		})
-	} else {
-		sort.SliceStable(candidates, func(a, b int) bool {
+	// Sort and find probable candidates: the best 2?
+	sort.SliceStable(candidates, func(a, b int) bool {
+		if opts.UseOriginalDate {
 			return candidates[a].Pattern < candidates[b].Pattern
-		})
+		} else {
+			return candidates[a].Pattern > candidates[b].Pattern
+		}
+	})
+
+	var bestOnes []yearCandidate
+	if bestCount := 2; len(candidates) > bestCount {
+		bestOnes = append([]yearCandidate{}, candidates[:bestCount]...)
+	} else {
+		bestOnes = append([]yearCandidate{}, candidates...)
 	}
 
-	candidate1 := candidates[0]
-	candidate2 := candidates[1]
-	log.Debug().Msgf("best candidate: %v, %v", candidate1, candidate2)
+	log.Debug().Msgf("best ones: %v", bestOnes)
 
 	// Use plausability heuristics
-	year1Parts := yearPattern.FindStringSubmatch(candidate1.Pattern)
-	year2Parts := yearPattern.FindStringSubmatch(candidate2.Pattern)
-	if len(year1Parts) < 2 || len(year2Parts) < 2 {
-		return "", nil
+	nBestCandidate := len(bestOnes)
+	years := make([]int, nBestCandidate)
+	counts := make([]int, nBestCandidate)
+	patterns := make([]string, nBestCandidate)
+	validations := make([]bool, nBestCandidate)
+
+	for i, candidate := range bestOnes {
+		// Separate struct value
+		counts[i] = candidate.Count
+		patterns[i] = candidate.Pattern
+
+		// Extract year
+		yearParts := yearPattern.FindStringSubmatch(candidate.Pattern)
+		if len(yearParts) >= 2 {
+			years[i], _ = strconv.Atoi(yearParts[1])
+			_, validations[i] = validateDateParts(years[i], 1, 1, opts)
+		}
 	}
 
-	year1, _ := strconv.Atoi(year1Parts[1])
-	year2, _ := strconv.Atoi(year2Parts[1])
-	_, year1isValid := validateDateParts(year1, 1, 1, opts)
-	_, year2isValid := validateDateParts(year2, 1, 1, opts)
+	// Summarize the validations
+	anyValidationsValid := false
+	everyValidationsValid := true
+	for _, v := range validations {
+		anyValidationsValid = anyValidationsValid || v
+		everyValidationsValid = everyValidationsValid && v
+	}
 
+	// Safety net: plausibility
 	var matches []string
 	var rawString string
 
-	// Safety net: plausibility
-	if year1isValid && year2isValid {
-		if candidate1.Count == candidate2.Count {
-			// Same number of occurrences: always take top of the pile?
-			rawString = candidate1.RawString
-			matches = catchPattern.FindStringSubmatch(candidate1.Pattern)
-		} else if year2 != year1 && float64(candidate1.Count)/float64(candidate2.Count) > 0.5 {
+	if everyValidationsValid {
+		// Same number of occurrences: always take top of the pile?
+		if counts[0] == counts[1] {
+			rawString = bestOnes[0].RawString
+			matches = catchPattern.FindStringSubmatch(patterns[0])
+		} else if years[1] != years[0] && float64(counts[1])/float64(counts[0]) > 0.5 {
 			// Safety net: newer date but up to 50% less frequent
-			rawString = candidate2.RawString
-			matches = catchPattern.FindStringSubmatch(candidate2.Pattern)
+			rawString = bestOnes[1].RawString
+			matches = catchPattern.FindStringSubmatch(patterns[1])
 		} else {
 			// Not newer or hopefully not significant
-			rawString = candidate1.RawString
-			matches = catchPattern.FindStringSubmatch(candidate1.Pattern)
+			rawString = bestOnes[0].RawString
+			matches = catchPattern.FindStringSubmatch(patterns[0])
 		}
-	} else if !year1isValid && year2isValid {
-		rawString = candidate2.RawString
-		matches = catchPattern.FindStringSubmatch(candidate2.Pattern)
-	} else if year1isValid && !year2isValid {
-		rawString = candidate1.RawString
-		matches = catchPattern.FindStringSubmatch(candidate1.Pattern)
+	} else if anyValidationsValid {
+		// Get first valid candidate
+		var idx int
+		for i, v := range validations {
+			if v {
+				idx = i
+				break
+			}
+		}
+
+		rawString = bestOnes[idx].RawString
+		matches = catchPattern.FindStringSubmatch(patterns[idx])
 	} else {
-		log.Debug().Msgf("no suitable candidate: %d %d", year1, year2)
+		log.Debug().Msgf("no suitable candidate: %d %d", years[0], years[1])
 	}
 
 	return rawString, matches

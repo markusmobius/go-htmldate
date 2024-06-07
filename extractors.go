@@ -172,14 +172,16 @@ func fastParse(s string, opts Options) time.Time {
 	}
 
 	// 3. Try the very common YMD, Y-M-D, and D-M-Y patterns
-	namedParts := rxFindNamedStringSubmatch(rxYmdPattern, s)
+	namedParts, lastMatchedName := rxFindNamedStringSubmatch(rxYmdPattern, s)
 	if len(namedParts) != 0 {
 		year, _ := strconv.Atoi(namedParts["year"])
 		month, _ := strconv.Atoi(namedParts["month"])
 		day, _ := strconv.Atoi(namedParts["day"])
 
-		year = correctYear(year)
-		day, month = trySwapValues(day, month)
+		if lastMatchedName != "day" { // handle D-M-Y formats
+			year = correctYear(year)
+			day, month = trySwapValues(day, month)
+		}
 
 		// Make sure month is at most 12, because if not then it's not YMD
 		dt, valid := validateDateParts(year, month, day, opts)
@@ -190,7 +192,7 @@ func fastParse(s string, opts Options) time.Time {
 	}
 
 	// 4. Try the Y-M and M-Y patterns
-	namedParts = rxFindNamedStringSubmatch(rxYmPattern, s)
+	namedParts, _ = rxFindNamedStringSubmatch(rxYmPattern, s)
 	if len(namedParts) != 0 {
 		year, _ := strconv.Atoi(namedParts["year"])
 		month, _ := strconv.Atoi(namedParts["month"])
@@ -455,7 +457,7 @@ func regexParse(s string, opts Options) time.Time {
 	var year, month, day int
 
 	// Multilingual day-month-year pattern + American English patterns
-	parts := rxFindNamedStringSubmatch(rxLongTextPattern, s)
+	parts, _ := rxFindNamedStringSubmatch(rxLongTextPattern, s)
 	if len(parts) != 0 {
 		monthName := strings.ToLower(parts["month"])
 		monthName = strings.Trim(monthName, ".")

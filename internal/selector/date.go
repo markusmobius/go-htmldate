@@ -27,32 +27,35 @@ func FastDate(n *html.Node) bool {
 	return dateRule(n)
 }
 
-// [contains(translate(@id, "D", "d"), 'date')
-// or contains(translate(@class, "D", "d"), 'date')
-// or contains(translate(@itemprop, "D", "d"), 'date')
-// or contains(translate(@id, "D", "d"), 'datum')
-// or contains(translate(@class, "D", "d"), 'datum')
-// or contains(@id, 'time') or contains(@class, 'time')
-// or @class='meta' or contains(translate(@id, "M", "m"), 'metadata')
-// or contains(translate(@class, "M", "m"), 'meta-')
-// or contains(translate(@class, "M", "m"), '-meta')
-// or contains(translate(@id, "M", "m"), '-meta')
-// or contains(translate(@class, "M", "m"), '_meta')
-// or contains(translate(@class, "M", "m"), 'postmeta')
-// or contains(@class, 'info') or contains(@class, 'post_detail')
-// or contains(@class, 'block-content')
-// or contains(@class, 'byline') or contains(@class, 'subline')
-// or contains(@class, 'posted') or contains(@class, 'submitted')
-// or contains(@class, 'created-post')
-// or contains(@id, 'publish') or contains(@class, 'publish')
-// or contains(@class, 'publication')
-// or contains(@class, 'author') or contains(@class, 'autor')
-// or contains(@class, 'field-content')
-// or contains(@class, 'fa-clock-o') or contains(@class, 'fa-calendar')
-// or contains(@class, 'fecha') or contains(@class, 'parution')
-// or contains(@class, 'footer') or contains(@id, 'footer')]
-// |
-// .//footer|.//small`
+// contains(translate(@id|@class|@itemprop, "D", "d"), 'date') or
+// contains(translate(@id|@class|@itemprop, "D", "d"), 'datum') or
+// contains(@id|@class, 'time') or
+// @class='meta' or
+// contains(translate(@id|@class, "M", "m"), 'metadata') or
+// contains(translate(@id|@class, "M", "m"), 'meta-') or
+// contains(translate(@id|@class, "M", "m"), '-meta') or
+// contains(translate(@id|@class, "M", "m"), '_meta') or
+// contains(translate(@id|@class, "M", "m"), 'postmeta') or
+// contains(@id|@class, 'publish') or
+// contains(@id|@class, 'footer') or
+// contains(@class, 'info') or
+// contains(@class, 'post_detail') or
+// contains(@class, 'block-content') or
+// contains(@class, 'byline') or
+// contains(@class, 'subline') or
+// contains(@class, 'posted') or
+// contains(@class, 'submitted') or
+// contains(@class, 'created-post') or
+// contains(@class, 'publication') or
+// contains(@class, 'author') or
+// contains(@class, 'autor') or
+// contains(@class, 'field-content') or
+// contains(@class, 'fa-clock-o') or
+// contains(@class, 'fa-calendar') or
+// contains(@class, 'fecha') or
+// contains(@class, 'parution')
+// ] |
+// .//footer | .//small
 //
 // Further tests needed:
 // or contains(@class, 'article')
@@ -69,21 +72,33 @@ func dateRule(n *html.Node) bool {
 		return true
 	}
 
+	lowId := strings.ToLower(id)
+	lowClass := strings.ToLower(class)
+	lowItemProp := strings.ToLower(itemProp)
 	switch {
-	case strings.Contains(strings.ToLower(id), "date"),
-		strings.Contains(strings.ToLower(class), "date"),
-		strings.Contains(strings.ToLower(itemProp), "date"),
-		strings.Contains(strings.ToLower(id), "datum"),
-		strings.Contains(strings.ToLower(class), "datum"),
+	case strings.Contains(lowId, "date"),
+		strings.Contains(lowClass, "date"),
+		strings.Contains(lowItemProp, "date"),
+		strings.Contains(lowId, "datum"),
+		strings.Contains(lowClass, "datum"),
+		strings.Contains(lowItemProp, "datum"),
 		strings.Contains(id, "time"),
 		strings.Contains(class, "time"),
 		class == "meta",
-		strings.Contains(strings.ToLower(id), "metadata"),
-		strings.Contains(strings.ToLower(class), "meta-"),
-		strings.Contains(strings.ToLower(class), "-meta"),
-		strings.Contains(strings.ToLower(id), "-meta"),
-		strings.Contains(strings.ToLower(class), "_meta"),
-		strings.Contains(strings.ToLower(class), "postmeta"),
+		strings.Contains(lowId, "metadata"),
+		strings.Contains(lowClass, "metadata"),
+		strings.Contains(lowId, "meta-"),
+		strings.Contains(lowClass, "meta-"),
+		strings.Contains(lowId, "-meta"),
+		strings.Contains(lowClass, "-meta"),
+		strings.Contains(lowId, "_meta"),
+		strings.Contains(lowClass, "_meta"),
+		strings.Contains(lowId, "postmeta"),
+		strings.Contains(lowClass, "postmeta"),
+		strings.Contains(lowId, "publish"),
+		strings.Contains(lowClass, "publish"),
+		strings.Contains(lowId, "footer"),
+		strings.Contains(lowClass, "footer"),
 		strings.Contains(class, "info"),
 		strings.Contains(class, "post_detail"),
 		strings.Contains(class, "block-content"),
@@ -92,8 +107,6 @@ func dateRule(n *html.Node) bool {
 		strings.Contains(class, "posted"),
 		strings.Contains(class, "submitted"),
 		strings.Contains(class, "created-post"),
-		strings.Contains(id, "publish"),
-		strings.Contains(class, "publish"),
 		strings.Contains(class, "publication"),
 		strings.Contains(class, "author"),
 		strings.Contains(class, "autor"),
@@ -101,9 +114,7 @@ func dateRule(n *html.Node) bool {
 		strings.Contains(class, "fa-clock-o"),
 		strings.Contains(class, "fa-calendar"),
 		strings.Contains(class, "fecha"),
-		strings.Contains(class, "parution"),
-		strings.Contains(class, "footer"),
-		strings.Contains(id, "footer"):
+		strings.Contains(class, "parution"):
 	default:
 		return false
 	}
