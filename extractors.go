@@ -114,7 +114,7 @@ func tryDateExpr(s string, opts Options) (string, time.Time) {
 	}
 
 	// Check if string only contains time/single year or digits and not a date
-	if rxNoTextDatePattern.MatchString(s) {
+	if rxDiscardPattern.MatchString(s) {
 		return s, timeZero
 	}
 
@@ -127,7 +127,7 @@ func tryDateExpr(s string, opts Options) (string, time.Time) {
 	// Use slow but extensive search, using dateparser
 	if !opts.SkipExtensiveSearch {
 		// Additional filters to prevent computational cost
-		if !rxTextDatePattern.MatchString(s) || rxDiscardPattern.MatchString(s) {
+		if !rxTextDatePattern.MatchString(s) {
 			return s, timeZero
 		}
 

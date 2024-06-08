@@ -86,21 +86,23 @@ var (
 	rxCompleteUrl = regexp.MustCompile(`(?i)\D([0-9]{4})[/_-]([0-9]{1,2})[/_-]([0-9]{1,2})(?:\D|$)`)
 	rxPartialUrl  = regexp.MustCompile(`(?i)\D([0-9]{4})[/_-]([0-9]{2})(?:\D|$)`)
 
-	rxTimestampPattern  = regexp.MustCompile(`(?i)([0-9]{4}-[0-9]{2}-[0-9]{2}|[0-9]{2}\.[0-9]{2}\.[0-9]{4}).[0-9]{2}:[0-9]{2}:[0-9]{2}`)
-	rxTextDatePattern   = regexp.MustCompile(`(?i)[.:,_/ -]|^\d+$`)
-	rxNoTextDatePattern = regexp.MustCompile(`(?i)^(?:\d{3,}\D+\d{3,}|\d{2}:\d{2}(:| )|\+\d{2}\D+|\D*\d{4}\D*$)`)
+	rxTimestampPattern = regexp.MustCompile(`(?i)([0-9]{4}-[0-9]{2}-[0-9]{2}|[0-9]{2}\.[0-9]{2}\.[0-9]{4}).[0-9]{2}:[0-9]{2}:[0-9]{2}`)
+	rxTextDatePattern  = regexp.MustCompile(`(?i)[.:,_/ -]|^\d+$`)
 
-	rxDiscardPattern = regexp.MustCompile(`(?i)` +
-		`[$€¥Ұ£¢₽₱฿#]|` + // currency symbols
-		`CNY|EUR|GBP|JPY|USD|` + // currency codes
-		`http|` + // protocols
-		`\.(com|net|org)|` + // TLDs
-		`IBAN|` + // bank accounts
-		`\+\d{2}(?:\z|[^\pL\pM\d_])` + // amounts/telephone numbers
+	rxDiscardPattern = regexp.MustCompile(`` +
+		`^\d{2}:\d{2}(?: |:|$)|` +
+		`^\D*\d{4}\D*$|` +
+		`[$€¥Ұ£¢₽₱฿#₹]|` + // currency symbols and special characters
+		`[A-Z]{3}[^A-Z]|` + // currency codes
+		`(?:^|\D)(?:\+\d{2}|\d{3}|\d{5})\D|` + // tel./IPs/postal codes
+		`ftps?|https?|sftp|` + // protocols
+		`\.(com|net|org|info|gov|edu|de|fr|io)(?:\z|[^\pL\pM\d_])|` + // TLDs
+		`IBAN|[A-Z]{2}[0-9]{2}|` + // bank accounts
+		`®` + // ©
 		``)
 	// TODO: further testing required:
 	// \d[,.]\d+  // currency amounts
-	// # \b\d{5}\s  // postal codes
+	// leads to errors: ^\D+\d{3,}\D+
 
 	rxEnPattern = regexp.MustCompile(`(?i)(?:date[^0-9"]{0,20}|updated|published) *?(?:in)? *?:? *?([0-9]{1,4})[./]([0-9]{1,2})[./]([0-9]{2,4})`)
 	rxDePattern = regexp.MustCompile(`(?i)(?:Datum|Stand): ?([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{2,4})`)
