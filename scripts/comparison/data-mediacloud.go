@@ -34,7 +34,7 @@ var mediacloudData = []comparisonEntry{
 	}, {
 		URL:       "http://auto-door16814.ttblogs.com/2028064/%E0%B8%9C-%E0%B8%9C%E0%B8%A5-%E0%B8%95-%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%88%E0%B8%B3%E0%B8%AB%E0%B8%99-%E0%B8%B2%E0%B8%A2%E0%B9%82%E0%B8%8B-%E0%B8%AD-%E0%B8%95%E0%B8%AA%E0%B8%B2%E0%B8%AB%E0%B8%81%E0%B8%A3%E0%B8%A3%E0%B8%A1%E0%B8%97-%E0%B8%81%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B9%80%E0%B8%A0%E0%B8%97-%E0%B8%97-%E0%B8%81%E0%B8%8A%E0%B8%99-%E0%B8%94",
 		File:      "1799801548.html",
-		Date:      "",
+		Date:      "nan",
 		Fast:      "",
 		Extensive: "2020-01-01",
 	}, {
@@ -76,7 +76,7 @@ var mediacloudData = []comparisonEntry{
 	}, {
 		URL:       "https://www.ukrinform.ru/rubric-kyiv/3103218-policia-napravila-delo-minera-stolicnogo-metro-v-sud.html",
 		File:      "1716561772.html",
-		Date:      "",
+		Date:      "nan",
 		Fast:      "2020-09-20",
 		Extensive: "2020-09-20",
 	}, {
@@ -118,7 +118,7 @@ var mediacloudData = []comparisonEntry{
 	}, {
 		URL:       "https://news.yam.md/ro/story/10939686",
 		File:      "1716324024.html",
-		Date:      "",
+		Date:      "nan",
 		Fast:      "2020-09-20",
 		Extensive: "2020-09-20",
 	}, {
@@ -197,7 +197,7 @@ var mediacloudData = []comparisonEntry{
 		URL:       "http://alarmeringen.nl/zuid-holland/haaglanden/den-haag/34192126/p2000-ambulance-met-spoed-naar-hoge-zand-in-den-haag.html?utm_source=rss&utm_medium=nederland&utm_campaign=sharing",
 		File:      "1733850206.html",
 		Date:      "2020-10-09",
-		Fast:      "",
+		Fast:      "2020-10-09",
 		Extensive: "2020-10-09",
 	}, {
 		URL:       "https://news.google.com/__i/rss/rd/articles/CBMibWh0dHBzOi8vd3d3Lm51Lm5sL2Zvcm11bGUtMS82MDgwMDIxL3ZlcnN0YXBwZW4tbm90ZWVydC16ZXNkZS10aWpkLWluLWRlcmRlLXRyYWluaW5nLXJ1c3Npc2NoZS1ncmFuZC1wcml4Lmh0bWzSAWxodHRwczovL3d3dy5udS5ubC9mb3JtdWxlLTEvNjA4MDAyMS92ZXJzdGFwcGVuLW5vdGVlcnQtemVzZGUtdGlqZC1pbi1kZXJkZS10cmFpbmluZy1ydXNzaXNjaGUtZ3JhbmQtcHJpeC5hbXA?oc=5",
@@ -238,7 +238,7 @@ var mediacloudData = []comparisonEntry{
 	}, {
 		URL:       "https://news.biglobe.ne.jp/entertainment/0215/ori_200215_7568645051.html",
 		File:      "1521513101.html",
-		Date:      "",
+		Date:      "nan",
 		Fast:      "2020-02-15",
 		Extensive: "2020-02-15",
 	}, {
@@ -358,13 +358,13 @@ var mediacloudData = []comparisonEntry{
 	}, {
 		URL:       "https://www.divyabhaskar.co.in/local/gujarat/vadodara/news/chhetu-patel-a-resident-of-the-united-states-died-due-to-corona-wife-under-treatment-127088788.html",
 		File:      "1565998355.html",
-		Date:      "",
+		Date:      "nan",
 		Fast:      "2020-04-02",
 		Extensive: "2020-04-02",
 	}, {
 		URL:       "https://www.divyabhaskar.co.in/local/gujarat/rajkot/news/people-who-are-scared-of-corona-call-and-say-i-see-corona-in-my-hand-and-foot-127064846.html",
 		File:      "1561643340.html",
-		Date:      "",
+		Date:      "nan",
 		Fast:      "2020-03-28",
 		Extensive: "2020-03-28",
 	}, {
@@ -592,7 +592,7 @@ var mediacloudData = []comparisonEntry{
 	}, {
 		URL:       "https://www.seattlepi.com/sports/article/Tiz-the-Law-draws-No-17-post-as-3-5-Kentucky-15530833.php",
 		File:      "1699121936.html",
-		Date:      "",
+		Date:      "nan",
 		Fast:      "2020-09-01",
 		Extensive: "2020-09-01",
 	}, {
@@ -610,7 +610,7 @@ var mediacloudData = []comparisonEntry{
 	}, {
 		URL:       "https://tucson.com/news/national/college-football-player-arrested-on-murder-charge-in-georgia/article_c7e4b901-9d60-5895-a288-73911df10bd3.html",
 		File:      "1725250200.html",
-		Date:      "",
+		Date:      "nan",
 		Fast:      "2020-09-30",
 		Extensive: "2020-09-30",
 	}, {
@@ -640,7 +640,7 @@ var mediacloudData = []comparisonEntry{
 	}, {
 		URL:       "https://www.breakingsoup.com/south-park-characters-fill-empty-seats-at-denver-broncos-games/",
 		File:      "1732261760.html",
-		Date:      "",
+		Date:      "nan",
 		Fast:      "2020-09-28",
 		Extensive: "2020-09-28",
 	}, {
@@ -694,7 +694,7 @@ var mediacloudData = []comparisonEntry{
 	}, {
 		URL:       "https://www.google.com/imgres?imgurl=https://i.ebayimg.com/images/g/fjoAAOSwyGZaRXKK/s-l300.jpg&imgrefurl=https://www.ebay.com/itm/Retirement-Gift-Ideas-Retired-Definition-Funny-Retirement-Coffee-Mug-Tea-Cup-/132449557566&tbnid=QBu8niz350w2PM&vet=1&docid=CTb7OqAkXHkPUM&w=300&h=265&itg=1&q=retirement+definition&hl=en-US&source=sh/x/im",
 		File:      "1564637733.html",
-		Date:      "",
+		Date:      "nan",
 		Fast:      "",
 		Extensive: "",
 	}, {
@@ -736,7 +736,7 @@ var mediacloudData = []comparisonEntry{
 	}, {
 		URL:       "https://www.moneycontrol.com/news/business/goldman-sachs-says-india’s-fy21-gdp-may-plummet-tomulti-decade-low16bleakest-forecast-so-far_13654421.html",
 		File:      "1572317591.html",
-		Date:      "",
+		Date:      "nan",
 		Fast:      "2020-04-08",
 		Extensive: "2020-04-08",
 	}, {
@@ -754,7 +754,7 @@ var mediacloudData = []comparisonEntry{
 	}, {
 		URL:       "https://thefrontierpost.com/two-newborns-die-for-want-of-oxygen-at-bhakkar-hospital/",
 		File:      "1535415671.html",
-		Date:      "",
+		Date:      "nan",
 		Fast:      "2020-03-01",
 		Extensive: "2020-03-01",
 	}, {
@@ -772,7 +772,7 @@ var mediacloudData = []comparisonEntry{
 	}, {
 		URL:       "https://www.dln.com/newcorporations/details/ref_index/438057",
 		File:      "1687351353.html",
-		Date:      "",
+		Date:      "nan",
 		Fast:      "2020-08-18",
 		Extensive: "2020-08-18",
 	}, {
@@ -780,7 +780,7 @@ var mediacloudData = []comparisonEntry{
 		File:      "1711803974.html",
 		Date:      "2020-09-15",
 		Fast:      "",
-		Extensive: "2020-01-01",
+		Extensive: "2020-05-20",
 	}, {
 		URL:       "https://www.philstar.com/showbiz/2020/11/27/2059828/abs-cbn-nagsalita-na-sa-paglayas-ni-bea",
 		File:      "1781170231.html",
@@ -863,18 +863,18 @@ var mediacloudData = []comparisonEntry{
 		URL:       "https://carnegieendowment.org/chinafinancialmarkets/79641",
 		File:      "1487058344.html",
 		Date:      "2019-08-06",
-		Fast:      "",
-		Extensive: "2019-06-19",
+		Fast:      "2019-08-06",
+		Extensive: "2019-08-06",
 	}, {
 		URL:       "http://feeds.reuters.com/~r/reuters/businessNews/~3/UjOBluJTi0o/volkswagens-skoda-auto-2019-deliveries-dip-to-1-24-million-cars-due-to-weaker-sales-in-china-idUSKBN1ZC1DA",
 		File:      "1493638362.html",
-		Date:      "",
+		Date:      "nan",
 		Fast:      "2020-01-13",
 		Extensive: "2020-01-13",
 	}, {
 		URL:       "https://www.96fm.ie/",
 		File:      "1630687900.html",
-		Date:      "",
+		Date:      "nan",
 		Fast:      "",
 		Extensive: "2020-01-01",
 	}, {
@@ -910,15 +910,15 @@ var mediacloudData = []comparisonEntry{
 	}, {
 		URL:       "https://www.jstor.org/stable/2669240?origin=crossref",
 		File:      "1587353145.html",
-		Date:      "",
+		Date:      "nan",
 		Fast:      "2008-02-02",
 		Extensive: "2008-02-02",
 	}, {
 		URL:       "https://azraelsmerryland.blogspot.com/2020/07/consumers-elevate-appeal-to-president.html",
 		File:      "1653190016.html",
 		Date:      "2020-07-05",
-		Fast:      "2020-07-01",
-		Extensive: "2020-07-01",
+		Fast:      "2020-07-05",
+		Extensive: "2020-07-05",
 	}, {
 		URL:       "https://kiow.com/2020/10/26/absentee-ballots-are-slow-to-return/",
 		File:      "1749876905.html",
@@ -952,7 +952,7 @@ var mediacloudData = []comparisonEntry{
 	}, {
 		URL:       "https://www.couriermail.com.au/news/national/98yearold-wwii-veteran-beats-covid19-receives-ovation-from-hospital-staff/video/ca6ce285879e2291307f3fc8148670aa",
 		File:      "1588233953.html",
-		Date:      "",
+		Date:      "nan",
 		Fast:      "2020-04-24",
 		Extensive: "2020-04-24",
 	}, {
@@ -1012,7 +1012,7 @@ var mediacloudData = []comparisonEntry{
 	}, {
 		URL:       "http://optimussearch.com.ph/2020/06/02/no-membership-required-best-and-free-online-dating-websites-in-los-angeles/",
 		File:      "1677010256.html",
-		Date:      "",
+		Date:      "nan",
 		Fast:      "2020-06-02",
 		Extensive: "2020-06-02",
 	}, {
@@ -1126,7 +1126,7 @@ var mediacloudData = []comparisonEntry{
 	}, {
 		URL:       "https://vratza.com/obshtina-b-vratsa-b-specheli-proekt-za-izgrazhdaneto-na-dopalnitelen-korpus-na/",
 		File:      "1766087391.html",
-		Date:      "",
+		Date:      "nan",
 		Fast:      "2020-11-10",
 		Extensive: "2020-11-10",
 	}, {
@@ -1169,14 +1169,14 @@ var mediacloudData = []comparisonEntry{
 		URL:       "https://elbaladtv.net/%d8%aa%d8%b1%d9%83%d9%89-%d8%a2%d9%84-%d8%a7%d9%84%d8%b4%d9%8a%d8%ae-%d8%a8%d8%b9%d8%af-%d8%a5%d8%b5%d8%a7%d8%a8%d8%a9-%d9%8a%d8%b3%d8%b1%d8%a7-%d8%a8%d9%83%d9%88%d8%b1%d9%88%d9%86%d8%a7-%d9%8a%d8%a7/",
 		File:      "1806793639.html",
 		Date:      "2020-12-25",
-		Fast:      "2020-12-24",
-		Extensive: "2020-12-24",
+		Fast:      "2020-12-25",
+		Extensive: "2020-12-25",
 	}, {
 		URL:       "https://www.beirutobserver.com/2020/11/2338761/",
 		File:      "1764731404.html",
 		Date:      "2020-11-09",
-		Fast:      "2020-11-23",
-		Extensive: "2020-11-23",
+		Fast:      "2020-11-09",
+		Extensive: "2020-11-09",
 	}, {
 		URL:       "https://money.udn.com/money/story/5603/4909425",
 		File:      "1728970162.html",

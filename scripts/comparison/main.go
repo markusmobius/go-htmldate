@@ -61,7 +61,7 @@ func main() {
 			log.Error().Msgf("fast error in %s: %v", entry.URL, err)
 		}
 
-		duration := time.Now().Sub(start)
+		duration := time.Since(start)
 		ev := evaluateResult(fastResult, entry)
 		evFast = mergeEvaluationResult(evFast, ev)
 		evFast.Duration += duration
@@ -73,7 +73,7 @@ func main() {
 			log.Error().Msgf("extensive error in %s: %v", entry.URL, err)
 		}
 
-		duration = time.Now().Sub(start)
+		duration = time.Since(start)
 		ev = evaluateResult(extensiveResult, entry)
 		evExtensive = mergeEvaluationResult(evExtensive, ev)
 		evExtensive.Duration += duration
