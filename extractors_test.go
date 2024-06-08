@@ -67,6 +67,9 @@ func Test_tryDateExpr(t *testing.T) {
 		return ""
 	}
 
+	// Try empty
+	assert.Equal(t, "", try(""))
+
 	// Extensive search disabled
 	opts.SkipExtensiveSearch = true
 	assert.Equal(t, "", try("Fri, Sept 1, 2017"))
