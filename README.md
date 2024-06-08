@@ -6,12 +6,13 @@ The structure of this package is arranged following the structure of original Py
 
 ## Table of Contents
 
-- [Table of Contents](#table-of-contents)
 - [Features](#features)
 - [Status](#status)
 - [Usage as Go package](#usage-as-go-package)
 - [Usage as CLI Application](#usage-as-cli-application)
 - [Performance](#performance)
+  - [Compiling with cgo under Linux](#compiling-with-cgo-under-linux)
+  - [Compiling with cgo under Windows](#compiling-with-cgo-under-windows)
 - [Comparison with Original](#comparison-with-original)
 - [Additional Notes](#additional-notes)
 - [Acknowledgements](#acknowledgements)
@@ -98,6 +99,7 @@ If you want to parse a huge amount of data, it would be preferrable to have a be
 ```
 go build -tags re2_cgo .
 ```
+
 More detailed instructions in how to prepare your system for compiling with cgo are provided below.
 
 When using `re2_wasm` tag, it will make your app uses `re2` that packaged as WebAssembly module so it should be runnable even without cgo. However, if your input is too small, it might be even slower than using Go's standard regex engine.
@@ -116,18 +118,19 @@ sudo apt-get install -y libre2-dev
 ```
 
 ### Compiling with cgo under Windows
+
 On Windows start by installing [MSYS2][msys2]. Then open the MINGW64 terminal and install the gcc toolchain and re2 via pacman:
 
 ```bash
 pacman -S mingw-w64-x86_64-gcc
 pacman -S mingw-w64-x86_64-re2
 ```
+
 If you want to run the resulting exe program outside the MINGW64 terminal you need to add a path to the MinGW-w64 libraries to the PATH environmental variable (adjust as needed for your system):
 
 ```cmd
 SET PATH=C:\msys64\mingw64\bin;%PATH%
 ```
-
 
 ## Comparison with Original
 
@@ -137,10 +140,10 @@ Here we compare the extraction performance between the fast and extensive mode. 
 go run scripts/comparison/*.go
 ```
 
-For the test, we use 500 documents which taken from two sources:
+For the test, we use documents which taken from two sources:
 
-- 225 documents from BBAW collection by Adrien Barbaresi and Lukas Kozmus.
-- 275 documents from [Data Culture Group][dcg] from Northeastern University for additional English news.
+- BBAW collection by Adrien Barbaresi, Shiyang Chen, and Lukas Kozmus.
+- [Data Culture Group][dcg] from Northeastern University for additional English news.
 
 Here is the result when tested in my PC (Intel i7-8550U @ 4.000GHz, RAM 16 GB):
 
