@@ -874,6 +874,12 @@ func Test_searchPage(t *testing.T) {
 
 	_, dt = searchPage(`<html><body><p> © Company 2014-2019 </p></body></html>`, opts)
 	assert.Equal(t, "2019-01-01", format(dt))
+
+	_, dt = searchPage(`<html><head><link xmlns="http://www.w3.org/1999/xhtml"/></head></html>`, opts)
+	assert.Equal(t, "", format(dt))
+
+	_, dt = searchPage(`<html><body><link href="//homepagedesigner.telekom.de/.cm4all/res/static/beng-editor/5.1.98/css/deploy.css"/></body></html>`, opts)
+	assert.Equal(t, "", format(dt))
 }
 
 func Test_searchPattern(t *testing.T) {

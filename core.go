@@ -793,7 +793,12 @@ func searchPage(htmlString string, opts Options) (string, time.Time) {
 
 	// Last resort: 1 component
 	log.Debug().Msg("switching to one component")
-	rawString, bestMatch = searchPattern(htmlString, rxSimplePattern, rxYearPattern, rxYearPattern, opts)
+
+	// Clean string from W3 URLs.
+	// This is done because unlike Python, Go doesn't support negative look behind.
+	cleanedString := rxSimpleW3Cleaner.ReplaceAllString(htmlString, " ")
+
+	rawString, bestMatch = searchPattern(cleanedString, rxSimplePattern, rxYearPattern, rxYearPattern, opts)
 	if len(bestMatch) >= 2 {
 		str := fmt.Sprintf("%s-1-1", bestMatch[1])
 		dt, err := time.Parse("2006-1-2", str)
