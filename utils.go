@@ -41,11 +41,13 @@ func cleanDocument(doc *html.Node) *html.Node {
 		// Embed elements
 		"object", "embed", "applet",
 		// Frame elements
-		"frame", "iframe",
+		"frame", "frameset", "noframes",
 		// Others
 		"audio", "canvas", "datalist",
 		"figure", "label", "map", "math",
-		"picture", "rdf", "svg", "video",
+		"picture", "rdf", "svg", "track", "video",
+		// TODO: to be considered
+		// "iframe", "input", "layer", "param", "source"
 	}
 
 	for _, node := range dom.GetAllNodesWithTag(clone, tagNames...) {
