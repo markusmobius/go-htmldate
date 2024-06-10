@@ -69,38 +69,12 @@ func extractUrlDate(url string, opts Options) time.Time {
 	return date
 }
 
-// extractPartialUrlDate extract the date out of an URL string complying
-// with the Y-M format.
-func extractPartialUrlDate(url string, opts Options) time.Time {
-	// Extract date component using regex
-	parts := rxPartialUrl.FindStringSubmatch(url)
-	if len(parts) != 3 {
-		return timeZero
-	}
-
-	// Create date from the extracted parts
-	year, _ := strconv.Atoi(parts[1])
-	month, _ := strconv.Atoi(parts[2])
-
-	if month > 12 {
-		return timeZero
-	}
-
-	date, valid := validateDateParts(year, month, 1, opts)
-	if !valid {
-		return timeZero
-	}
-
-	log.Debug().Msgf("found partial date in url: %s", parts[0])
-	return date
-}
-
 // tryDateExpr tries to extract date which contains year, month and day using
 // a series of heuristics and rules.
 func tryDateExpr(s string, opts Options) (string, time.Time) {
 	// Trim
 	s = normalizeSpaces(s)
-	s = strLimit(s, maxTextSize)
+	s = strLimit(s, maxSegmentLen)
 
 	// If string less than 6 runes, stop
 	if utf8.RuneCountInString(s) < 6 {

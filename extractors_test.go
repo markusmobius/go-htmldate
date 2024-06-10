@@ -34,24 +34,6 @@ func Test_tryDiscard(t *testing.T) {
 	assert.Len(t, discarded, 1)
 }
 
-func Test_extractPartialUrlDate(t *testing.T) {
-	opts := Options{
-		MinDate: defaultMinDate,
-		MaxDate: defaultMaxDate,
-	}
-
-	extract := func(s string) string {
-		dt := extractPartialUrlDate(s, opts)
-		if !dt.IsZero() {
-			return dt.Format("2006-01-02")
-		}
-		return ""
-	}
-
-	assert.Equal(t, "2018-01-01", extract("https://testsite.org/2018/01/test"))
-	assert.Equal(t, "", extract("https://testsite.org/2018/33/test"))
-}
-
 func Test_tryDateExpr(t *testing.T) {
 	// Helper function
 	opts := Options{

@@ -12,14 +12,12 @@ func SlowDate(n *html.Node) bool {
 	return dateRule(n)
 }
 
-// .//*[(self::div or self::li or self::p or self::span)], then date selector.
+// .//*[(self::div or self::h2 or self::h3 or self::h4 or self::li or self::p or self::span or self::time or self::ul)], then date selector.
 func FastDate(n *html.Node) bool {
 	tagName := dom.TagName(n)
 
 	switch tagName {
-	case "div", "li", "p", "span":
-	case "footer", "small":
-		return true
+	case "div", "h2", "h3", "h4", "li", "p", "span", "time", "ul":
 	default:
 		return false
 	}
@@ -27,15 +25,11 @@ func FastDate(n *html.Node) bool {
 	return dateRule(n)
 }
 
+// [
 // contains(translate(@id|@class|@itemprop, "D", "d"), 'date') or
 // contains(translate(@id|@class|@itemprop, "D", "d"), 'datum') or
+// contains(translate(@id|@class, "M", "m"), 'meta') or
 // contains(@id|@class, 'time') or
-// @class='meta' or
-// contains(translate(@id|@class, "M", "m"), 'metadata') or
-// contains(translate(@id|@class, "M", "m"), 'meta-') or
-// contains(translate(@id|@class, "M", "m"), '-meta') or
-// contains(translate(@id|@class, "M", "m"), '_meta') or
-// contains(translate(@id|@class, "M", "m"), 'postmeta') or
 // contains(@id|@class, 'publish') or
 // contains(@id|@class, 'footer') or
 // contains(@class, 'info') or
@@ -82,19 +76,10 @@ func dateRule(n *html.Node) bool {
 		strings.Contains(lowId, "datum"),
 		strings.Contains(lowClass, "datum"),
 		strings.Contains(lowItemProp, "datum"),
+		strings.Contains(lowId, "meta"),
+		strings.Contains(lowClass, "meta"),
 		strings.Contains(id, "time"),
 		strings.Contains(class, "time"),
-		class == "meta",
-		strings.Contains(lowId, "metadata"),
-		strings.Contains(lowClass, "metadata"),
-		strings.Contains(lowId, "meta-"),
-		strings.Contains(lowClass, "meta-"),
-		strings.Contains(lowId, "-meta"),
-		strings.Contains(lowClass, "-meta"),
-		strings.Contains(lowId, "_meta"),
-		strings.Contains(lowClass, "_meta"),
-		strings.Contains(lowId, "postmeta"),
-		strings.Contains(lowClass, "postmeta"),
 		strings.Contains(lowId, "publish"),
 		strings.Contains(lowClass, "publish"),
 		strings.Contains(lowId, "footer"),

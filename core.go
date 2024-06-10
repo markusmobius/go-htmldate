@@ -165,7 +165,12 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 		return rawString, abbrResult, nil
 	}
 
-	// Use selectors + text content
+	// First, prune tree
+	prunedDoc := dom.Clone(doc, true)
+	prunedDoc = cleanDocument(prunedDoc)
+	discardUnwanted(prunedDoc)
+
+	// Define selectors + text content
 	var dateSelector selector.Rule
 	if !opts.SkipExtensiveSearch {
 		dateSelector = selector.SlowDate
@@ -173,13 +178,24 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 		dateSelector = selector.FastDate
 	}
 
-	// First try in pruned document
-	prunedDoc := dom.Clone(doc, true)
-	discardUnwanted(prunedDoc)
+	// Then look for expressions
 	dateElements := selector.QueryAll(prunedDoc, dateSelector)
 	rawString, dateResult := examineOtherElements(dateElements, opts)
 	if !dateResult.IsZero() {
 		return rawString, dateResult, nil
+	}
+
+	// Try title elements
+	titleElements := dom.QuerySelectorAll(prunedDoc, "title, h1")
+	rawString, dateResult = examineOtherElements(titleElements, opts)
+	if !dateResult.IsZero() {
+		return rawString, dateResult, nil
+	}
+
+	// Try <time> elements
+	rawString, timeResult := examineTimeElements(prunedDoc, opts)
+	if !timeResult.IsZero() {
+		return rawString, timeResult, nil
 	}
 
 	// TODO: for now, we'll stop searching in discarded elements
@@ -192,21 +208,13 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 	// 	}
 	// }
 
-	// Try <time> elements
-	rawString, timeResult := examineTimeElements(prunedDoc, opts)
-	if !timeResult.IsZero() {
-		return rawString, timeResult, nil
-	}
-
-	// Try string search
-	cleanedDoc := cleanDocument(doc)
-
+	// Conversion to string
 	var htmlString string
-	htmlNode := dom.QuerySelector(cleanedDoc, "html")
+	htmlNode := dom.QuerySelector(prunedDoc, "html")
 	if htmlNode != nil {
 		htmlString = dom.InnerHTML(htmlNode)
 	} else {
-		htmlString = dom.InnerHTML(cleanedDoc)
+		htmlString = dom.InnerHTML(prunedDoc)
 	}
 
 	// String search using regex timestamp
@@ -215,34 +223,16 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 		return rawString, timestampResult, nil
 	}
 
+	// Try URL from image metadata
+	rawString, imgResult := metaImgSearch(prunedDoc, opts)
+	if !imgResult.IsZero() {
+		return rawString, imgResult, nil
+	}
+
 	// Precise patterns and idiosyncrasies
 	rawString, textResult := idiosyncrasiesSearch(htmlString, opts)
 	if !textResult.IsZero() {
 		return rawString, textResult, nil
-	}
-
-	// Try title elements
-	for _, titleElem := range dom.GetAllNodesWithTag(doc, "title", "h1") {
-		textContent := normalizeSpaces(dom.TextContent(titleElem))
-		_, attempt := tryDateExpr(textContent, opts)
-		if !attempt.IsZero() {
-			log.Debug().Msgf("found date in title: %s", textContent)
-			return textContent, attempt, nil
-		}
-	}
-
-	// Try partial URL
-	if opts.URL != "" {
-		urlDate := extractPartialUrlDate(opts.URL, opts)
-		if !urlDate.IsZero() {
-			return opts.URL, urlDate, nil
-		}
-	}
-
-	// Try URL from image metadata
-	rawString, imgResult := metaImgSearch(doc, opts)
-	if !imgResult.IsZero() {
-		return rawString, imgResult, nil
 	}
 
 	// Last resort: do extensive search.
@@ -252,10 +242,10 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 		// TODO: further tests & decide according to original_date
 		var refValue int64
 		var refString string
-		for _, segment := range selector.QueryAllTextNodes(doc, selector.FreeText) {
+		for _, segment := range selector.QueryAllTextNodes(prunedDoc, selector.FreeText) {
 			// Basic filter: minimum could be 8 or 9
 			text := normalizeSpaces(segment.Data)
-			if nText := len(text); nText > 6 && nText < maxTextSize {
+			if nText := len(text); nText > minSegmentLen && nText < maxSegmentLen {
 				refString, refValue = compareReference(refString, refValue, text, opts)
 			}
 		}
@@ -627,9 +617,9 @@ func examineOtherElements(elements []*html.Node, opts Options) (string, time.Tim
 		text := normalizeSpaces(dom.TextContent(elem))
 
 		// Simple length heuristic
-		if len(text) > 6 { // Could be 8 or 9
+		if len(text) > minSegmentLen { // Could be 8 or 9
 			// Shorten and try the beginning of the string.
-			toExamine := strLimit(text, maxTextSize)
+			toExamine := strLimit(text, maxSegmentLen)
 			toExamine = rxLastNonDigits.ReplaceAllString(toExamine, "")
 
 			// Log the examined element
@@ -646,9 +636,9 @@ func examineOtherElements(elements []*html.Node, opts Options) (string, time.Tim
 		}
 
 		// Try link title (Blogspot)
-		titleAttr := strings.TrimSpace(dom.GetAttribute(elem, "title"))
-		if titleAttr != "" {
-			toExamine := strLimit(titleAttr, maxTextSize)
+		titleAttr := normalizeSpaces(dom.GetAttribute(elem, "title"))
+		if len(titleAttr) > minSegmentLen {
+			toExamine := strLimit(titleAttr, maxSegmentLen)
 			toExamine = rxLastNonDigits.ReplaceAllString(toExamine, "")
 			_, attempt := tryDateExpr(toExamine, opts)
 			if !attempt.IsZero() {

@@ -540,9 +540,6 @@ func Test_HtmlDate(t *testing.T) {
 	url = "http://www.kreditwesen.org/widerstand-berlin/2012-11-29/keine-kurzung-bei-der-jugend-klubs-konnen-vorerst-aufatmen-bvv-beschliest-haushaltsplan/"
 	checkURL(url, "2012-11-29")
 
-	url = "http://www.kreditwesen.org/widerstand-berlin/2012-11/keine-kurzung-bei-der-jugend-klubs-konnen-vorerst-aufatmen-bvv-beschliest-haushaltsplan/"
-	checkURL(url, "2012-11-01")
-
 	url = "http://www.kreditwesen.org/widerstand-berlin/6666-42-87/"
 	checkURL(url, "")
 
@@ -552,9 +549,6 @@ func Test_HtmlDate(t *testing.T) {
 	// =========================================================
 	// Tests below these point are for URL with approximate date
 	// =========================================================
-
-	url = "http://example.com/blog/2016/07/key-words"
-	checkURL(url, "2016-07-01")
 
 	url = "http://example.com/category/2016/"
 	checkURL(url, "")

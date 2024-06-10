@@ -47,7 +47,8 @@ var (
 )
 
 const (
-	maxTextSize           = 48
+	minSegmentLen         = 6
+	maxSegmentLen         = 52
 	maxPossibleCandidates = 150
 	defaultDateFormat     = "2006-1-2"
 )
@@ -83,10 +84,8 @@ var (
 		`|` +
 		`(?P<day>[0-9]{1,2})(?:st|nd|rd|th|\.)? (?:of )?(?P<month>` + rxMonths + `)[,.]? (?P<year>[0-9]{4})`)
 
-	rxCompleteUrl = regexp.MustCompile(`(?i)\D([0-9]{4})[/_-]([0-9]{1,2})[/_-]([0-9]{1,2})(?:\D|$)`)
-	rxPartialUrl  = regexp.MustCompile(`(?i)\D([0-9]{4})[/_-]([0-9]{2})(?:\D|$)`)
-
-	rxTimestampPattern = regexp.MustCompile(`(?i)([0-9]{4}-[0-9]{2}-[0-9]{2}|[0-9]{2}\.[0-9]{2}\.[0-9]{4}).[0-9]{2}:[0-9]{2}:[0-9]{2}`)
+	rxCompleteUrl      = regexp.MustCompile(`(?i)\D([0-9]{4})[/_-]([0-9]{1,2})[/_-]([0-9]{1,2})(?:\D|$)`)
+	rxTimestampPattern = regexp.MustCompile(`(?i)([0-9]{4}-[0-9]{2}-[0-9]{2}).[0-9]{2}:[0-9]{2}:[0-9]{2}`)
 	rxTextDatePattern  = regexp.MustCompile(`(?i)[.:,_/ -]|^\d+$`)
 
 	rxDiscardPattern = regexp.MustCompile(`` +
@@ -96,16 +95,13 @@ var (
 		`[A-Z]{3}[^A-Z]|` + // currency codes
 		`(?:^|\D)(?:\+\d{2}|\d{3}|\d{5})\D|` + // tel./IPs/postal codes
 		`ftps?|https?|sftp|` + // protocols
-		`\.(com|net|org|info|gov|edu|de|fr|io)(?:\z|[^\pL\pM\d_])|` + // TLDs
+		`\.(?:com|net|org|info|gov|edu|de|fr|io)(?:\z|[^\pL\pM\d_])|` + // TLDs
 		`IBAN|[A-Z]{2}[0-9]{2}|` + // bank accounts
 		`®` + // ©
 		``)
-	// TODO: further testing required:
-	// \d[,.]\d+  // currency amounts
-	// leads to errors: ^\D+\d{3,}\D+
 
-	rxEnPattern = regexp.MustCompile(`(?i)(?:date[^0-9"]{0,20}|updated|published) *?(?:in)? *?:? *?([0-9]{1,4})[./]([0-9]{1,2})[./]([0-9]{2,4})`)
-	rxDePattern = regexp.MustCompile(`(?i)(?:Datum|Stand|[Vv]eröffentlicht am):? ?([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{2,4})`)
+	rxEnPattern = regexp.MustCompile(`(?i)(?:date[^0-9"]{,20}|updated|published|on)(?:[ :])*?([0-9]{1,4})[./]([0-9]{1,2})[./]([0-9]{2,4})`)
+	rxDePattern = regexp.MustCompile(`(?i)(?:Datum|Stand|Veröffentlicht am):? ?([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{2,4})`)
 	rxTrPattern = regexp.MustCompile(`(?i)` +
 		`(?:güncellen?me|yayı(?:m|n)lan?ma) *?(?:tarihi)? *?:? *?([0-9]{1,2})[./]([0-9]{1,2})[./]([0-9]{2,4})` +
 		`|` +
@@ -113,9 +109,9 @@ var (
 
 	// TODO: merge all idiosyncracy pattern
 	// rxIdiosyncracyPattern = regexp.MustCompile(`(?i)` +
-	// `(?:date[^0-9"]{,20}|updated|published) *?(?:in)? *?:? *?([0-9]{1,4})[./]([0-9]{1,2})[./]([0-9]{2,4})` + // EN
+	// `(?:date[^0-9"]{,20}|updated|published|on)(?:[ :])*?([0-9]{1,4})[./]([0-9]{1,2})[./]([0-9]{2,4})` + // EN
 	// `|` +
-	// `(?:Datum|Stand): ?([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{2,4})` + // DE
+	// `(?i)(?:Datum|Stand|Veröffentlicht am):? ?([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{2,4})` + // DE
 	// `|` +
 	// `(?:güncellen?me|yayı(?:m|n)lan?ma) *?(?:tarihi)? *?:? *?([0-9]{1,2})[./]([0-9]{1,2})[./]([0-9]{2,4})` +
 	// `|` +
