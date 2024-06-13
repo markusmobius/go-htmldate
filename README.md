@@ -197,7 +197,7 @@ This package won't be exist without effort by Adrien Barbaresi, the author of th
 
 ## License
 
-Like the original, `go-htmldate` is distributed under the [GNU General Public License v3.0](LICENSE).
+Like the original, `go-htmldate` is distributed under the [Apache v2.0](LICENSE).
 
 [0]: https://github.com/adbar/htmldate
 [1]: https://github.com/adbar
