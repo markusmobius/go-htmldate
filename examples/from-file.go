@@ -12,7 +12,7 @@ import (
 
 func main() {
 	// Open the file
-	f, err := os.Open("test-files/mock/blog.todamax.net.html")
+	f, err := os.Open("test-files/comparison/talent.ch.5031.html")
 	if err != nil {
 		panic(err)
 	}
@@ -21,9 +21,9 @@ func main() {
 	// Prepare configuration
 	// Here we want the publish date instead of last modified
 	opts := htmldate.Options{
-		UseOriginalDate:     false,
+		UseOriginalDate:     true,
 		EnableLog:           true,
-		SkipExtensiveSearch: true,
+		SkipExtensiveSearch: false,
 	}
 
 	// Extract date

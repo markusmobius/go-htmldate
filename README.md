@@ -151,8 +151,8 @@ Here is the result when tested in my PC (Intel i7-8550U @ 4.000GHz, RAM 16 GB):
 | :-------------------------: | :-------: | :----: | :------: | :-----: |
 |   `htmldate` v1.8.1 fast    |   0.881   | 0.924  |  0.821   |  0.902  |
 | `htmldate` v1.8.1 extensive |   0.868   | 0.993  |  0.863   |  0.926  |
-|     `go-htmldate` fast      |   0.881   | 0.927  |  0.824   |  0.904  |
-|   `go-htmldate` extensive   |   0.868   | 0.993  |  0.863   |  0.926  |
+|     `go-htmldate` fast      |   0.882   | 0.925  |  0.823   |  0.903  |
+|   `go-htmldate` extensive   |   0.870   | 0.993  |  0.865   |  0.928  |
 
 So, from the table above we can see that this port has a similar performance with the original `htmldate`.
 

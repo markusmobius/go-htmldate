@@ -7,7 +7,7 @@ import (
 	"golang.org/x/net/html"
 )
 
-// `.//footer | .//small`, then date selector.
+// `.//footer | .//small | //*`, then date selector.
 func SlowDate(n *html.Node) bool {
 	switch dom.TagName(n) {
 	case "footer", "small":
@@ -63,44 +63,44 @@ func dateRule(n *html.Node) bool {
 	class := dom.ClassName(n)
 	itemProp := dom.GetAttribute(n, "itemprop")
 
-	lowId := strings.ToLower(id)
-	lowClass := strings.ToLower(class)
-	lowItemProp := strings.ToLower(itemProp)
+	or := strOr
+	contains := strings.Contains
+	translate := strings.ReplaceAll
 
 	switch {
-	case strings.Contains(lowId, "date"),
-		strings.Contains(lowClass, "date"),
-		strings.Contains(lowItemProp, "date"),
-		strings.Contains(lowId, "datum"),
-		strings.Contains(lowClass, "datum"),
-		strings.Contains(lowItemProp, "datum"),
-		strings.Contains(lowId, "meta"),
-		strings.Contains(lowClass, "meta"),
-		strings.Contains(id, "time"),
-		strings.Contains(class, "time"),
-		strings.Contains(lowId, "publish"),
-		strings.Contains(lowClass, "publish"),
-		strings.Contains(lowId, "footer"),
-		strings.Contains(lowClass, "footer"),
-		strings.Contains(class, "info"),
-		strings.Contains(class, "post_detail"),
-		strings.Contains(class, "block-content"),
-		strings.Contains(class, "byline"),
-		strings.Contains(class, "subline"),
-		strings.Contains(class, "posted"),
-		strings.Contains(class, "submitted"),
-		strings.Contains(class, "created-post"),
-		strings.Contains(class, "publication"),
-		strings.Contains(class, "author"),
-		strings.Contains(class, "autor"),
-		strings.Contains(class, "field-content"),
-		strings.Contains(class, "fa-clock-o"),
-		strings.Contains(class, "fa-calendar"),
-		strings.Contains(class, "fecha"),
-		strings.Contains(class, "parution"):
+	case contains(translate(or(id, class, itemProp), "D", "d"), "date"),
+		contains(translate(or(id, class, itemProp), "D", "d"), "datum"),
+		contains(translate(or(id, class), "M", "m"), "meta"),
+		contains(or(id, class), "time"),
+		contains(or(id, class), "publish"),
+		contains(or(id, class), "footer"),
+		contains(class, "info"),
+		contains(class, "post_detail"),
+		contains(class, "block-content"),
+		contains(class, "byline"),
+		contains(class, "subline"),
+		contains(class, "posted"),
+		contains(class, "submitted"),
+		contains(class, "created-post"),
+		contains(class, "publication"),
+		contains(class, "author"),
+		contains(class, "autor"),
+		contains(class, "field-content"),
+		contains(class, "fa-clock-o"),
+		contains(class, "fa-calendar"),
+		contains(class, "fecha"),
+		contains(class, "parution"):
+		return true
 	default:
 		return false
 	}
+}
 
-	return true
+func strOr(strs ...string) string {
+	for i := range strs {
+		if strs[i] != "" {
+			return strs[i]
+		}
+	}
+	return ""
 }
