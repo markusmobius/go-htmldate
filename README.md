@@ -33,7 +33,7 @@ By default Go-HtmlDate will run in extensive mode. You can disabled it by settin
 
 ## Status
 
-This package is stable enough for use and up to date with the original `htmldate` [v1.4.1][2] (commit [d8f8220][3]). However, since time extraction is a brand new feature which doesn't exist in the original, use it with care. So far it works quite nicely on most news sites that I've tried, but it still needs more testing.
+This package is stable enough for use and up to date with the original `htmldate` [v1.6.1][2] (commit [b296776][3]). However, since time extraction is a brand new feature which doesn't exist in the original, use it with care. So far it works quite nicely on most news sites that I've tried, but it still needs more testing.
 
 When time extraction is enabled, there a some behaviors that I'd like to note:
 
@@ -140,19 +140,19 @@ Here we compare the extraction performance between the fast and extensive mode. 
 go run scripts/comparison/*.go
 ```
 
-For the test, we use documents which taken from two sources:
+For the test, we use 1,000 documents which taken from two sources:
 
-- BBAW collection by Adrien Barbaresi, Shiyang Chen, and Lukas Kozmus.
-- [Data Culture Group][dcg] from Northeastern University for additional English news.
+- 725 documents from BBAW collection by Adrien Barbaresi, Shiyang Chen, and Lukas Kozmus.
+- 275 documents from [Data Culture Group][dcg] from Northeastern University for additional English news.
 
 Here is the result when tested in my PC (Intel i7-8550U @ 4.000GHz, RAM 16 GB):
 
 |           Package           | Precision | Recall | Accuracy | F-Score |
 | :-------------------------: | :-------: | :----: | :------: | :-----: |
-|   `htmldate` v1.4.1 fast    |   0.856   | 0.921  |  0.798   |  0.888  |
-| `htmldate` v1.4.1 extensive |   0.847   | 0.991  |  0.840   |  0.913  |
-|     `go-htmldate` fast      |   0.850   | 0.927  |  0.798   |  0.887  |
-|   `go-htmldate` extensive   |   0.841   | 0.993  |  0.836   |  0.910  |
+|   `htmldate` v1.6.0 fast    |   0.881   | 0.924  |  0.821   |  0.902  |
+| `htmldate` v1.6.0 extensive |   0.868   | 0.993  |  0.863   |  0.926  |
+|     `go-htmldate` fast      |   0.884   | 0.916  |  0.818   |  0.900  |
+|   `go-htmldate` extensive   |   0.866   | 0.993  |  0.861   |  0.925  |
 
 So, from the table above we can see that this port has a similar performance with the original `htmldate`.
 
@@ -160,10 +160,10 @@ For the speed, our port is far faster than the original especially when `re2` re
 
 |            Name            | Fast (s) | Extensive (s) |
 | :------------------------: | :------: | :-----------: |
-|     `htmldate` v1.4.1      |  3.085   |     7.388     |
-|       `go-htmldate`        |  1.268   |     2.712     |
-| `go-htmldate` + `re2_wasm` |  0.371   |     0.966     |
-| `go-htmldate` + `re2_cgo`  |  0.270   |     0.808     |
+|     `htmldate` v1.6.0      |  7.039   |    11.507     |
+|       `go-htmldate`        |  2.999   |     4.308     |
+| `go-htmldate` + `re2_wasm` |  0.780   |     1.548     |
+| `go-htmldate` + `re2_cgo`  |  0.681   |     1.124     |
 
 ## Additional Notes
 
@@ -201,8 +201,8 @@ Like the original, `go-htmldate` is distributed under the [GNU General Public Li
 
 [0]: https://github.com/adbar/htmldate
 [1]: https://github.com/adbar
-[2]: https://github.com/adbar/htmldate/tree/v1.4.1
-[3]: https://github.com/adbar/htmldate/commit/d8f8220
+[2]: https://github.com/adbar/htmldate/tree/v1.6.1
+[3]: https://github.com/adbar/htmldate/commit/b296776
 [dcg]: https://dataculturegroup.org
 [ref-badge]: https://pkg.go.dev/badge/github.com/markusmobius/go-htmldate.svg
 [ref-link]: https://pkg.go.dev/github.com/markusmobius/go-htmldate
