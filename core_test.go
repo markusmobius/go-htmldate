@@ -70,6 +70,12 @@ func Test_HtmlDate(t *testing.T) {
 	str = "<html><body>XYZ</body></html>"
 	checkString(str, "")
 
+	str = "<html><body><time></time></body></html>"
+	checkString(str, "")
+
+	str = `<html><body><abbr class="published"></abbr></body></html>`
+	checkString(str, "")
+
 	// HTML document tree
 	str = `<html><head><meta property="dc:created" content="2017-09-01"></head><body><p>HELLO</p></body></html>`
 	checkString(str, "2017-09-01", useOriginalDate)

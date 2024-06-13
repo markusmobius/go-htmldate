@@ -148,6 +148,14 @@ var (
 	rxSimplePattern      = compileRegexF(`\D(%s)\D`, rxYear)
 	rxSimpleW3Cleaner    = compileRegexF(`w3.org\D(%s)\D`, rxYear)
 
+	rxThreeComponents = []struct {
+		Pattern *regexp.Regexp
+		Catcher *regexp.Regexp
+	}{
+		{rxThreePattern, rxThreeCatch},
+		{rxThreeLoosePattern, rxThreeLooseCatch},
+	}
+
 	// Time patterns
 	rxCommonTime = regexp.MustCompile(`(?i)(?:\D|^)(\d{1,2})(?::|\s*h\s*)(\d{1,2})(?::(\d{1,2})(?:\.\d+)?)?(?:\s*((?:a|p)\.?m\.?))?`)
 	rxTzCode     = stdregex.MustCompile(`(?i)(?:\s|^)([-+])(\d{2})(?::?(\d{2}))?`)

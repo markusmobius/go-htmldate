@@ -596,9 +596,9 @@ func examineTimeElements(doc *html.Node, opts Options) (string, time.Time) {
 	}
 
 	// Return
-	converted := checkExtractedReference(refValue, opts)
-	if !converted.IsZero() {
-		return refString, converted
+	result := checkExtractedReference(refValue, opts)
+	if !result.IsZero() {
+		return refString, result
 	}
 
 	return "", timeZero
@@ -661,18 +661,13 @@ func searchPage(htmlString string, opts Options) (string, time.Time) {
 	// 3 components
 	log.Debug().Msg("3 components")
 
-	// Target URL characteristics
-	rawString, bestMatch = searchPattern(htmlString, rxThreePattern, rxThreeCatch, rxYearPattern, opts)
-	result := filterYmdCandidate(bestMatch, rxThreePattern, copYear, opts)
-	if !result.IsZero() {
-		return rawString, result
-	}
-
-	// More loosely structured date
-	rawString, bestMatch = searchPattern(htmlString, rxThreeLoosePattern, rxThreeLooseCatch, rxYearPattern, opts)
-	result = filterYmdCandidate(bestMatch, rxThreeLoosePattern, copYear, opts)
-	if !result.IsZero() {
-		return rawString, result
+	// Target URL characteristics, then more loosely structured date
+	for _, rx := range rxThreeComponents {
+		rawString, bestMatch = searchPattern(htmlString, rx.Pattern, rx.Catcher, rxYearPattern, opts)
+		result := filterYmdCandidate(bestMatch, rx.Pattern, copYear, opts)
+		if !result.IsZero() {
+			return rawString, result
+		}
 	}
 
 	// Handle YYYY-MM-DD/DD-MM-YYYY, normalize candidates first
@@ -680,7 +675,7 @@ func searchPage(htmlString string, opts Options) (string, time.Time) {
 	candidates = normalizeCandidates(candidates, opts)
 
 	rawString, bestMatch = selectCandidate(candidates, rxYmdPattern, rxYmdYear, opts)
-	result = filterYmdCandidate(bestMatch, rxSelectYmdPattern, copYear, opts)
+	result := filterYmdCandidate(bestMatch, rxSelectYmdPattern, copYear, opts)
 	if !result.IsZero() {
 		return rawString, result
 	}
