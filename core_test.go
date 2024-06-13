@@ -552,6 +552,9 @@ func Test_HtmlDate(t *testing.T) {
 	url = "http://www.hundeverein-kreisunna.de/termine.html"
 	checkMockFile(url, "2017-03-29") // probably newer
 
+	url = "https://www.mozilla.org/en-US/security/advisories/mfsa2024-17/"
+	checkMockFile(url, "1998-01-01")
+
 	// ===================================================
 	// Tests below these point are for URL with exact date
 	// ===================================================
