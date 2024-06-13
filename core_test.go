@@ -108,9 +108,26 @@ func Test_HtmlDate(t *testing.T) {
 	checkString(str, "2017-01-01")
 
 	// Original date
-	str = `<html><head><meta property="OG:Updated_Time" content="2017-09-01"/><meta property="OG:Original_Time" content="2017-07-02"/></head><body></body></html>`
+	str = `<html><head>
+	<meta property="OG:Updated_Time" content="2017-09-01"/>
+	<meta property="OG:DatePublished" content="2017-07-02"/>
+	</head><body/></html>`
 	checkString(str, "2017-09-01")
 	checkString(str, "2017-07-02", useOriginalDate)
+
+	str = `<html><head>
+	<meta property="article:modified_time" content="2021-04-06T06:32:14+00:00" />
+	<meta property="article:published_time" content="2020-07-21T00:17:28+00:00" />
+	</head><body/></html>`
+	checkString(str, "2021-04-06")
+	checkString(str, "2020-07-21", useOriginalDate)
+
+	str = `<html><head>
+	<meta property="article:published_time" content="2020-07-21T00:17:28+00:00" />
+	<meta property="article:modified_time" content="2021-04-06T06:32:14+00:00" />
+	</head><body/></html>`
+	checkString(str, "2021-04-06")
+	checkString(str, "2020-07-21", useOriginalDate)
 
 	// Link in header
 	url = "http://www.jovelstefan.de/2012/05/11/parken-in-paris/"
@@ -640,7 +657,7 @@ func Test_HtmlDate(t *testing.T) {
 	checkMockFile(url, "2016-11-18") // could also be: 29 June 2007
 
 	url = "https://netzpolitik.org/2016/die-cider-connection-abmahnungen-gegen-nutzer-von-creative-commons-bildern/"
-	checkMockFile(url, "2016-06-23") // was '2019-06-24'
+	checkMockFile(url, "2019-06-24")
 
 	url = "https://netzpolitik.org/2016/die-cider-connection-abmahnungen-gegen-nutzer-von-creative-commons-bildern/"
 	checkMockFile(url, "2016-06-23", useOriginalDate)
@@ -680,7 +697,7 @@ func Test_HtmlDate(t *testing.T) {
 	
 	</html>`
 
-	opts := Options{ExtractTime: true}
+	opts := Options{ExtractTime: true, UseOriginalDate: true}
 	opts.DeferUrlExtractor = true
 	res := extractFromString(str, opts)
 	assert.Equal(t, "2022-10-20 18:45", res.Format("2006-01-02 15:04"))

@@ -374,8 +374,8 @@ func examineMetaElements(doc *html.Node, opts Options) (string, time.Time) {
 		if name != "" && content != "" { // Name attribute first: the most frequent
 			name = strings.ToLower(name)
 			if name == "og:url" { // url
-				strMeta = content
-				tMeta = extractUrlDate(content, opts)
+				strReserve = content
+				tReserve = extractUrlDate(content, opts)
 			} else if inMap(name, dateAttributes) { // date
 				log.Debug().Msgf("examining meta name: %s", outerHtml)
 				strMeta, tMeta = tryDateExpr(content, opts)
@@ -392,10 +392,18 @@ func examineMetaElements(doc *html.Node, opts Options) (string, time.Time) {
 			inModifiedProps := inMap(attribute, propertyModified)
 			inDateAttributes := inMap(attribute, dateAttributes)
 
-			if (opts.UseOriginalDate && inDateAttributes) ||
-				(!opts.UseOriginalDate && (inModifiedProps || inDateAttributes)) {
-				log.Debug().Msgf("examining meta property for publish date: %s", outerHtml)
-				strMeta, tMeta = tryDateExpr(content, opts)
+			if inDateAttributes || inModifiedProps {
+				log.Debug().Msgf("examining meta property: %s", outerHtml)
+				strAttempt, tAttempt := tryDateExpr(content, opts)
+				if !tAttempt.IsZero() {
+					if (inDateAttributes && opts.UseOriginalDate) ||
+						(inModifiedProps && !opts.UseOriginalDate) {
+						strMeta, tMeta = strAttempt, tAttempt
+					} else {
+						// Hurts precision
+						strReserve, tReserve = strAttempt, tAttempt
+					}
+				}
 			}
 		} else if itemProp != "" { // Item scope
 			attribute := strings.ToLower(itemProp)
