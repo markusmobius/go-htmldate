@@ -82,11 +82,11 @@ func main() {
 			log.Debug().Msgf("%s: want \"%s\"", entry.URL, entry.Date)
 
 			if fastResult != entry.Fast {
-				log.Debug().Msgf("\tfast different with original: \"%s\" vs \"%s\"", entry.Fast, fastResult)
+				log.Debug().Msgf("\tfast different: original %q, our %q", entry.Fast, fastResult)
 			}
 
 			if extensiveResult != entry.Extensive {
-				log.Debug().Msgf("\textensive different with original: \"%s\" vs \"%s\"", entry.Extensive, extensiveResult)
+				log.Debug().Msgf("\textensive different: original %q, our %q", entry.Extensive, extensiveResult)
 			}
 		}
 

@@ -12,7 +12,7 @@ import (
 
 func main() {
 	// Open the file
-	f, err := os.Open("test-files/comparison/security.googleblog.com.protection.html")
+	f, err := os.Open("test-files/mock/blog.todamax.net.html")
 	if err != nil {
 		panic(err)
 	}

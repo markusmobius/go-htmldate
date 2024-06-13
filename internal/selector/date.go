@@ -7,22 +7,26 @@ import (
 	"golang.org/x/net/html"
 )
 
-// `.//*`, then date selector.
+// `.//footer | .//small`, then date selector.
 func SlowDate(n *html.Node) bool {
-	return dateRule(n)
+	switch dom.TagName(n) {
+	case "footer", "small":
+		return true
+	default:
+		return dateRule(n)
+	}
 }
 
-// .//*[(self::div or self::h2 or self::h3 or self::h4 or self::li or self::p or self::span or self::time or self::ul)], then date selector.
+// ..//footer | .//small | //*[(self::div or self::h2 or self::h3 or self::h4 or self::li or self::p or self::span or self::time or self::ul)], then date selector.
 func FastDate(n *html.Node) bool {
-	tagName := dom.TagName(n)
-
-	switch tagName {
+	switch dom.TagName(n) {
+	case "footer", "small":
+		return true
 	case "div", "h2", "h3", "h4", "li", "p", "span", "time", "ul":
+		return dateRule(n)
 	default:
 		return false
 	}
-
-	return dateRule(n)
 }
 
 // [
@@ -48,8 +52,7 @@ func FastDate(n *html.Node) bool {
 // contains(@class, 'fa-calendar') or
 // contains(@class, 'fecha') or
 // contains(@class, 'parution')
-// ] |
-// .//footer | .//small
+// ]
 //
 // Further tests needed:
 // or contains(@class, 'article')
@@ -58,17 +61,12 @@ func FastDate(n *html.Node) bool {
 func dateRule(n *html.Node) bool {
 	id := dom.ID(n)
 	class := dom.ClassName(n)
-	tagName := dom.TagName(n)
 	itemProp := dom.GetAttribute(n, "itemprop")
-
-	switch tagName {
-	case "footer", "small":
-		return true
-	}
 
 	lowId := strings.ToLower(id)
 	lowClass := strings.ToLower(class)
 	lowItemProp := strings.ToLower(itemProp)
+
 	switch {
 	case strings.Contains(lowId, "date"),
 		strings.Contains(lowClass, "date"),
