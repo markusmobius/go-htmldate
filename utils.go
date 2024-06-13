@@ -21,6 +21,7 @@ import (
 	"bytes"
 	"strings"
 	"unicode"
+	"unicode/utf8"
 
 	"github.com/go-shiori/dom"
 	"github.com/markusmobius/go-htmldate/internal/regexp"
@@ -131,8 +132,8 @@ func inMap(key string, mapString map[string]struct{}) bool {
 
 // strLimit cut a string until the specified limit.
 func strLimit(s string, limit int) string {
-	if len(s) > limit {
-		s = s[:limit]
+	if utf8.RuneCountInString(s) > limit {
+		s = string([]rune(s)[:limit])
 	}
 
 	return s
