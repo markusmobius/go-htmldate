@@ -159,7 +159,7 @@ func fastParse(s string, opts Options) time.Time {
 		// Make sure month is at most 12, because if not then it's not YMD
 		dt, valid := validateDateParts(year, month, day, opts)
 		if valid {
-			log.Debug().Msgf("fast parse found Y-M-D date: %s", namedParts[""])
+			log.Debug().Msgf("fast parse found Y-M-D date: %s", s)
 			return dt
 		}
 	}
@@ -173,7 +173,7 @@ func fastParse(s string, opts Options) time.Time {
 		// Make sure month is at most 12, because if not then it's not D-M-Y
 		dt, valid := validateDateParts(year, month, 1, opts)
 		if valid {
-			log.Debug().Msgf("fast parse found Y-M date: %s", namedParts[""])
+			log.Debug().Msgf("fast parse found Y-M date: %s", s)
 			return dt
 		}
 	}
@@ -253,7 +253,7 @@ func jsonSearch(doc *html.Node, opts Options) (string, time.Time) {
 		// Get the json text inside the script
 		jsonText := dom.TextContent(elem)
 		jsonText = strings.TrimSpace(jsonText)
-		log.Debug().Msgf("found JSON: %s", jsonText)
+		log.Debug().Msgf("found JSON: %s", strLimit(jsonText, 200))
 
 		// First, decode JSON text assuming it as array of object
 		var err error
