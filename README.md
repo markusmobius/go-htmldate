@@ -33,7 +33,7 @@ By default Go-HtmlDate will run in extensive mode. You can disabled it by settin
 
 ## Status
 
-This package is stable enough for use and up to date with the original `htmldate` [v1.6.1][2] (commit [b296776][3]). However, since time extraction is a brand new feature which doesn't exist in the original, use it with care. So far it works quite nicely on most news sites that I've tried, but it still needs more testing.
+This package is stable enough for use and up to date with the original `htmldate` [v1.8.1][2] (commit [6dde09e][3]). However, since time extraction is a brand new feature which doesn't exist in the original, use it with care. So far it works quite nicely on most news sites that I've tried, but it still needs more testing.
 
 When time extraction is enabled, there a some behaviors that I'd like to note:
 
@@ -151,8 +151,8 @@ Here is the result when tested in my PC (Intel i7-8550U @ 4.000GHz, RAM 16 GB):
 | :-------------------------: | :-------: | :----: | :------: | :-----: |
 |   `htmldate` v1.6.0 fast    |   0.881   | 0.924  |  0.821   |  0.902  |
 | `htmldate` v1.6.0 extensive |   0.868   | 0.993  |  0.863   |  0.926  |
-|     `go-htmldate` fast      |   0.884   | 0.916  |  0.818   |  0.900  |
-|   `go-htmldate` extensive   |   0.866   | 0.993  |  0.861   |  0.925  |
+|     `go-htmldate` fast      |   0.882   | 0.916  |  0.816   |  0.899  |
+|   `go-htmldate` extensive   |   0.864   | 0.993  |  0.859   |  0.924  |
 
 So, from the table above we can see that this port has a similar performance with the original `htmldate`.
 
@@ -201,8 +201,8 @@ Like the original, `go-htmldate` is distributed under the [Apache v2.0](LICENSE)
 
 [0]: https://github.com/adbar/htmldate
 [1]: https://github.com/adbar
-[2]: https://github.com/adbar/htmldate/tree/v1.6.1
-[3]: https://github.com/adbar/htmldate/commit/b296776
+[2]: https://github.com/adbar/htmldate/tree/v1.8.1
+[3]: https://github.com/adbar/htmldate/commit/6dde09e
 [dcg]: https://dataculturegroup.org
 [ref-badge]: https://pkg.go.dev/badge/github.com/markusmobius/go-htmldate.svg
 [ref-link]: https://pkg.go.dev/github.com/markusmobius/go-htmldate
