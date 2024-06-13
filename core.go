@@ -25,6 +25,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	"github.com/go-shiori/dom"
 	"github.com/markusmobius/go-htmldate/internal/regexp"
@@ -244,7 +245,8 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 		for _, segment := range selector.QueryAllTextNodes(prunedDoc, selector.FreeText) {
 			// Basic filter: minimum could be 8 or 9
 			text := normalizeSpaces(segment.Data)
-			if nText := len(text); nText > minSegmentLen && nText < maxSegmentLen {
+			nText := utf8.RuneCountInString(text)
+			if nText > minSegmentLen && nText < maxSegmentLen {
 				refString, refValue = compareReference(refString, refValue, text, opts)
 			}
 		}
@@ -524,7 +526,7 @@ func examineAbbrElements(doc *html.Node, opts Options) (string, time.Time) {
 						break
 					}
 				}
-			} else if len(text) > 10 { // Dates, not times of the day
+			} else if utf8.RuneCountInString(text) > 10 { // Dates, not times of the day
 				tryText := strings.TrimPrefix(text, "am ")
 				log.Debug().Msgf("abbr published found: %s", tryText)
 				refString, refValue = compareReference(refString, refValue, tryText, opts)
@@ -568,7 +570,7 @@ func examineTimeElements(doc *html.Node, opts Options) (string, time.Time) {
 		dateTime := strings.TrimSpace(dom.GetAttribute(elem, "datetime"))
 		pubDate := strings.TrimSpace(dom.GetAttribute(elem, "pubdate"))
 
-		if len(dateTime) > 6 { // Go for datetime attribute
+		if utf8.RuneCountInString(dateTime) > 6 { // Go for datetime attribute
 			if strings.ToLower(pubDate) == "pubdate" && opts.UseOriginalDate { // Shortcut: time pubdate
 				shortcutFlag = true
 				log.Debug().Msgf("shortcut for time pubdate found: %s", dateTime)
@@ -596,7 +598,7 @@ func examineTimeElements(doc *html.Node, opts Options) (string, time.Time) {
 			} else {
 				refString, refValue = compareReference(refString, refValue, dateTime, opts)
 			}
-		} else if len(text) > 6 { // Bare text in element
+		} else if utf8.RuneCountInString(text) > 6 { // Bare text in element
 			log.Debug().Msgf("time/datetime found in text: %s", text)
 			refString, refValue = compareReference(refString, refValue, text, opts)
 		}
@@ -614,7 +616,7 @@ func examineTimeElements(doc *html.Node, opts Options) (string, time.Time) {
 // examineText prepares text and try to extract a date.
 func examineText(text string, opts Options) (string, time.Time) {
 	text = normalizeSpaces(text)
-	if len(text) <= minSegmentLen {
+	if utf8.RuneCountInString(text) <= minSegmentLen {
 		return "", timeZero
 	}
 
