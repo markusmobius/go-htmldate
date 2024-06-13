@@ -326,19 +326,6 @@ func jsonSearch(doc *html.Node, opts Options) (string, time.Time) {
 	return best.Text, best.Date
 }
 
-// timestampSearch looks for timestamps throughout the html string.
-func timestampSearch(htmlString string, opts Options) (string, time.Time) {
-	idxs := rxTimestampPattern.FindStringSubmatchIndex(htmlString)
-	if len(idxs) == 0 {
-		return "", timeZero
-	}
-
-	rawString := strLimit(htmlString[idxs[0]:], 100)
-	group1 := htmlString[idxs[2]:idxs[3]]
-	dt := fastParse(group1, opts)
-	return rawString, dt
-}
-
 // idiosyncrasiesSearch looks for author-written dates throughout the web page.
 func idiosyncrasiesSearch(htmlString string, opts Options) (string, time.Time) {
 	// TODO: do it all in one go
@@ -368,6 +355,22 @@ func metaImgSearch(doc *html.Node, opts Options) (string, time.Time) {
 				return content, result
 			}
 		}
+	}
+
+	return "", timeZero
+}
+
+// patternSearch looks for date expressions using a regular expression on a string of text.
+func patternSearch(text string, datePattern *regexp.Regexp, opts Options) (string, time.Time) {
+	parts := datePattern.FindStringSubmatch(text)
+	if len(parts) < 2 {
+		return "", timeZero
+	}
+
+	dt := fastParse(parts[1], opts)
+	if validateDate(dt, opts) {
+		log.Debug().Msgf("regex found: %q %q", datePattern, parts[0])
+		return parts[0], dt
 	}
 
 	return "", timeZero

@@ -130,16 +130,6 @@ func inMap(key string, mapString map[string]struct{}) bool {
 	return exist
 }
 
-// strIn check if string exists in slice.
-func strIn(s string, args ...string) bool {
-	for _, arg := range args {
-		if s == arg {
-			return true
-		}
-	}
-	return false
-}
-
 // strLimit cut a string until the specified limit.
 func strLimit(s string, limit int) string {
 	if len(s) > limit {

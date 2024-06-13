@@ -218,7 +218,7 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 	}
 
 	// String search using regex timestamp
-	rawString, timestampResult := timestampSearch(htmlString, opts)
+	rawString, timestampResult := patternSearch(htmlString, rxTimestampPattern, opts)
 	if !timestampResult.IsZero() {
 		return rawString, timestampResult, nil
 	}
@@ -604,6 +604,18 @@ func examineTimeElements(doc *html.Node, opts Options) (string, time.Time) {
 	return "", timeZero
 }
 
+// examineText prepares text and try to extract a date.
+func examineText(text string, opts Options) (string, time.Time) {
+	text = normalizeSpaces(text)
+	if len(text) <= minSegmentLen {
+		return "", timeZero
+	}
+
+	text = strLimit(text, maxSegmentLen)
+	text = rxLastNonDigits.ReplaceAllString(text, "")
+	return tryDateExpr(text, opts)
+}
+
 // examineOtherElements scans the specified elements and check if their content
 // contains an eligible date.
 func examineOtherElements(elements []*html.Node, opts Options) (string, time.Time) {
@@ -614,35 +626,13 @@ func examineOtherElements(elements []*html.Node, opts Options) (string, time.Tim
 
 	for _, elem := range elements {
 		// Trim text content
-		text := normalizeSpaces(dom.TextContent(elem))
+		text := dom.TextContent(elem)
+		titleAttr := dom.GetAttribute(elem, "title")
 
-		// Simple length heuristic
-		if len(text) > minSegmentLen { // Could be 8 or 9
-			// Shorten and try the beginning of the string.
-			toExamine := strLimit(text, maxSegmentLen)
-			toExamine = rxLastNonDigits.ReplaceAllString(toExamine, "")
-
-			// Log the examined element
-			elemHTML := dom.OuterHTML(elem)
-			elemHTML = strLimit(normalizeSpaces(elemHTML), 100)
-			elemHTML = strings.TrimSpace(elemHTML)
-			log.Debug().Msgf("analyzing HTML: %s (%s)", elemHTML, toExamine)
-
-			// Attempt to extract date
-			_, attempt := tryDateExpr(toExamine, opts)
+		for _, text := range []string{text, titleAttr} {
+			_, attempt := examineText(text, opts)
 			if !attempt.IsZero() {
-				return toExamine, attempt
-			}
-		}
-
-		// Try link title (Blogspot)
-		titleAttr := normalizeSpaces(dom.GetAttribute(elem, "title"))
-		if len(titleAttr) > minSegmentLen {
-			toExamine := strLimit(titleAttr, maxSegmentLen)
-			toExamine = rxLastNonDigits.ReplaceAllString(toExamine, "")
-			_, attempt := tryDateExpr(toExamine, opts)
-			if !attempt.IsZero() {
-				return toExamine, attempt
+				return text, attempt
 			}
 		}
 	}
