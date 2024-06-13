@@ -1,4 +1,5 @@
-//+build ignore
+//go:build ignore
+// +build ignore
 
 package main
 
@@ -11,7 +12,7 @@ import (
 
 func main() {
 	// Open the file
-	f, err := os.Open("test-files/mock/befifty.montauk.html")
+	f, err := os.Open("test-files/comparison/security.googleblog.com.protection.html")
 	if err != nil {
 		panic(err)
 	}
@@ -20,8 +21,9 @@ func main() {
 	// Prepare configuration
 	// Here we want the publish date instead of last modified
 	opts := htmldate.Options{
-		UseOriginalDate: false,
-		EnableLog:       true,
+		UseOriginalDate:     false,
+		EnableLog:           true,
+		SkipExtensiveSearch: true,
 	}
 
 	// Extract date

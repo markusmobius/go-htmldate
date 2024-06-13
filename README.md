@@ -149,10 +149,10 @@ Here is the result when tested in my PC (Intel i7-8550U @ 4.000GHz, RAM 16 GB):
 
 |           Package           | Precision | Recall | Accuracy | F-Score |
 | :-------------------------: | :-------: | :----: | :------: | :-----: |
-|   `htmldate` v1.6.0 fast    |   0.881   | 0.924  |  0.821   |  0.902  |
-| `htmldate` v1.6.0 extensive |   0.868   | 0.993  |  0.863   |  0.926  |
-|     `go-htmldate` fast      |   0.882   | 0.916  |  0.816   |  0.899  |
-|   `go-htmldate` extensive   |   0.864   | 0.993  |  0.859   |  0.924  |
+|   `htmldate` v1.8.1 fast    |   0.881   | 0.924  |  0.821   |  0.902  |
+| `htmldate` v1.8.1 extensive |   0.868   | 0.993  |  0.863   |  0.926  |
+|     `go-htmldate` fast      |   0.881   | 0.919  |  0.818   |  0.900  |
+|   `go-htmldate` extensive   |   0.867   | 0.993  |  0.862   |  0.926  |
 
 So, from the table above we can see that this port has a similar performance with the original `htmldate`.
 
@@ -160,7 +160,7 @@ For the speed, our port is far faster than the original especially when `re2` re
 
 |            Name            | Fast (s) | Extensive (s) |
 | :------------------------: | :------: | :-----------: |
-|     `htmldate` v1.6.0      |  7.039   |    11.507     |
+|     `htmldate` v1.8.1      |  7.039   |    11.507     |
 |       `go-htmldate`        |  2.999   |     4.308     |
 | `go-htmldate` + `re2_wasm` |  0.780   |     1.548     |
 | `go-htmldate` + `re2_cgo`  |  0.681   |     1.124     |

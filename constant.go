@@ -49,7 +49,7 @@ var (
 const (
 	minSegmentLen         = 6
 	maxSegmentLen         = 52
-	maxPossibleCandidates = 150
+	maxPossibleCandidates = 1_000
 	defaultDateFormat     = "2006-1-2"
 )
 
