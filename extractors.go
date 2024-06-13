@@ -359,8 +359,8 @@ func metaImgSearch(doc *html.Node, opts Options) (string, time.Time) {
 	return "", timeZero
 }
 
-// patternSearch looks for date expressions using a regular expression on a string of text.
-func patternSearch(text string, datePattern *regexp.Regexp, opts Options) (string, time.Time) {
+// regexPatternSearch looks for date expressions using a regular expression on a string of text.
+func regexPatternSearch(text string, datePattern *regexp.Regexp, opts Options) (string, time.Time) {
 	parts := datePattern.FindStringSubmatch(text)
 	if len(parts) < 2 {
 		return "", timeZero
