@@ -120,7 +120,7 @@ func checkExtractedReference(reference int64, opts Options) time.Time {
 // Unlike in the original, here we sort it as well by the highest frequency.
 func plausibleYearFilter3(
 	htmlString string,
-	patternFinder func(string) [][]int,
+	patternFinder fnRe2GoFinder,
 	rxYearPattern *regexp.Regexp,
 	toComplete bool, opts Options,
 ) []yearCandidate {

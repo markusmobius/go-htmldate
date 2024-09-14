@@ -30,15 +30,6 @@ func IdiosyncracyPattern(input string) ([]string, int) {
 	var yyt4 int
 	_ = yyt4
 
-	// Helper function
-	getSubmatch := func(input string, indexes []int) ([]string, int) {
-		submatch := make([]string, YYMAXNMATCH)
-		for i := 0; i < YYMAXNMATCH; i++ {
-			submatch[i] = input[indexes[2*i]:indexes[2*i+1]]
-		}
-		return submatch, indexes[0]
-	}
-
 	for {
 		{
 			var yych byte
@@ -1395,7 +1386,7 @@ func IdiosyncracyPattern(input string) ([]string, int) {
 			yypmatch[5] += -1
 			yypmatch[7] = cursor
 			{
-				return getSubmatch(input, yypmatch)
+				return getAllSubmatch(input, YYMAXNMATCH, yypmatch)
 			}
 		yy113:
 			cursor++
@@ -1958,7 +1949,7 @@ func IdiosyncracyPattern(input string) ([]string, int) {
 			yypmatch[5] += -1
 			yypmatch[7] = cursor
 			{
-				return getSubmatch(input, yypmatch)
+				return getAllSubmatch(input, YYMAXNMATCH, yypmatch)
 			}
 		yy160:
 			cursor++
@@ -2764,7 +2755,7 @@ func IdiosyncracyPattern(input string) ([]string, int) {
 			yypmatch[5] += -1
 			yypmatch[7] = cursor
 			{
-				return getSubmatch(input, yypmatch)
+				return getAllSubmatch(input, YYMAXNMATCH, yypmatch)
 			}
 		yy231:
 			cursor++
@@ -3456,7 +3447,7 @@ func IdiosyncracyPattern(input string) ([]string, int) {
 			yypmatch[5] = yyt3
 			yypmatch[5] += -1
 			{
-				return getSubmatch(input, yypmatch)
+				return getAllSubmatch(input, YYMAXNMATCH, yypmatch)
 			}
 		yy289:
 			cursor++

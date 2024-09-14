@@ -657,7 +657,7 @@ func searchPage(htmlString string, opts Options) (string, time.Time) {
 
 	var copYear int
 	var copRawString string
-	rawString, bestMatch := searchPattern(htmlString, rxCopyrightPattern, rxYearPattern, rxYearPattern, opts)
+	rawString, bestMatch := searchPattern2(htmlString, re2go.CopyrightPattern, rxYearPattern, rxYearPattern, opts)
 	if len(bestMatch) > 0 {
 		log.Debug().Msgf("copyright detected: %s", bestMatch[0])
 		bestMatchVal, err := strconv.Atoi(bestMatch[0])
@@ -673,8 +673,8 @@ func searchPage(htmlString string, opts Options) (string, time.Time) {
 
 	// Target URL characteristics, then more loosely structured date
 	for _, rx := range rxThreeComponents {
-		rawString, bestMatch = searchPattern(htmlString, rx.Pattern, rx.Catcher, rxYearPattern, opts)
-		result := filterYmdCandidate(bestMatch, rx.Pattern, copYear, opts)
+		rawString, bestMatch = searchPattern2(htmlString, rx.Pattern, rx.Catcher, rxYearPattern, opts)
+		result := filterYmdCandidate2(bestMatch, rx.Name, copYear, opts)
 		if !result.IsZero() {
 			return rawString, result
 		}
@@ -691,8 +691,8 @@ func searchPage(htmlString string, opts Options) (string, time.Time) {
 	}
 
 	// Valid dates string
-	rawString, bestMatch = searchPattern(htmlString, rxDateStringsPattern, rxDateStringsCatch, rxYearPattern, opts)
-	result = filterYmdCandidate(bestMatch, rxDateStringsPattern, copYear, opts)
+	rawString, bestMatch = searchPattern2(htmlString, re2go.DateStringsPattern, rxDateStringsCatch, rxYearPattern, opts)
+	result = filterYmdCandidate2(bestMatch, "DateStringsPattern", copYear, opts)
 	if !result.IsZero() {
 		return rawString, result
 	}
@@ -711,12 +711,12 @@ func searchPage(htmlString string, opts Options) (string, time.Time) {
 	log.Debug().Msg("switching to 2 components")
 
 	// First option
-	rawString, bestMatch = searchPattern(htmlString, rxYyyyMmPattern, rxYyyyMmCatch, rxYearPattern, opts)
+	rawString, bestMatch = searchPattern2(htmlString, re2go.YyyyMmPattern, rxYyyyMmCatch, rxYearPattern, opts)
 	if len(bestMatch) >= 3 {
 		str := fmt.Sprintf("%s-%s-1", bestMatch[1], bestMatch[2])
 		dt, err := time.Parse("2006-1-2", str)
 		if err == nil && validateDate(dt, opts) && (copYear == 0 || dt.Year() >= copYear) {
-			log.Debug().Msgf("date found for pattern \"%s\": %s", rxYyyyMmPattern.String(), str)
+			log.Debug().Msgf("date found for pattern \"%s\": %s", "YyyyMmPattern", str)
 			return rawString, dt
 		}
 	}
@@ -783,12 +783,12 @@ func searchPage(htmlString string, opts Options) (string, time.Time) {
 	// This is done because unlike Python, Go doesn't support negative look behind.
 	cleanedString := rxSimpleW3Cleaner.ReplaceAllString(htmlString, " ")
 
-	rawString, bestMatch = searchPattern(cleanedString, rxSimplePattern, rxYearPattern, rxYearPattern, opts)
+	rawString, bestMatch = searchPattern2(cleanedString, re2go.SimplePattern, rxYearPattern, rxYearPattern, opts)
 	if len(bestMatch) >= 2 {
 		str := fmt.Sprintf("%s-1-1", bestMatch[1])
 		dt, err := time.Parse("2006-1-2", str)
 		if err == nil && validateDate(dt, opts) && dt.Year() >= copYear {
-			log.Debug().Msgf("date found for pattern \"%s\": %s", rxSimplePattern.String(), str)
+			log.Debug().Msgf("date found for pattern \"%s\": %s", "SimplePattern", str)
 			return rawString, dt
 		}
 	}
@@ -810,6 +810,12 @@ func compareReference(refString string, refValue int64, expression string, opts 
 	}
 
 	return refString, refValue
+}
+
+// searchPattern runs chained candidate filtering and selection.
+func searchPattern2(htmlString string, patternFinder fnRe2GoFinder, rxCatchPattern, rxYearPattern *regexp.Regexp, opts Options) (string, []string) {
+	candidates := plausibleYearFilter3(htmlString, patternFinder, rxYearPattern, false, opts)
+	return selectCandidate(candidates, rxCatchPattern, rxYearPattern, opts)
 }
 
 // searchPattern runs chained candidate filtering and selection.

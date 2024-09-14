@@ -24,13 +24,6 @@ func SelectYmdPattern(input string) [][]int {
 	var yyt3 int
 	_ = yyt3
 
-	// Helper function
-	copySlice := func(src []int) []int {
-		indexes := make([]int, len(src))
-		copy(indexes, src)
-		return src
-	}
-
 	var allIndexes [][]int
 	for {
 		{
@@ -313,7 +306,7 @@ func SelectYmdPattern(input string) [][]int {
 			yypmatch[3] = yyt3
 			yypmatch[1] = cursor
 			{
-				allIndexes = append(allIndexes, copySlice(yypmatch))
+				allIndexes = append(allIndexes, copyIndexes(yypmatch))
 				continue
 			}
 		yy25:
@@ -401,13 +394,6 @@ func SlashesPattern(input string) [][]int {
 	_ = yyt2
 	var yyt3 int
 	_ = yyt3
-
-	// Helper function
-	copySlice := func(src []int) []int {
-		indexes := make([]int, len(src))
-		copy(indexes, src)
-		return src
-	}
 
 	var allIndexes [][]int
 	for {
@@ -713,7 +699,7 @@ func SlashesPattern(input string) [][]int {
 			yypmatch[3] = yyt3
 			yypmatch[1] = cursor
 			{
-				allIndexes = append(allIndexes, copySlice(yypmatch))
+				allIndexes = append(allIndexes, copyIndexes(yypmatch))
 				continue
 			}
 		yy59:
@@ -801,13 +787,6 @@ func MmYyyyPattern(input string) [][]int {
 	_ = yyt2
 	var yyt3 int
 	_ = yyt3
-
-	// Helper function
-	copySlice := func(src []int) []int {
-		indexes := make([]int, len(src))
-		copy(indexes, src)
-		return src
-	}
 
 	var allIndexes [][]int
 	for {
@@ -1060,7 +1039,7 @@ func MmYyyyPattern(input string) [][]int {
 			yypmatch[3] = yyt3
 			yypmatch[1] = cursor
 			{
-				allIndexes = append(allIndexes, copySlice(yypmatch))
+				allIndexes = append(allIndexes, copyIndexes(yypmatch))
 				continue
 			}
 		yy88:
