@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -29,7 +30,6 @@ import (
 
 	"github.com/go-shiori/dom"
 	"github.com/markusmobius/go-htmldate/internal/re2go"
-	"github.com/markusmobius/go-htmldate/internal/regexp"
 	"github.com/markusmobius/go-htmldate/internal/selector"
 	"github.com/rs/zerolog"
 	"golang.org/x/net/html"

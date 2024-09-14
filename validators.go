@@ -18,10 +18,9 @@
 package htmldate
 
 import (
+	"regexp"
 	"strconv"
 	"time"
-
-	"github.com/markusmobius/go-htmldate/internal/regexp"
 )
 
 type yearCandidate struct {
