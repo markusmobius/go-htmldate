@@ -95,7 +95,7 @@ var (
 	rxTimestampPattern = compileRegexF(`(?i)(%[1]s-%[2]s-%[3]s).[0-9]{2}:[0-9]{2}:[0-9]{2}`,
 		rxYear, rxMonth, rxDay)
 
-	// rxTextDatePattern = regexp.MustCompile(`(?i)[.:,_/ -]|^\d+$`)
+	rxTextDatePattern = regexp.MustCompile(`(?i)[.:,_/ -]|^\d+$`)
 
 	rxDiscardPattern = regexp.MustCompile(`` +
 		`^\d{2}:\d{2}(?: |:|$)|` +
@@ -134,16 +134,16 @@ var (
 	rxThreeLoosePattern = regexp.MustCompile(`\D([0-9]{4}[/.-][0-9]{2}[/.-][0-9]{2})\D`)
 	rxThreeLooseCatch   = regexp.MustCompile(`([0-9]{4})[/.-]([0-9]{2})[/.-]([0-9]{2})`)
 	// rxSelectYmdPattern   = regexp.MustCompile(`\D([0-3]?[0-9][/.-][01]?[0-9][/.-][0-9]{4})\D`)
-	// rxSelectYmdYear      = compileRegexF(`(%s)\D?$`, rxYear)
+	rxSelectYmdYear      = compileRegexF(`(%s)\D?$`, rxYear)
 	rxYmdYear            = compileRegexF(`^(%s)`, rxYear)
 	rxDateStringsPattern = regexp.MustCompile(`(\D19[0-9]{2}[01][0-9][0-3][0-9]\D|\D20[0-9]{2}[01][0-9][0-3][0-9]\D)`)
 	rxDateStringsCatch   = compileRegexF(`(%s)([01][0-9])([0-3][0-9])`, rxYear)
 	// rxSlashesPattern     = regexp.MustCompile(`\D([0-3]?[0-9]/[01]?[0-9]/[0129][0-9]|[0-3][0-9]\.[01][0-9]\.[0129][0-9])\D`)
-	// rxSlashesYear     = regexp.MustCompile(`([0-9]{2})$`)
+	rxSlashesYear   = regexp.MustCompile(`([0-9]{2})$`)
 	rxYyyyMmPattern = regexp.MustCompile(`\D([12][0-9]{3}[/.-](?:1[0-2]|0[1-9]))\D`)
 	rxYyyyMmCatch   = compileRegexF(`(%s)[/.-](1[0-2]|0[1-9])`, rxYear)
 	// rxMmYyyyPattern   = regexp.MustCompile(`\D([01]?[0-9][/.-][12][0-9]{3})\D`)
-	// rxMmYyyyYear      = compileRegexF(`(%s)\D?$`, rxYear)
+	rxMmYyyyYear      = compileRegexF(`(%s)\D?$`, rxYear)
 	rxSimplePattern   = compileRegexF(`\D(%s)\D`, rxYear)
 	rxSimpleW3Cleaner = compileRegexF(`w3.org\D(%s)\D`, rxYear)
 

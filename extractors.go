@@ -101,7 +101,7 @@ func tryDateExpr(s string, opts Options) (string, time.Time) {
 	// Use slow but extensive search, using dateparser
 	if !opts.SkipExtensiveSearch {
 		// Additional filters to prevent computational cost
-		if !re2go.MatchTextDatePattern(s) {
+		if !rxTextDatePattern.MatchString(s) {
 			return s, timeZero
 		}
 
@@ -330,7 +330,7 @@ func jsonSearch(doc *html.Node, opts Options) (string, time.Time) {
 func idiosyncrasiesSearch(htmlString string, opts Options) (string, time.Time) {
 	// Extract date parts
 	var candidate time.Time
-	parts, startIdx := re2go.IdiosyncracyPatternSubmatch(htmlString)
+	parts, startIdx := re2go.IdiosyncracyPattern(htmlString)
 	if len(parts) == 0 {
 		return "", timeZero
 	}

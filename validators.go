@@ -120,8 +120,8 @@ func checkExtractedReference(reference int64, opts Options) time.Time {
 // Unlike in the original, here we sort it as well by the highest frequency.
 func plausibleYearFilter3(
 	htmlString string,
-	patternSubmatchIndexesFinder func(string) [][]int,
-	yearSubmatchFinder func(string) []string,
+	patternFinder func(string) [][]int,
+	rxYearPattern *regexp.Regexp,
 	toComplete bool, opts Options,
 ) []yearCandidate {
 	// Prepare min and max year
@@ -133,7 +133,7 @@ func plausibleYearFilter3(
 	mapMatchCount := make(map[string]int)
 	mapMatchRawString := make(map[string]string)
 
-	for _, idxs := range patternSubmatchIndexesFinder(htmlString) {
+	for _, idxs := range patternFinder(htmlString) {
 		var match string
 		if len(idxs) > 2 {
 			match = htmlString[idxs[2]:idxs[3]]
@@ -156,7 +156,7 @@ func plausibleYearFilter3(
 		// Check if match fulfill the year pattern as well
 		var err error
 		yearVal := -1
-		yearParts := yearSubmatchFinder(match)
+		yearParts := rxYearPattern.FindStringSubmatch(match)
 
 		if len(yearParts) >= 2 {
 			yearVal, err = strconv.Atoi(yearParts[1])

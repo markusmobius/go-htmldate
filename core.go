@@ -681,7 +681,7 @@ func searchPage(htmlString string, opts Options) (string, time.Time) {
 	}
 
 	// Handle YYYY-MM-DD/DD-MM-YYYY, normalize candidates first
-	candidates := plausibleYearFilter3(htmlString, re2go.SelectYmdPatternSubmatchIndexes, re2go.SelectYmdYearSubmatch, false, opts)
+	candidates := plausibleYearFilter3(htmlString, re2go.SelectYmdPattern, rxSelectYmdYear, false, opts)
 	candidates = normalizeCandidates(candidates, opts)
 
 	rawString, bestMatch = selectCandidate(candidates, rxYmdPattern, rxYmdYear, opts)
@@ -698,7 +698,7 @@ func searchPage(htmlString string, opts Options) (string, time.Time) {
 	}
 
 	// Handle DD?/MM?/YYYY, normalize candidates first
-	candidates = plausibleYearFilter3(htmlString, re2go.SlashesPatternSubmatchIndexes, re2go.SlashesYearSubmatch, true, opts)
+	candidates = plausibleYearFilter3(htmlString, re2go.SlashesPattern, rxSlashesYear, true, opts)
 	candidates = normalizeCandidates(candidates, opts)
 
 	rawString, bestMatch = selectCandidate(candidates, rxYmdPattern, rxYmdYear, opts)
@@ -722,7 +722,7 @@ func searchPage(htmlString string, opts Options) (string, time.Time) {
 	}
 
 	// Second option
-	candidates = plausibleYearFilter3(htmlString, re2go.MmYyyyPatternSubmatchIndexes, re2go.MmYyyyYearSubmatch, false, opts)
+	candidates = plausibleYearFilter3(htmlString, re2go.MmYyyyPattern, rxMmYyyyYear, false, opts)
 
 	// Revert DD-MM-YYYY patterns before sorting
 	uniquePatterns := []string{}
