@@ -28,6 +28,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/go-shiori/dom"
+	"github.com/markusmobius/go-htmldate/internal/re2go"
 	"github.com/markusmobius/go-htmldate/internal/regexp"
 	"github.com/markusmobius/go-htmldate/internal/selector"
 	"github.com/rs/zerolog"
@@ -680,11 +681,11 @@ func searchPage(htmlString string, opts Options) (string, time.Time) {
 	}
 
 	// Handle YYYY-MM-DD/DD-MM-YYYY, normalize candidates first
-	candidates := plausibleYearFilter(htmlString, rxSelectYmdPattern, rxSelectYmdYear, false, opts)
+	candidates := plausibleYearFilter3(htmlString, re2go.SelectYmdPatternSubmatchIndexes, re2go.SelectYmdYearSubmatch, false, opts)
 	candidates = normalizeCandidates(candidates, opts)
 
 	rawString, bestMatch = selectCandidate(candidates, rxYmdPattern, rxYmdYear, opts)
-	result := filterYmdCandidate(bestMatch, rxSelectYmdPattern, copYear, opts)
+	result := filterYmdCandidate2(bestMatch, "SelectYmdPattern", copYear, opts)
 	if !result.IsZero() {
 		return rawString, result
 	}
@@ -697,11 +698,11 @@ func searchPage(htmlString string, opts Options) (string, time.Time) {
 	}
 
 	// Handle DD?/MM?/YYYY, normalize candidates first
-	candidates = plausibleYearFilter(htmlString, rxSlashesPattern, rxSlashesYear, true, opts)
+	candidates = plausibleYearFilter3(htmlString, re2go.SlashesPatternSubmatchIndexes, re2go.SlashesYearSubmatch, true, opts)
 	candidates = normalizeCandidates(candidates, opts)
 
 	rawString, bestMatch = selectCandidate(candidates, rxYmdPattern, rxYmdYear, opts)
-	result = filterYmdCandidate(bestMatch, rxSlashesPattern, copYear, opts)
+	result = filterYmdCandidate2(bestMatch, "SlashesPattern", copYear, opts)
 	if !result.IsZero() {
 		return rawString, result
 	}
@@ -721,7 +722,7 @@ func searchPage(htmlString string, opts Options) (string, time.Time) {
 	}
 
 	// Second option
-	candidates = plausibleYearFilter(htmlString, rxMmYyyyPattern, rxMmYyyyYear, false, opts)
+	candidates = plausibleYearFilter3(htmlString, re2go.MmYyyyPatternSubmatchIndexes, re2go.MmYyyyYearSubmatch, false, opts)
 
 	// Revert DD-MM-YYYY patterns before sorting
 	uniquePatterns := []string{}
@@ -756,7 +757,7 @@ func searchPage(htmlString string, opts Options) (string, time.Time) {
 	}
 
 	rawString, bestMatch = selectCandidate(candidates, rxYmdPattern, rxYmdYear, opts)
-	result = filterYmdCandidate(bestMatch, rxMmYyyyPattern, copYear, opts)
+	result = filterYmdCandidate2(bestMatch, "MmYyyyPattern", copYear, opts)
 	if !result.IsZero() {
 		return rawString, result
 	}

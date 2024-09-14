@@ -17,6 +17,7 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 	var cursor, marker int
 	input += string(rune(0)) // add terminating null
 	limit := len(input) - 1  // limit points at the terminating null
+	_ = marker
 
 	// Variable for capturing parentheses (twice the number of groups).
 	var YYMAXNMATCH int = 4
@@ -4067,11 +4068,12 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 }
 
 // PYTHON NAME: TEXT_DATE_PATTERN
-// original pattern: [.:,_/ -]|^\d+$
+// Original pattern: [.:,_/ -]|^\d+$
 func MatchTextDatePattern(input string) bool {
-	var cursor int
+	var cursor, marker int
 	input += string(rune(0)) // add terminating null
 	limit := len(input) - 1  // limit points at the terminating null
+	_ = marker
 
 	// Variable for capturing parentheses (twice the number of groups).
 	var YYMAXNMATCH int = 4
@@ -4166,6 +4168,7 @@ func IdiosyncracyPatternSubmatch(input string) ([]string, int) {
 	var cursor, marker int
 	input += string(rune(0)) // add terminating null
 	limit := len(input) - 1  // limit points at the terminating null
+	_ = marker
 
 	// Variable for capturing parentheses (twice the number of groups).
 	var YYMAXNMATCH int = 4
@@ -4185,12 +4188,12 @@ func IdiosyncracyPatternSubmatch(input string) ([]string, int) {
 	_ = yyt4
 
 	// Helper function
-	getSubmatches := func(input string, indexes []int) ([]string, int) {
-		submatches := make([]string, YYMAXNMATCH)
+	getSubmatch := func(input string, indexes []int) ([]string, int) {
+		submatch := make([]string, YYMAXNMATCH)
 		for i := 0; i < YYMAXNMATCH; i++ {
-			submatches[i] = input[indexes[2*i]:indexes[2*i+1]]
+			submatch[i] = input[indexes[2*i]:indexes[2*i+1]]
 		}
-		return submatches, indexes[0]
+		return submatch, indexes[0]
 	}
 
 	for {
@@ -5549,7 +5552,7 @@ func IdiosyncracyPatternSubmatch(input string) ([]string, int) {
 			yypmatch[5] += -1
 			yypmatch[7] = cursor
 			{
-				return getSubmatches(input, yypmatch)
+				return getSubmatch(input, yypmatch)
 			}
 		yy402:
 			cursor++
@@ -6112,7 +6115,7 @@ func IdiosyncracyPatternSubmatch(input string) ([]string, int) {
 			yypmatch[5] += -1
 			yypmatch[7] = cursor
 			{
-				return getSubmatches(input, yypmatch)
+				return getSubmatch(input, yypmatch)
 			}
 		yy449:
 			cursor++
@@ -6918,7 +6921,7 @@ func IdiosyncracyPatternSubmatch(input string) ([]string, int) {
 			yypmatch[5] += -1
 			yypmatch[7] = cursor
 			{
-				return getSubmatches(input, yypmatch)
+				return getSubmatch(input, yypmatch)
 			}
 		yy520:
 			cursor++
@@ -7610,7 +7613,7 @@ func IdiosyncracyPatternSubmatch(input string) ([]string, int) {
 			yypmatch[5] = yyt3
 			yypmatch[5] += -1
 			{
-				return getSubmatches(input, yypmatch)
+				return getSubmatch(input, yypmatch)
 			}
 		yy578:
 			cursor++

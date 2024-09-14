@@ -33,6 +33,7 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 	var cursor, marker int
 	input += string(rune(0)) // add terminating null
 	limit := len(input) - 1  // limit points at the terminating null
+	_ = marker
 
 	// Variable for capturing parentheses (twice the number of groups).
 	/*!maxnmatch:re2c*/
@@ -76,11 +77,12 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 }
 
 // PYTHON NAME: TEXT_DATE_PATTERN
-// original pattern: [.:,_/ -]|^\d+$
+// Original pattern: [.:,_/ -]|^\d+$
 func MatchTextDatePattern(input string) bool {
-	var cursor int
+	var cursor, marker int
 	input += string(rune(0)) // add terminating null
 	limit := len(input) - 1  // limit points at the terminating null
+	_ = marker
 
 	// Variable for capturing parentheses (twice the number of groups).
 	/*!maxnmatch:re2c*/
@@ -123,6 +125,7 @@ func IdiosyncracyPatternSubmatch(input string) ([]string, int) {
 	var cursor, marker int
 	input += string(rune(0)) // add terminating null
 	limit := len(input) - 1  // limit points at the terminating null
+	_ = marker
 
 	// Variable for capturing parentheses (twice the number of groups).
 	/*!maxnmatch:re2c*/
@@ -134,12 +137,12 @@ func IdiosyncracyPatternSubmatch(input string) ([]string, int) {
 	/*!stags:re2c format = 'var @@ int; _ = @@\n'; */
 
 	// Helper function
-	getSubmatches := func(input string, indexes []int) ([]string, int) {
-		submatches := make([]string, YYMAXNMATCH)
+	getSubmatch := func(input string, indexes []int) ([]string, int) {
+		submatch := make([]string, YYMAXNMATCH)
 		for i := 0; i < YYMAXNMATCH; i++ {
-			submatches[i] = input[indexes[2*i]:indexes[2*i+1]]
+			submatch[i] = input[indexes[2*i]:indexes[2*i+1]]
 		}
-		return submatches, indexes[0]
+		return submatch, indexes[0]
 	}
 
 	for { /*!use:re2c:base_template
@@ -151,10 +154,10 @@ func IdiosyncracyPatternSubmatch(input string) ([]string, int) {
 		tr1 = (!güncellen?me|yayı(!m|n)lan?ma)[ ]*?(!tarihi)?[ ]*?:?[ ]*?([0-9]{1,2})[./]([0-9]{1,2})[./]([0-9]{2,4});
 		tr2 = ([0-9]{1,2})[./]([0-9]{1,2})[./]([0-9]{2,4})[ ]*?(!'de|'da|'te|'ta|’de|’da|’te|’ta|tarihinde)[ ]*(!güncellendi|yayı(!m|n)landı);
 
-		{en} { return getSubmatches(input, yypmatch) }
-		{de} { return getSubmatches(input, yypmatch) }
-		{tr1} { return getSubmatches(input, yypmatch) }
-		{tr2} { return getSubmatches(input, yypmatch) }
+		{en} { return getSubmatch(input, yypmatch) }
+		{de} { return getSubmatch(input, yypmatch) }
+		{tr1} { return getSubmatch(input, yypmatch) }
+		{tr2} { return getSubmatch(input, yypmatch) }
 
 		* { continue }
 		$ { return nil, -1 }
