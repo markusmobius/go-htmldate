@@ -17,7 +17,8 @@ re2c:define:YYSTAGN     = "@@{tag} = -1";
 re2c:define:YYSHIFTSTAG = "@@{tag} += @@{shift}";
 */
 
-// In the original code it's named as LONG_TEXT_PATTERN.
+// TODO: check "août"
+// PYTHON NAME: LONG_TEXT_PATTERN
 // Given the following pattern:
 //
 // - day: [0-3]?[0-9]
@@ -68,6 +69,42 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 
 		* { continue }
 		$ { return }
+		*/
+	}
+}
+
+// PYTHON NAME: TEXT_DATE_PATTERN
+// original pattern: [.:,_/ -]|^\d+$
+func MatchTextDatePattern(input string) bool {
+	var cursor int
+	input += string(rune(0)) // add terminating null
+	limit := len(input) - 1  // limit points at the terminating null
+
+	// Capturing groups
+	/*!maxnmatch:re2c*/
+	yypmatch := make([]int, YYMAXNMATCH*2)
+	var yynmatch int
+	var yyt1 int
+	_ = yynmatch
+
+	for { /*!use:re2c:base_template
+		re2c:posix-captures   = 1;
+
+		[ ,-/:_] {
+			// Handle [.:,_/ -]
+			return true
+		}
+
+		[0-9]+ {
+			// Handle ^\d+$
+			if yypmatch[0] == 0 && yypmatch[1] == limit {
+				return true
+			}
+			continue
+		}
+
+		* { continue }
+		$ { return false }
 		*/
 	}
 }

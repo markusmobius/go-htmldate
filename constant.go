@@ -95,7 +95,7 @@ var (
 	rxTimestampPattern = compileRegexF(`(?i)(%[1]s-%[2]s-%[3]s).[0-9]{2}:[0-9]{2}:[0-9]{2}`,
 		rxYear, rxMonth, rxDay)
 
-	rxTextDatePattern = regexp.MustCompile(`(?i)[.:,_/ -]|^\d+$`)
+	// rxTextDatePattern = regexp.MustCompile(`(?i)[.:,_/ -]|^\d+$`)
 
 	rxDiscardPattern = regexp.MustCompile(`` +
 		`^\d{2}:\d{2}(?: |:|$)|` +

@@ -101,7 +101,7 @@ func tryDateExpr(s string, opts Options) (string, time.Time) {
 	// Use slow but extensive search, using dateparser
 	if !opts.SkipExtensiveSearch {
 		// Additional filters to prevent computational cost
-		if !rxTextDatePattern.MatchString(s) {
+		if !re2go.MatchTextDatePattern(s) {
 			return s, timeZero
 		}
 
