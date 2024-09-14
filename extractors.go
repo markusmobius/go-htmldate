@@ -27,7 +27,6 @@ import (
 	"github.com/go-shiori/dom"
 	dps "github.com/markusmobius/go-dateparser"
 	"github.com/markusmobius/go-htmldate/internal/re2go"
-	"github.com/markusmobius/go-htmldate/internal/regexp"
 	"github.com/markusmobius/go-htmldate/internal/selector"
 	"golang.org/x/net/html"
 )
@@ -330,7 +329,7 @@ func jsonSearch(doc *html.Node, opts Options) (string, time.Time) {
 func idiosyncrasiesSearch(htmlString string, opts Options) (string, time.Time) {
 	// Extract date parts
 	var candidate time.Time
-	parts, startIdx := re2go.IdiosyncracyPattern(htmlString)
+	parts, startIdx := re2go.IdiosyncracyPatternSubmatch(htmlString)
 	if len(parts) == 0 {
 		return "", timeZero
 	}
@@ -379,15 +378,20 @@ func metaImgSearch(doc *html.Node, opts Options) (string, time.Time) {
 }
 
 // regexPatternSearch looks for date expressions using a regular expression on a string of text.
-func regexPatternSearch(text string, datePattern *regexp.Regexp, opts Options) (string, time.Time) {
-	parts := datePattern.FindStringSubmatch(text)
+func regexPatternSearch(
+	text string,
+	patternName string,
+	dateSubmatchFinder func(string) ([]string, int),
+	opts Options,
+) (string, time.Time) {
+	parts, _ := dateSubmatchFinder(text)
 	if len(parts) < 2 {
 		return "", timeZero
 	}
 
 	dt := fastParse(parts[1], opts)
 	if validateDate(dt, opts) {
-		log.Debug().Msgf("regex found: %q %q", datePattern, parts[0])
+		log.Debug().Msgf("regex found: %q %q", patternName, parts[0])
 		return parts[0], dt
 	}
 

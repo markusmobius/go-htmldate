@@ -95,8 +95,8 @@ var (
 	rxCompleteUrl = compileRegexF(`(?i)\D(%[1]s)[/_-](%[2]s)[/_-](%[3]s)(?:\D|$)`,
 		rxYear, rxMonth, rxDay)
 
-	rxTimestampPattern = compileRegexF(`(?i)(%[1]s-%[2]s-%[3]s).[0-9]{2}:[0-9]{2}:[0-9]{2}`,
-		rxYear, rxMonth, rxDay)
+	// rxTimestampPattern = compileRegexF(`(?i)(%[1]s-%[2]s-%[3]s).[0-9]{2}:[0-9]{2}:[0-9]{2}`,
+	// 	rxYear, rxMonth, rxDay)
 
 	rxTextDatePattern = regexp.MustCompile(`(?i)[.:,_/ -]|^\d+$`)
 

@@ -219,7 +219,9 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 	}
 
 	// String search using regex timestamp
-	rawString, timestampResult := regexPatternSearch(htmlString, rxTimestampPattern, opts)
+	rawString, timestampResult := regexPatternSearch(
+		htmlString, "Timestamp",
+		re2go.TimestampPatternSubmatch, opts)
 	if !timestampResult.IsZero() {
 		return rawString, timestampResult, nil
 	}

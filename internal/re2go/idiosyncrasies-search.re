@@ -6,7 +6,7 @@
 // - DE : (?i)(?:Datum|Stand|Veröffentlicht am):? ?([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{2,4})
 // - TR1: (?i)(?:güncellen?me|yayı(?:m|n)lan?ma) *?(?:tarihi)? *?:? *?([0-9]{1,2})[./]([0-9]{1,2})[./]([0-9]{2,4})
 // - TR2: (?i)([0-9]{1,2})[./]([0-9]{1,2})[./]([0-9]{2,4}) *?(?:'de|'da|'te|'ta|’de|’da|’te|’ta|tarihinde) *(?:güncellendi|yayı(?:m|n)landı)
-func IdiosyncracyPattern(input string) ([]string, int) {
+func IdiosyncracyPatternSubmatch(input string) ([]string, int) {
 	var cursor, marker int
 	input += string(rune(0)) // add terminating null
 	limit := len(input) - 1  // limit points at the terminating null
