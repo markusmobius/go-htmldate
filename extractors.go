@@ -26,6 +26,7 @@ import (
 
 	"github.com/go-shiori/dom"
 	dps "github.com/markusmobius/go-dateparser"
+	"github.com/markusmobius/go-htmldate/internal/re2go"
 	"github.com/markusmobius/go-htmldate/internal/regexp"
 	"github.com/markusmobius/go-htmldate/internal/selector"
 	"golang.org/x/net/html"
@@ -433,14 +434,13 @@ func regexParse(s string, opts Options) time.Time {
 	var year, month, day int
 
 	// Multilingual day-month-year pattern + American English patterns
-	parts, _ := rxFindNamedStringSubmatch(rxLongTextPattern, s)
-	if len(parts) != 0 {
-		monthName := strings.ToLower(parts["month"])
-		monthName = strings.Trim(monthName, ".")
-		month, exist = monthNumber[monthName]
+	strYear, strMonth, strDay, ok := re2go.FindLongTextPattern(s)
+	if ok {
+		strMonth = strings.ToLower(strMonth)
+		month, exist = monthNumber[strMonth]
 		if exist {
-			year, _ = strconv.Atoi(parts["year"])
-			day, _ = strconv.Atoi(parts["day"])
+			year, _ = strconv.Atoi(strYear)
+			day, _ = strconv.Atoi(strDay)
 		}
 	}
 

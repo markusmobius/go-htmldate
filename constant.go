@@ -75,19 +75,19 @@ var (
 		`)(?:\D|$)`, rxYear, rxMonth)
 
 	// TODO: check "août"
-	rxMonths = `` +
-		`January?|February?|March|A[pv]ril|Ma[iy]|Jun[ei]|Jul[iy]|August|September|O[ck]tober|November|De[csz]ember|` +
-		`Jan|Feb|M[aä]r|Apr|Jun|Jul|Aug|Sep|O[ck]t|Nov|De[cz]|` +
-		`Januari|Februari|Maret|Mei|Agustus|` +
-		`Jänner|Feber|März|` +
-		`janvier|février|mars|juin|juillet|aout|septembre|octobre|novembre|décembre|` +
-		`Ocak|Şubat|Mart|Nisan|Mayıs|Haziran|Temmuz|Ağustos|Eylül|Ekim|Kasım|Aralık|` +
-		`Oca|Şub|Mar|Nis|Haz|Tem|Ağu|Eyl|Eki|Kas|Ara`
-	rxLongTextPattern = compileRegexF(`(?i)`+
-		`(?P<month>%[2]s)\s(?P<day>%[3]s)(?:st|nd|rd|th)?,? (?P<year>%[1]s)`+
-		`|`+
-		`(?P<day>%[3]s)(?:st|nd|rd|th|\.)? (?:of )?(?P<month>%[2]s)[,.]? (?P<year>%[1]s)`,
-		rxYear, rxMonths, rxDay)
+	// rxMonths = `` +
+	// 	`January?|February?|March|A[pv]ril|Ma[iy]|Jun[ei]|Jul[iy]|August|September|O[ck]tober|November|De[csz]ember|` +
+	// 	`Jan|Feb|M[aä]r|Apr|Jun|Jul|Aug|Sep|O[ck]t|Nov|De[cz]|` +
+	// 	`Januari|Februari|Maret|Mei|Agustus|` +
+	// 	`Jänner|Feber|März|` +
+	// 	`janvier|février|mars|juin|juillet|aout|septembre|octobre|novembre|décembre|` +
+	// 	`Ocak|Şubat|Mart|Nisan|Mayıs|Haziran|Temmuz|Ağustos|Eylül|Ekim|Kasım|Aralık|` +
+	// 	`Oca|Şub|Mar|Nis|Haz|Tem|Ağu|Eyl|Eki|Kas|Ara`
+	// rxLongTextPattern = compileRegexF(`(?i)`+
+	// 	`(?P<month>%[2]s)\s(?P<day>%[3]s)(?:st|nd|rd|th)?,? (?P<year>%[1]s)`+
+	// 	`|`+
+	// 	`(?P<day>%[3]s)(?:st|nd|rd|th|\.)? (?:of )?(?P<month>%[2]s)[,.]? (?P<year>%[1]s)`,
+	// 	rxYear, rxMonths, rxDay)
 
 	rxCompleteUrl = compileRegexF(`(?i)\D(%[1]s)[/_-](%[2]s)[/_-](%[3]s)(?:\D|$)`,
 		rxYear, rxMonth, rxDay)
