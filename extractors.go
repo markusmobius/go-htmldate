@@ -328,21 +328,39 @@ func jsonSearch(doc *html.Node, opts Options) (string, time.Time) {
 
 // idiosyncrasiesSearch looks for author-written dates throughout the web page.
 func idiosyncrasiesSearch(htmlString string, opts Options) (string, time.Time) {
-	// TODO: do it all in one go
-	// return extractIdiosyncrasy(rxIdiosyncracyPattern, htmlString, opts)
-
-	// Do it in order of EN-DE-TR
-	rawString, result := extractIdiosyncrasy(rxEnPattern, htmlString, opts)
-
-	if result.IsZero() {
-		rawString, result = extractIdiosyncrasy(rxDePattern, htmlString, opts)
+	// Extract date parts
+	var candidate time.Time
+	parts, startIdx := re2go.IdiosyncracyPatternSubmatch(htmlString)
+	if len(parts) == 0 {
+		return "", timeZero
 	}
 
-	if result.IsZero() {
-		rawString, result = extractIdiosyncrasy(rxTrPattern, htmlString, opts)
+	// Process parts
+	if len(parts[1]) == 4 { // YYYY/MM/DD
+		year, _ := strconv.Atoi(parts[1])
+		month, _ := strconv.Atoi(parts[2])
+		day, _ := strconv.Atoi(parts[3])
+		candidate, _ = validateDateParts(year, month, day, opts)
+	} else if tmp := len(parts[3]); tmp == 2 || tmp == 4 { // DD/MM/YY or MM/DD/YY
+		year, _ := strconv.Atoi(parts[3])
+		month, _ := strconv.Atoi(parts[2])
+		day, _ := strconv.Atoi(parts[1])
+
+		year = correctYear(year)
+		day, month = trySwapValues(day, month)
+		candidate, _ = validateDateParts(year, month, day, opts)
 	}
 
-	return rawString, result
+	if !validateDate(candidate, opts) {
+		return "", timeZero
+	}
+
+	// Get raw string
+	rawString := strLimit(htmlString[startIdx:], 100)
+
+	// Return candidate
+	log.Debug().Msgf("idiosyncratic pattern found: %s", parts[0])
+	return rawString, candidate
 }
 
 // metaImgSearch looks for url in <meta> image elements.
@@ -374,57 +392,6 @@ func regexPatternSearch(text string, datePattern *regexp.Regexp, opts Options) (
 	}
 
 	return "", timeZero
-}
-
-// extractIdiosyncrasy looks for a precise pattern throughout the web page.
-func extractIdiosyncrasy(rxIdiosyncrasy *regexp.Regexp, htmlString string, opts Options) (string, time.Time) {
-	// Extract date parts using regex
-	var candidate time.Time
-	subMatches := rxIdiosyncrasy.FindStringSubmatch(htmlString)
-	if len(subMatches) == 0 {
-		return "", timeZero
-	}
-
-	// Filter empty submatches
-	var parts []string
-	for i := 1; i < len(subMatches); i++ {
-		if subMatches[i] != "" {
-			parts = append(parts, subMatches[i])
-		}
-	}
-
-	if len(parts) != 3 {
-		return "", timeZero
-	}
-
-	// Process parts
-	if len(parts[0]) == 4 {
-		year, _ := strconv.Atoi(parts[0])
-		month, _ := strconv.Atoi(parts[1])
-		day, _ := strconv.Atoi(parts[2])
-		candidate, _ = validateDateParts(year, month, day, opts)
-	} else if tmp := len(parts[2]); tmp == 2 || tmp == 4 {
-		year, _ := strconv.Atoi(parts[2])
-		month, _ := strconv.Atoi(parts[1])
-		day, _ := strconv.Atoi(parts[0])
-
-		year = correctYear(year)
-		day, month = trySwapValues(day, month)
-
-		candidate, _ = validateDateParts(year, month, day, opts)
-	}
-
-	if !validateDate(candidate, opts) {
-		return "", timeZero
-	}
-
-	// Get raw string
-	idxs := rxIdiosyncrasy.FindStringIndex(htmlString)
-	rawString := strLimit(htmlString[idxs[0]:], 100)
-
-	// Return candidate
-	log.Debug().Msgf("idiosyncratic pattern found: %s", parts[0])
-	return rawString, candidate
 }
 
 // regexParse try full-text parse for date elements using a series of regular
