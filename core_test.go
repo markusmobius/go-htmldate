@@ -22,6 +22,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/markusmobius/go-htmldate/internal/re2go"
 	"github.com/markusmobius/go-htmldate/internal/regexp"
 	"github.com/stretchr/testify/assert"
 )
@@ -909,7 +910,7 @@ func Test_searchPattern(t *testing.T) {
 	opts := Options{MinDate: defaultMinDate, MaxDate: defaultMaxDate}
 
 	// First pattern, YYYY MM
-	pattern := regexp.MustCompile(`\D([0-9]{4}[/.-][0-9]{2})\D`)
+	pattern := re2go.TestSpYyyyMmPattern
 	catchPattern := regexp.MustCompile(`([0-9]{4})[/.-]([0-9]{2})`)
 	yearPattern := regexp.MustCompile(`^([12][0-9]{3})`)
 
@@ -932,7 +933,7 @@ func Test_searchPattern(t *testing.T) {
 	assert.Equal(t, "2016/01", res[0])
 
 	// Second pattern, MM YYYY
-	pattern = regexp.MustCompile(`\D([0-9]{2}[/.-][0-9]{4})\D`)
+	pattern = re2go.TestSpMmYyyyPattern
 	catchPattern = regexp.MustCompile(`([0-9]{2})[/.-]([0-9]{4})`)
 	yearPattern = regexp.MustCompile(`([12][0-9]{3})$`)
 
@@ -946,7 +947,7 @@ func Test_searchPattern(t *testing.T) {
 	assert.Equal(t, "02.2002", res[0])
 
 	// Third pattern, YYYY only
-	pattern = regexp.MustCompile(`\D(2[01][0-9]{2})\D`)
+	pattern = re2go.TestSpYyyyOnlyPattern
 	catchPattern = regexp.MustCompile(`(2[01][0-9]{2})`)
 	yearPattern = regexp.MustCompile(`^(2[01][0-9]{2})`)
 
