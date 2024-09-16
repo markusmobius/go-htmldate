@@ -127,8 +127,7 @@ func DateStringsPattern(input string) [][]int {
 	for { /*!use:re2c:base_template
 		re2c:posix-captures = 1;
 
-		// With additional `_?` regex in front as workaround for re2c#489
-		dateStrings = _?([^0-9]19[0-9]{2}[01][0-9][0-3][0-9][^0-9]|[^0-9]20[0-9]{2}[01][0-9][0-3][0-9][^0-9]);
+		dateStrings = ([^0-9]19[0-9]{2}[01][0-9][0-3][0-9][^0-9]|[^0-9]20[0-9]{2}[01][0-9][0-3][0-9][^0-9]);
 
 		{dateStrings} {
 			allIndexes = append(allIndexes, copyIndexes(yypmatch))

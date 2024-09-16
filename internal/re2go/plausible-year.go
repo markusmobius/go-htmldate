@@ -10,7 +10,7 @@ func SelectYmdPattern(input string) [][]int {
 	_ = marker
 
 	// Variable for capturing parentheses (twice the number of groups).
-	var YYMAXNMATCH int = 2
+	const YYMAXNMATCH = 2
 
 	yypmatch := make([]int, YYMAXNMATCH*2)
 	var yynmatch int
@@ -381,7 +381,7 @@ func SlashesPattern(input string) [][]int {
 	_ = marker
 
 	// Variable for capturing parentheses (twice the number of groups).
-	var YYMAXNMATCH int = 2
+	const YYMAXNMATCH = 2
 
 	yypmatch := make([]int, YYMAXNMATCH*2)
 	var yynmatch int
@@ -774,7 +774,7 @@ func MmYyyyPattern(input string) [][]int {
 	_ = marker
 
 	// Variable for capturing parentheses (twice the number of groups).
-	var YYMAXNMATCH int = 2
+	const YYMAXNMATCH = 2
 
 	yypmatch := make([]int, YYMAXNMATCH*2)
 	var yynmatch int

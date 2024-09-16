@@ -10,7 +10,7 @@ func TestSpYyyyMmPattern(input string) [][]int {
 	_ = marker
 
 	// Variable for capturing parentheses (twice the number of groups).
-	var YYMAXNMATCH int = 2
+	const YYMAXNMATCH = 2
 
 	yypmatch := make([]int, YYMAXNMATCH*2)
 	var yynmatch int
@@ -339,7 +339,7 @@ func TestSpMmYyyyPattern(input string) [][]int {
 	_ = marker
 
 	// Variable for capturing parentheses (twice the number of groups).
-	var YYMAXNMATCH int = 2
+	const YYMAXNMATCH = 2
 
 	yypmatch := make([]int, YYMAXNMATCH*2)
 	var yynmatch int
@@ -668,7 +668,7 @@ func TestSpYyyyOnlyPattern(input string) [][]int {
 	_ = marker
 
 	// Variable for capturing parentheses (twice the number of groups).
-	var YYMAXNMATCH int = 2
+	const YYMAXNMATCH = 2
 
 	yypmatch := make([]int, YYMAXNMATCH*2)
 	var yynmatch int

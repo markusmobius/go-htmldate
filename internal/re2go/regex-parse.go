@@ -20,7 +20,7 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 	_ = marker
 
 	// Variable for capturing parentheses (twice the number of groups).
-	var YYMAXNMATCH int = 4
+	const YYMAXNMATCH = 4
 
 	yypmatch := make([]int, YYMAXNMATCH*2)
 	var yynmatch int
