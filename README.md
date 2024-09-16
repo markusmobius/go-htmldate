@@ -11,8 +11,6 @@ The structure of this package is arranged following the structure of original Py
 - [Usage as Go package](#usage-as-go-package)
 - [Usage as CLI Application](#usage-as-cli-application)
 - [Performance](#performance)
-  - [Compiling with cgo under Linux](#compiling-with-cgo-under-linux)
-  - [Compiling with cgo under Windows](#compiling-with-cgo-under-windows)
 - [Comparison with Original](#comparison-with-original)
 - [Additional Notes](#additional-notes)
 - [Acknowledgements](#acknowledgements)
@@ -26,8 +24,7 @@ The structure of this package is arranged following the structure of original Py
 Just like the original, Go-HtmlDate has two mode: fast and extensive. The differences are:
 
 - In fast mode, the HTML page is cleaned and precise patterns are targeted;
-- In extensive mode, Go-HtmlDate will also collects all potential dates and uses a disambiguation
-  algorithm to determines the best one to use.
+- In extensive mode, Go-HtmlDate will also collects all potential dates and uses a disambiguation algorithm to determines the best one to use.
 
 By default Go-HtmlDate will run in extensive mode. You can disabled it by setting `SkipExtensiveSearch` in options to `true`.
 
@@ -35,7 +32,7 @@ By default Go-HtmlDate will run in extensive mode. You can disabled it by settin
 
 This package is stable enough for use and up to date with the original `htmldate` [v1.8.1][2] (commit [6dde09e][3]). However, since time extraction is a brand new feature which doesn't exist in the original, use it with care. So far it works quite nicely on most news sites that I've tried, but it still needs more testing.
 
-When time extraction is enabled, there a some behaviors that I'd like to note:
+When time extraction is enabled, there are some behaviors that I'd like to note:
 
 - If time is not found or not specified in the web page, the time will be set into `00:00:00` (it will only returns the date).
 - If timezone is not found or not specified in the web page, the timezone will be set into `time.UTC`.
@@ -89,49 +86,12 @@ Flags:
 
 ## Performance
 
-This library heavily uses regular expression for various purposes. Unfortunately, as commonly known, Go's regular expression is pretty slow. This is because:
+This library heavily uses regular expression for various purposes. Unfortunately, as commonly known, Go's regular expression is pretty [slow][go-regex-slow]. This is because:
 
 - The regex engine in other language usually implemented in C, while in Go it's implemented from scratch in Go language. As expected, C implementation is still faster than Go's.
 - Since Go is usually used for web service, its regex is designed to finish in time linear to the length of the input, which useful for protecting server from ReDoS attack. However, this comes with performance cost.
 
-If you want to parse a huge amount of data, it would be preferrable to have a better performance. So, this package provides C++ [`re2`][re2] as an alternative regex engine using binding from [go-re2]. To activate it, you can build your app using tag `re2_wasm` or `re2_cgo`, for example:
-
-```
-go build -tags re2_cgo .
-```
-
-More detailed instructions in how to prepare your system for compiling with cgo are provided below.
-
-When using `re2_wasm` tag, it will make your app uses `re2` that packaged as WebAssembly module so it should be runnable even without cgo. However, if your input is too small, it might be even slower than using Go's standard regex engine.
-
-When using `re2_cgo` tag, it will make your app uses `re2` library that wrapped using cgo. It's a lot faster than Go's standard regex and `re2_wasm`, however to use it cgo must be available and `re2` should be installed in your system.
-
-In my test, `re2_cgo` will always be faster, so when possible you might be better using it. Do note that this alternative regex engine is experimental, so use on your own risk.
-
-### Compiling with cgo under Linux
-
-On Ubuntu install the gcc tool chain and the re2 library as follows:
-
-```bash
-sudo apt install build-essential
-sudo apt-get install -y libre2-dev
-```
-
-### Compiling with cgo under Windows
-
-On Windows start by installing [MSYS2][msys2]. Then open the MINGW64 terminal and install the gcc toolchain and re2 via pacman:
-
-```bash
-pacman -S mingw-w64-x86_64-gcc
-pacman -S mingw-w64-x86_64-re2
-pacman -S mingw-w64-x86_64-pkg-config
-```
-
-If you want to run the resulting exe program outside the MINGW64 terminal you need to add a path to the MinGW-w64 libraries to the PATH environmental variable (adjust as needed for your system):
-
-```cmd
-SET PATH=C:\msys64\mingw64\bin;%PATH%
-```
+To solve this issue, we compile several important regexes into Go code using [re2go]. Thanks to this we are able to get a great speed without using cgo or external regex packages.
 
 ## Comparison with Original
 
@@ -148,23 +108,14 @@ For the test, we use 1,000 documents which taken from two sources:
 
 Here is the result when tested in my PC (Intel i7-8550U @ 4.000GHz, RAM 16 GB):
 
-|           Package           | Precision | Recall | Accuracy | F-Score |
-| :-------------------------: | :-------: | :----: | :------: | :-----: |
-|   `htmldate` v1.8.1 fast    |   0.881   | 0.924  |  0.821   |  0.902  |
-| `htmldate` v1.8.1 extensive |   0.868   | 0.993  |  0.863   |  0.926  |
-|     `go-htmldate` fast      |   0.882   | 0.925  |  0.823   |  0.903  |
-|   `go-htmldate` extensive   |   0.870   | 0.993  |  0.865   |  0.928  |
+|           Package           | Precision | Recall | Accuracy | F-Score | Speed (s) |
+| :-------------------------: | :-------: | :----: | :------: | :-----: | :-------: |
+|   `htmldate` v1.8.1 fast    |   0.881   | 0.924  |  0.821   |  0.902  |   7.039   |
+| `htmldate` v1.8.1 extensive |   0.868   | 0.993  |  0.863   |  0.926  |  11.507   |
+|     `go-htmldate` fast      |   0.882   | 0.925  |  0.823   |  0.903  |   0.767   |
+|   `go-htmldate` extensive   |   0.870   | 0.993  |  0.865   |  0.928  |   1.682   |
 
-So, from the table above we can see that this port has a similar performance with the original `htmldate`.
-
-For the speed, our port is far faster than the original especially when `re2` regex engine is enabled:
-
-|            Name            | Fast (s) | Extensive (s) |
-| :------------------------: | :------: | :-----------: |
-|     `htmldate` v1.8.1      |  7.039   |    11.507     |
-|       `go-htmldate`        |  2.999   |     4.308     |
-| `go-htmldate` + `re2_wasm` |  0.780   |     1.548     |
-| `go-htmldate` + `re2_cgo`  |  0.681   |     1.124     |
+So, from the table above we can see that this port has a similar performance with the original `htmldate` but with better speed.
 
 ## Additional Notes
 
@@ -212,5 +163,5 @@ Like the original, `go-htmldate` is distributed under the [Apache v2.0](LICENSE)
 [paper-3]: https://hal.archives-ouvertes.fr/hal-01371704v2/document
 [wac-x]: https://www.sigwac.org.uk/wiki/WAC-X
 [k-web]: https://www.dwds.de/d/k-web
-[re2]: https://github.com/google/re2
-[go-re2]: https://github.com/wasilibs/go-re2
+[go-regex-slow]: https://github.com/golang/go/issues/26623
+[re2go]: https://re2c.org/manual/manual_go.html
