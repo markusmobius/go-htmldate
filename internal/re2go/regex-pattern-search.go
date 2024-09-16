@@ -8,7 +8,7 @@ package re2go
 // - month: [0-1]?[0-9]
 // - year: 199[0-9]|20[0-3][0-9]
 //
-// Its original pattern is: (?i)(year-month-day).[0-9]{2}:[0-9]{2}:[0-9]{2}
+// Its original pattern is: (?i)((?:year)-(?:month)-(?:day)).[0-9]{2}:[0-9]{2}:[0-9]{2}
 func TimestampPatternSubmatch(input string) ([]string, int) {
 	var cursor, marker int
 	input += string(rune(0)) // add terminating null

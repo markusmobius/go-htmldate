@@ -2,7 +2,7 @@
 
 // PYTHON NAME: COPYRIGHT_PATTERN
 // Given year: 199[0-9]|20[0-3][0-9]
-// Original pattern: (?:©|\&copy;|Copyright|\(c\))\D*(?:year-)?(year)\D
+// Original pattern: (?:©|\&copy;|Copyright|\(c\))\D*(?:year)?-?(year)\D
 func CopyrightPattern(input string) [][]int {
 	var cursor, marker int
 	input += string(rune(0)) // add terminating null
@@ -24,7 +24,7 @@ func CopyrightPattern(input string) [][]int {
 
 		year = 199[0-9]|20[0-3][0-9];
 		quant1    = (!©|[&]copy[;]|Copyright|[(]c[)])[^0-9]*;
-		copyright = (!©|[&]copy[;]|Copyright|[(]c[)])[^0-9]*(!{year}-)?({year})[^0-9];
+		copyright = (!©|[&]copy[;]|Copyright|[(]c[)])[^0-9]*(!{year})?-?({year})[^0-9];
 
 		{copyright} {
 			allIndexes = append(allIndexes, copyIndexes(yypmatch))

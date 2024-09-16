@@ -33,7 +33,7 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 
 		rxDay = [0-3]?[0-9];
 		rxYear = 199[0-9]|20[0-3][0-9];
-		rxMonth = January?|February?|March|A[pv]ril|Ma[iy]|Jun[ei]|Jul[iy]|August|September|O[ck]tober|November|De[csz]ember|Jan|Feb|M[aä]r|Apr|Jun|Jul|Aug|Sep|O[ck]t|Nov|De[cz]|Januari|Februari|Maret|Mei|Agustus|Jänner|Feber|März|janvier|février|mars|juin|juillet|aout|septembre|octobre|novembre|décembre|Ocak|Şubat|Mart|Nisan|Mayıs|Haziran|Temmuz|Ağustos|Eylül|Ekim|Kasım|Aralık|Oca|Şub|Mar|Nis|Haz|Tem|Ağu|Eyl|Eki|Kas|Ara;
+		rxMonth = January?|February?|March|A[pvPV]ril|Ma[iyIY]|Jun[eiEI]|Jul[iyIY]|August|September|O[ckCK]tober|November|De[cszCSZ]ember|Jan|Feb|M[aäAÄ]r|Apr|Jun|Jul|Aug|Sep|O[ckCK]t|Nov|De[czCZ]|Januari|Februari|Maret|Mei|Agustus|J[äÄ]nner|Feber|M[äÄ]rz|janvier|f[éÉ]vrier|mars|juin|juillet|aout|septembre|octobre|novembre|d[éÉ]cembre|Ocak|[şŞ]ubat|Mart|Nisan|May[ıI]s|Haziran|Temmuz|A[ğĞ]ustos|Eyl[üÜ]l|Ekim|Kas[ıI]m|Aral[ıI]k|Oca|[şŞ]ub|Mar|Nis|Haz|Tem|A[ğĞ]u|Eyl|Eki|Kas|Ara;
 		rxMDY = ({rxMonth})[\t\n\f\r ]({rxDay})(!st|nd|rd|th)?,?[\t\n\f\r ]({rxYear});
 		rxDMY = ({rxDay})(!st|nd|rd|th|[.])?[\t\n\f\r ](!of[\t\n\f\r ])?({rxMonth})[,.]?[\t\n\f\r ]({rxYear});
 

@@ -112,7 +112,7 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 				goto yy17
 			default:
 				if limit <= cursor {
-					goto yy282
+					goto yy274
 				}
 				goto yy1
 			}
@@ -212,6 +212,8 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			case 'o':
 				goto yy26
 			case 'P':
+				fallthrough
+			case 'p':
 				goto yy27
 			case 'R':
 				fallthrough
@@ -221,12 +223,12 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 				fallthrough
 			case 'u':
 				goto yy29
-			case 'p':
-				goto yy30
+			case 'V':
+				fallthrough
 			case 'v':
-				goto yy31
+				goto yy30
 			case 0xC4:
-				goto yy32
+				goto yy31
 			default:
 				goto yy2
 			}
@@ -238,9 +240,9 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			case 'E':
 				fallthrough
 			case 'e':
-				goto yy33
+				goto yy32
 			case 0xC3:
-				goto yy34
+				goto yy33
 			default:
 				goto yy2
 			}
@@ -252,11 +254,11 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			case 'K':
 				fallthrough
 			case 'k':
-				goto yy35
+				goto yy34
 			case 'Y':
 				fallthrough
 			case 'y':
-				goto yy36
+				goto yy35
 			default:
 				goto yy2
 			}
@@ -268,9 +270,9 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			case 'E':
 				fallthrough
 			case 'e':
-				goto yy37
+				goto yy36
 			case 0xC3:
-				goto yy38
+				goto yy37
 			default:
 				goto yy2
 			}
@@ -282,7 +284,7 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			case 'A':
 				fallthrough
 			case 'a':
-				goto yy39
+				goto yy38
 			default:
 				goto yy2
 			}
@@ -294,13 +296,13 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			case 'A':
 				fallthrough
 			case 'a':
-				goto yy40
+				goto yy39
 			case 'U':
 				fallthrough
 			case 'u':
-				goto yy41
+				goto yy40
 			case 0xC3:
-				goto yy42
+				goto yy41
 			default:
 				goto yy2
 			}
@@ -312,7 +314,7 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			case 'A':
 				fallthrough
 			case 'a':
-				goto yy43
+				goto yy42
 			default:
 				goto yy2
 			}
@@ -324,13 +326,13 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			case 'A':
 				fallthrough
 			case 'a':
-				goto yy44
+				goto yy43
 			case 'E':
 				fallthrough
 			case 'e':
-				goto yy45
+				goto yy44
 			case 0xC3:
-				goto yy46
+				goto yy45
 			default:
 				goto yy2
 			}
@@ -342,11 +344,11 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			case 'I':
 				fallthrough
 			case 'i':
-				goto yy47
+				goto yy46
 			case 'O':
 				fallthrough
 			case 'o':
-				goto yy48
+				goto yy47
 			default:
 				goto yy2
 			}
@@ -356,11 +358,13 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			yych = input[cursor]
 			switch yych {
 			case 'C':
-				goto yy49
+				fallthrough
 			case 'c':
-				goto yy50
+				goto yy48
+			case 'K':
+				fallthrough
 			case 'k':
-				goto yy51
+				goto yy49
 			default:
 				goto yy2
 			}
@@ -372,7 +376,7 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			case 'E':
 				fallthrough
 			case 'e':
-				goto yy52
+				goto yy50
 			default:
 				goto yy2
 			}
@@ -384,7 +388,7 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			case 'E':
 				fallthrough
 			case 'e':
-				goto yy53
+				goto yy51
 			default:
 				goto yy2
 			}
@@ -393,8 +397,8 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			marker = cursor
 			yych = input[cursor]
 			switch yych {
-			case 0x9E:
-				goto yy54
+			case 0x9E, 0x9F:
+				goto yy52
 			default:
 				goto yy2
 			}
@@ -406,65 +410,65 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 				fallthrough
 			case 'a':
 				yyt4 = cursor
-				goto yy55
+				goto yy53
 			case 'D':
 				fallthrough
 			case 'd':
 				yyt4 = cursor
-				goto yy56
+				goto yy54
 			case 'E':
 				fallthrough
 			case 'e':
 				yyt4 = cursor
-				goto yy57
+				goto yy55
 			case 'F':
 				fallthrough
 			case 'f':
 				yyt4 = cursor
-				goto yy58
+				goto yy56
 			case 'H':
 				fallthrough
 			case 'h':
 				yyt4 = cursor
-				goto yy59
+				goto yy57
 			case 'J':
 				fallthrough
 			case 'j':
 				yyt4 = cursor
-				goto yy60
+				goto yy58
 			case 'K':
 				fallthrough
 			case 'k':
 				yyt4 = cursor
-				goto yy61
+				goto yy59
 			case 'M':
 				fallthrough
 			case 'm':
 				yyt4 = cursor
-				goto yy62
+				goto yy60
 			case 'N':
 				fallthrough
 			case 'n':
 				yyt4 = cursor
-				goto yy63
+				goto yy61
 			case 'O':
 				fallthrough
 			case 'o':
 				yyt4 = cursor
-				goto yy64
+				goto yy62
 			case 'S':
 				fallthrough
 			case 's':
 				yyt4 = cursor
-				goto yy65
+				goto yy63
 			case 'T':
 				fallthrough
 			case 't':
 				yyt4 = cursor
-				goto yy66
+				goto yy64
 			case 0xC5:
 				yyt4 = cursor
-				goto yy67
+				goto yy65
 			default:
 				goto yy19
 			}
@@ -560,7 +564,7 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			case 'U':
 				fallthrough
 			case 'u':
-				goto yy68
+				goto yy66
 			default:
 				goto yy19
 			}
@@ -571,7 +575,7 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			case 'U':
 				fallthrough
 			case 'u':
-				goto yy69
+				goto yy67
 			default:
 				goto yy19
 			}
@@ -582,7 +586,7 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			case 'R':
 				fallthrough
 			case 'r':
-				goto yy70
+				goto yy68
 			default:
 				goto yy19
 			}
@@ -593,7 +597,7 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			case 'A':
 				fallthrough
 			case 'a':
-				goto yy71
+				goto yy69
 			default:
 				goto yy19
 			}
@@ -604,7 +608,7 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			case 'G':
 				fallthrough
 			case 'g':
-				goto yy72
+				goto yy70
 			default:
 				goto yy19
 			}
@@ -615,7 +619,7 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			case 'R':
 				fallthrough
 			case 'r':
-				goto yy73
+				goto yy71
 			default:
 				goto yy19
 			}
@@ -623,10 +627,8 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'R':
-				fallthrough
-			case 'r':
-				goto yy74
+			case 0x9E, 0x9F:
+				goto yy72
 			default:
 				goto yy19
 			}
@@ -634,8 +636,18 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 0x9F:
-				goto yy75
+			case 'C':
+				fallthrough
+			case 'Z':
+				fallthrough
+			case 'c':
+				fallthrough
+			case 'z':
+				goto yy73
+			case 'S':
+				fallthrough
+			case 's':
+				goto yy74
 			default:
 				goto yy19
 			}
@@ -643,12 +655,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'c':
+			case 0x89:
 				fallthrough
-			case 'z':
-				goto yy76
-			case 's':
-				goto yy77
+			case 0xA9:
+				goto yy75
 			default:
 				goto yy19
 			}
@@ -656,8 +666,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 0xA9:
-				goto yy78
+			case 'I':
+				fallthrough
+			case 'i':
+				goto yy76
 			default:
 				goto yy19
 			}
@@ -665,10 +677,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'I':
+			case 'L':
 				fallthrough
-			case 'i':
-				goto yy79
+			case 'l':
+				goto yy77
 			default:
 				goto yy19
 			}
@@ -676,10 +688,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'L':
+			case 'B':
 				fallthrough
-			case 'l':
-				goto yy80
+			case 'b':
+				goto yy78
 			default:
 				goto yy19
 			}
@@ -687,10 +699,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'B':
+			case 0x89:
 				fallthrough
-			case 'b':
-				goto yy81
+			case 0xA9:
+				goto yy79
 			default:
 				goto yy19
 			}
@@ -698,8 +710,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 0xA9:
-				goto yy82
+			case 'Z':
+				fallthrough
+			case 'z':
+				goto yy80
 			default:
 				goto yy19
 			}
@@ -707,10 +721,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'Z':
+			case 'N':
 				fallthrough
-			case 'z':
-				goto yy83
+			case 'n':
+				goto yy81
 			default:
 				goto yy19
 			}
@@ -718,6 +732,14 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
+			case 'I':
+				fallthrough
+			case 'i':
+				goto yy82
+			case 'L':
+				fallthrough
+			case 'l':
+				goto yy83
 			case 'N':
 				fallthrough
 			case 'n':
@@ -729,18 +751,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'I':
+			case 0x84:
 				fallthrough
-			case 'i':
+			case 0xA4:
 				goto yy85
-			case 'L':
-				fallthrough
-			case 'l':
-				goto yy86
-			case 'N':
-				fallthrough
-			case 'n':
-				goto yy87
 			default:
 				goto yy19
 			}
@@ -748,8 +762,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 0xA4:
-				goto yy88
+			case 'S':
+				fallthrough
+			case 's':
+				goto yy86
 			default:
 				goto yy19
 			}
@@ -757,9 +773,17 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'S':
+			case 'I':
 				fallthrough
-			case 's':
+			case 'i':
+				goto yy87
+			case 'R':
+				fallthrough
+			case 'r':
+				goto yy88
+			case 'Y':
+				fallthrough
+			case 'y':
 				goto yy89
 			default:
 				goto yy19
@@ -768,16 +792,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'R':
+			case 'I':
 				fallthrough
-			case 'r':
-				goto yy90
-			case 'Y':
-				goto yy91
 			case 'i':
-				goto yy70
-			case 'y':
-				goto yy92
+				goto yy87
 			default:
 				goto yy19
 			}
@@ -785,10 +803,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'I':
+			case 0x84:
 				fallthrough
-			case 'i':
-				goto yy70
+			case 0xA4:
+				goto yy90
 			default:
 				goto yy19
 			}
@@ -796,8 +814,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 0xA4:
-				goto yy93
+			case 'S':
+				fallthrough
+			case 's':
+				goto yy91
 			default:
 				goto yy19
 			}
@@ -805,10 +825,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'S':
+			case 'V':
 				fallthrough
-			case 's':
-				goto yy94
+			case 'v':
+				goto yy92
 			default:
 				goto yy19
 			}
@@ -816,10 +836,14 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'V':
+			case 'A':
 				fallthrough
-			case 'v':
-				goto yy95
+			case 'a':
+				goto yy93
+			case 'T':
+				fallthrough
+			case 't':
+				goto yy94
 			default:
 				goto yy19
 			}
@@ -827,14 +851,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'A':
-				fallthrough
-			case 'a':
-				goto yy96
 			case 'T':
 				fallthrough
 			case 't':
-				goto yy97
+				goto yy95
 			default:
 				goto yy19
 			}
@@ -842,14 +862,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'A':
+			case 'P':
 				fallthrough
-			case 'a':
+			case 'p':
 				goto yy96
-			case 'T':
-				fallthrough
-			case 't':
-				goto yy98
 			default:
 				goto yy19
 			}
@@ -857,10 +873,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'T':
+			case 'M':
 				fallthrough
-			case 't':
-				goto yy99
+			case 'm':
+				goto yy97
 			default:
 				goto yy19
 			}
@@ -868,10 +884,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'P':
+			case 'U':
 				fallthrough
-			case 'p':
-				goto yy100
+			case 'u':
+				goto yy98
 			default:
 				goto yy19
 			}
@@ -879,10 +895,32 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'M':
+			case 'G':
 				fallthrough
-			case 'm':
+			case 'g':
+				goto yy99
+			case 'O':
+				fallthrough
+			case 'o':
+				goto yy100
+			case 'P':
+				fallthrough
+			case 'p':
 				goto yy101
+			case 'R':
+				fallthrough
+			case 'r':
+				goto yy102
+			case 'U':
+				fallthrough
+			case 'u':
+				goto yy103
+			case 'V':
+				fallthrough
+			case 'v':
+				goto yy104
+			case 0xC4:
+				goto yy105
 			default:
 				goto yy19
 			}
@@ -890,10 +928,12 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'U':
+			case 'E':
 				fallthrough
-			case 'u':
-				goto yy102
+			case 'e':
+				goto yy106
+			case 0xC3:
+				goto yy107
 			default:
 				goto yy19
 			}
@@ -901,30 +941,14 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'G':
+			case 'K':
 				fallthrough
-			case 'g':
-				goto yy103
-			case 'O':
-				fallthrough
-			case 'o':
-				goto yy104
-			case 'P':
-				goto yy105
-			case 'R':
-				fallthrough
-			case 'r':
-				goto yy106
-			case 'U':
-				fallthrough
-			case 'u':
-				goto yy107
-			case 'p':
+			case 'k':
 				goto yy108
-			case 'v':
+			case 'Y':
+				fallthrough
+			case 'y':
 				goto yy109
-			case 0xC4:
-				goto yy110
 			default:
 				goto yy19
 			}
@@ -935,9 +959,9 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			case 'E':
 				fallthrough
 			case 'e':
-				goto yy111
+				goto yy110
 			case 0xC3:
-				goto yy112
+				goto yy111
 			default:
 				goto yy19
 			}
@@ -945,14 +969,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'K':
+			case 'A':
 				fallthrough
-			case 'k':
-				goto yy113
-			case 'Y':
-				fallthrough
-			case 'y':
-				goto yy114
+			case 'a':
+				goto yy112
 			default:
 				goto yy19
 			}
@@ -960,12 +980,16 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'E':
+			case 'A':
 				fallthrough
-			case 'e':
-				goto yy115
+			case 'a':
+				goto yy113
+			case 'U':
+				fallthrough
+			case 'u':
+				goto yy114
 			case 0xC3:
-				goto yy116
+				goto yy115
 			default:
 				goto yy19
 			}
@@ -976,7 +1000,7 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			case 'A':
 				fallthrough
 			case 'a':
-				goto yy117
+				goto yy116
 			default:
 				goto yy19
 			}
@@ -987,13 +1011,13 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			case 'A':
 				fallthrough
 			case 'a':
-				goto yy118
-			case 'U':
+				goto yy117
+			case 'E':
 				fallthrough
-			case 'u':
-				goto yy119
+			case 'e':
+				goto yy118
 			case 0xC3:
-				goto yy120
+				goto yy119
 			default:
 				goto yy19
 			}
@@ -1001,9 +1025,13 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'A':
+			case 'I':
 				fallthrough
-			case 'a':
+			case 'i':
+				goto yy120
+			case 'O':
+				fallthrough
+			case 'o':
 				goto yy121
 			default:
 				goto yy19
@@ -1012,15 +1040,17 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'A':
+			case 'C':
 				fallthrough
-			case 'a':
+			case 'c':
 				goto yy122
-			case 'E':
+			case 'F':
 				fallthrough
-			case 'e':
+			case 'f':
 				goto yy123
-			case 0xC3:
+			case 'K':
+				fallthrough
+			case 'k':
 				goto yy124
 			default:
 				goto yy19
@@ -1029,14 +1059,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'I':
+			case 'E':
 				fallthrough
-			case 'i':
+			case 'e':
 				goto yy125
-			case 'O':
-				fallthrough
-			case 'o':
-				goto yy126
 			default:
 				goto yy19
 			}
@@ -1044,16 +1070,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'C':
-				goto yy127
-			case 'F':
+			case 'E':
 				fallthrough
-			case 'f':
-				goto yy128
-			case 'c':
-				goto yy129
-			case 'k':
-				goto yy130
+			case 'e':
+				goto yy126
 			default:
 				goto yy19
 			}
@@ -1061,10 +1081,8 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'E':
-				fallthrough
-			case 'e':
-				goto yy131
+			case 0x9E, 0x9F:
+				goto yy127
 			default:
 				goto yy19
 			}
@@ -1072,10 +1090,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'E':
+			case 'S':
 				fallthrough
-			case 'e':
-				goto yy132
+			case 's':
+				goto yy128
 			default:
 				goto yy19
 			}
@@ -1083,8 +1101,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 0x9E:
-				goto yy133
+			case 'T':
+				fallthrough
+			case 't':
+				goto yy87
 			default:
 				goto yy19
 			}
@@ -1092,10 +1112,16 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'S':
+			case '\t', '\n':
 				fallthrough
-			case 's':
-				goto yy134
+			case '\f', '\r':
+				fallthrough
+			case ' ':
+				goto yy129
+			case 'I':
+				fallthrough
+			case 'i':
+				goto yy130
 			default:
 				goto yy19
 			}
@@ -1103,10 +1129,16 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'T':
+			case '\t', '\n':
 				fallthrough
-			case 't':
-				goto yy70
+			case '\f', '\r':
+				fallthrough
+			case ' ':
+				goto yy129
+			case 'L':
+				fallthrough
+			case 'l':
+				goto yy131
 			default:
 				goto yy19
 			}
@@ -1119,7 +1151,11 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			case '\f', '\r':
 				fallthrough
 			case ' ':
-				goto yy135
+				goto yy129
+			case 'U':
+				fallthrough
+			case 'u':
+				goto yy132
 			default:
 				goto yy19
 			}
@@ -1127,16 +1163,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case '\t', '\n':
+			case 'I':
 				fallthrough
-			case '\f', '\r':
-				fallthrough
-			case ' ':
-				goto yy135
-			case 'L':
-				fallthrough
-			case 'l':
-				goto yy136
+			case 'i':
+				goto yy130
 			default:
 				goto yy19
 			}
@@ -1144,16 +1174,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case '\t', '\n':
-				fallthrough
-			case '\f', '\r':
-				fallthrough
-			case ' ':
-				goto yy135
 			case 'U':
 				fallthrough
 			case 'u':
-				goto yy137
+				goto yy133
 			default:
 				goto yy19
 			}
@@ -1166,11 +1190,11 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			case '\f', '\r':
 				fallthrough
 			case ' ':
-				goto yy135
-			case 'I':
+				goto yy129
+			case 'E':
 				fallthrough
-			case 'i':
-				goto yy138
+			case 'e':
+				goto yy134
 			default:
 				goto yy19
 			}
@@ -1178,10 +1202,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'I':
+			case 'E':
 				fallthrough
-			case 'i':
-				goto yy138
+			case 'e':
+				goto yy134
 			default:
 				goto yy19
 			}
@@ -1189,10 +1213,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'U':
+			case 'C':
 				fallthrough
-			case 'u':
-				goto yy139
+			case 'c':
+				goto yy135
 			default:
 				goto yy19
 			}
@@ -1205,37 +1229,15 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			case '\f', '\r':
 				fallthrough
 			case ' ':
-				goto yy135
-			case 'E':
+				goto yy129
+			case 'M':
 				fallthrough
-			case 'e':
-				goto yy140
+			case 'm':
+				goto yy87
 			default:
 				goto yy19
 			}
 		yy77:
-			cursor++
-			yych = input[cursor]
-			switch yych {
-			case 'E':
-				fallthrough
-			case 'e':
-				goto yy140
-			default:
-				goto yy19
-			}
-		yy78:
-			cursor++
-			yych = input[cursor]
-			switch yych {
-			case 'C':
-				fallthrough
-			case 'c':
-				goto yy141
-			default:
-				goto yy19
-			}
-		yy79:
 			cursor++
 			yych = input[cursor]
 			switch yych {
@@ -1244,11 +1246,41 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			case '\f', '\r':
 				fallthrough
 			case ' ':
-				goto yy135
-			case 'M':
+				goto yy129
+			case 0xC3:
+				goto yy136
+			default:
+				goto yy19
+			}
+		yy78:
+			cursor++
+			yych = input[cursor]
+			switch yych {
+			case '\t', '\n':
 				fallthrough
-			case 'm':
-				goto yy70
+			case '\f', '\r':
+				fallthrough
+			case ' ':
+				goto yy129
+			case 'E':
+				fallthrough
+			case 'e':
+				goto yy137
+			case 'R':
+				fallthrough
+			case 'r':
+				goto yy138
+			default:
+				goto yy19
+			}
+		yy79:
+			cursor++
+			yych = input[cursor]
+			switch yych {
+			case 'V':
+				fallthrough
+			case 'v':
+				goto yy139
 			default:
 				goto yy19
 			}
@@ -1261,9 +1293,11 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			case '\f', '\r':
 				fallthrough
 			case ' ':
-				goto yy135
-			case 0xC3:
-				goto yy142
+				goto yy129
+			case 'I':
+				fallthrough
+			case 'i':
+				goto yy140
 			default:
 				goto yy19
 			}
@@ -1276,15 +1310,15 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			case '\f', '\r':
 				fallthrough
 			case ' ':
-				goto yy135
-			case 'E':
+				goto yy129
+			case 'U':
 				fallthrough
-			case 'e':
-				goto yy27
-			case 'R':
+			case 'u':
+				goto yy141
+			case 'V':
 				fallthrough
-			case 'r':
-				goto yy143
+			case 'v':
+				goto yy142
 			default:
 				goto yy19
 			}
@@ -1292,10 +1326,14 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'V':
+			case 'L':
 				fallthrough
-			case 'v':
-				goto yy144
+			case 'l':
+				goto yy143
+			case 'N':
+				fallthrough
+			case 'n':
+				goto yy87
 			default:
 				goto yy19
 			}
@@ -1308,11 +1346,15 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			case '\f', '\r':
 				fallthrough
 			case ' ':
-				goto yy135
+				goto yy129
 			case 'I':
 				fallthrough
+			case 'Y':
+				fallthrough
 			case 'i':
-				goto yy145
+				fallthrough
+			case 'y':
+				goto yy87
 			default:
 				goto yy19
 			}
@@ -1325,15 +1367,15 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			case '\f', '\r':
 				fallthrough
 			case ' ':
-				goto yy135
-			case 'U':
+				goto yy129
+			case 'E':
 				fallthrough
-			case 'u':
-				goto yy146
-			case 'V':
+			case 'I':
 				fallthrough
-			case 'v':
-				goto yy147
+			case 'e':
+				fallthrough
+			case 'i':
+				goto yy87
 			default:
 				goto yy19
 			}
@@ -1341,14 +1383,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'L':
-				fallthrough
-			case 'l':
-				goto yy148
 			case 'N':
 				fallthrough
 			case 'n':
-				goto yy70
+				goto yy144
 			default:
 				goto yy19
 			}
@@ -1361,11 +1399,11 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			case '\f', '\r':
 				fallthrough
 			case ' ':
-				goto yy135
-			case 'i':
-				fallthrough
-			case 'y':
-				goto yy70
+				goto yy129
+			case 'I':
+				goto yy145
+			case 0xC4:
+				goto yy146
 			default:
 				goto yy19
 			}
@@ -1378,11 +1416,7 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			case '\f', '\r':
 				fallthrough
 			case ' ':
-				goto yy135
-			case 'e':
-				fallthrough
-			case 'i':
-				goto yy70
+				goto yy129
 			default:
 				goto yy19
 			}
@@ -1390,10 +1424,24 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'N':
+			case '\t', '\n':
 				fallthrough
-			case 'n':
-				goto yy149
+			case '\f', '\r':
+				fallthrough
+			case ' ':
+				goto yy129
+			case 'C':
+				fallthrough
+			case 'c':
+				goto yy147
+			case 'E':
+				fallthrough
+			case 'e':
+				goto yy67
+			case 'S', 'T':
+				fallthrough
+			case 's', 't':
+				goto yy87
 			default:
 				goto yy19
 			}
@@ -1406,13 +1454,26 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			case '\f', '\r':
 				fallthrough
 			case ' ':
-				goto yy135
+				goto yy129
+			case 'I':
+				goto yy148
 			case 0xC4:
-				goto yy150
+				goto yy149
 			default:
 				goto yy19
 			}
 		yy90:
+			cursor++
+			yych = input[cursor]
+			switch yych {
+			case 'R':
+				fallthrough
+			case 'r':
+				goto yy150
+			default:
+				goto yy19
+			}
+		yy91:
 			cursor++
 			yych = input[cursor]
 			switch yych {
@@ -1421,28 +1482,11 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			case '\f', '\r':
 				fallthrough
 			case ' ':
-				goto yy135
-			case 'C':
+				goto yy129
+			case 'A':
 				fallthrough
-			case 'c':
+			case 'a':
 				goto yy151
-			case 'E':
-				fallthrough
-			case 'e':
-				goto yy69
-			case 'S', 'T':
-				fallthrough
-			case 's', 't':
-				goto yy70
-			default:
-				goto yy19
-			}
-		yy91:
-			cursor++
-			yych = input[cursor]
-			switch yych {
-			case 0xC4:
-				goto yy152
 			default:
 				goto yy19
 			}
@@ -1455,8 +1499,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			case '\f', '\r':
 				fallthrough
 			case ' ':
-				goto yy135
-			case 0xC4:
+				goto yy129
+			case 'E':
+				fallthrough
+			case 'e':
 				goto yy152
 			default:
 				goto yy19
@@ -1465,10 +1511,16 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'R':
+			case '\t', '\n':
 				fallthrough
-			case 'r':
-				goto yy153
+			case '\f', '\r':
+				fallthrough
+			case ' ':
+				goto yy129
+			case 'K':
+				fallthrough
+			case 'k':
+				goto yy87
 			default:
 				goto yy19
 			}
@@ -1481,11 +1533,11 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			case '\f', '\r':
 				fallthrough
 			case ' ':
-				goto yy135
-			case 'A':
+				goto yy129
+			case 'O':
 				fallthrough
-			case 'a':
-				goto yy154
+			case 'o':
+				goto yy153
 			default:
 				goto yy19
 			}
@@ -1498,11 +1550,11 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			case '\f', '\r':
 				fallthrough
 			case ' ':
-				goto yy135
-			case 'E':
+				goto yy129
+			case 'O':
 				fallthrough
-			case 'e':
-				goto yy155
+			case 'o':
+				goto yy154
 			default:
 				goto yy19
 			}
@@ -1515,11 +1567,11 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			case '\f', '\r':
 				fallthrough
 			case ' ':
-				goto yy135
-			case 'K':
+				goto yy129
+			case 'T':
 				fallthrough
-			case 'k':
-				goto yy70
+			case 't':
+				goto yy155
 			default:
 				goto yy19
 			}
@@ -1527,9 +1579,15 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'O':
+			case '\t', '\n':
 				fallthrough
-			case 'o':
+			case '\f', '\r':
+				fallthrough
+			case ' ':
+				goto yy129
+			case 'M':
+				fallthrough
+			case 'm':
 				goto yy156
 			default:
 				goto yy19
@@ -1538,15 +1596,9 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case '\t', '\n':
+			case 'B':
 				fallthrough
-			case '\f', '\r':
-				fallthrough
-			case ' ':
-				goto yy135
-			case 'O':
-				fallthrough
-			case 'o':
+			case 'b':
 				goto yy157
 			default:
 				goto yy19
@@ -1555,15 +1607,9 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case '\t', '\n':
+			case 'U':
 				fallthrough
-			case '\f', '\r':
-				fallthrough
-			case ' ':
-				goto yy135
-			case 'O':
-				fallthrough
-			case 'o':
+			case 'u':
 				goto yy158
 			default:
 				goto yy19
@@ -1572,15 +1618,9 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case '\t', '\n':
+			case 'U':
 				fallthrough
-			case '\f', '\r':
-				fallthrough
-			case ' ':
-				goto yy135
-			case 'T':
-				fallthrough
-			case 't':
+			case 'u':
 				goto yy159
 			default:
 				goto yy19
@@ -1589,15 +1629,9 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case '\t', '\n':
+			case 'R':
 				fallthrough
-			case '\f', '\r':
-				fallthrough
-			case ' ':
-				goto yy135
-			case 'M':
-				fallthrough
-			case 'm':
+			case 'r':
 				goto yy160
 			default:
 				goto yy19
@@ -1606,9 +1640,9 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'B':
+			case 'A':
 				fallthrough
-			case 'b':
+			case 'a':
 				goto yy161
 			default:
 				goto yy19
@@ -1617,9 +1651,9 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'U':
+			case 'G':
 				fallthrough
-			case 'u':
+			case 'g':
 				goto yy162
 			default:
 				goto yy19
@@ -1628,9 +1662,9 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'U':
+			case 'R':
 				fallthrough
-			case 'u':
+			case 'r':
 				goto yy163
 			default:
 				goto yy19
@@ -1639,9 +1673,7 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'R':
-				fallthrough
-			case 'r':
+			case 0x9E, 0x9F:
 				goto yy164
 			default:
 				goto yy19
@@ -1650,10 +1682,18 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'A':
+			case 'C':
 				fallthrough
-			case 'a':
+			case 'Z':
+				fallthrough
+			case 'c':
+				fallthrough
+			case 'z':
 				goto yy165
+			case 'S':
+				fallthrough
+			case 's':
+				goto yy166
 			default:
 				goto yy19
 			}
@@ -1661,10 +1701,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'G':
+			case 0x89:
 				fallthrough
-			case 'g':
-				goto yy166
+			case 0xA9:
+				goto yy167
 			default:
 				goto yy19
 			}
@@ -1672,10 +1712,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'R':
+			case 'I':
 				fallthrough
-			case 'r':
-				goto yy167
+			case 'i':
+				goto yy168
 			default:
 				goto yy19
 			}
@@ -1683,10 +1723,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'R':
+			case 'L':
 				fallthrough
-			case 'r':
-				goto yy168
+			case 'l':
+				goto yy169
 			default:
 				goto yy19
 			}
@@ -1694,8 +1734,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 0x9F:
-				goto yy169
+			case 'B':
+				fallthrough
+			case 'b':
+				goto yy170
 			default:
 				goto yy19
 			}
@@ -1703,11 +1745,9 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'c':
+			case 0x89:
 				fallthrough
-			case 'z':
-				goto yy170
-			case 's':
+			case 0xA9:
 				goto yy171
 			default:
 				goto yy19
@@ -1716,7 +1756,9 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 0xA9:
+			case 'Z':
+				fallthrough
+			case 'z':
 				goto yy172
 			default:
 				goto yy19
@@ -1725,9 +1767,9 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'I':
+			case 'N':
 				fallthrough
-			case 'i':
+			case 'n':
 				goto yy173
 			default:
 				goto yy19
@@ -1736,10 +1778,18 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
+			case 'I':
+				fallthrough
+			case 'i':
+				goto yy174
 			case 'L':
 				fallthrough
 			case 'l':
-				goto yy174
+				goto yy175
+			case 'N':
+				fallthrough
+			case 'n':
+				goto yy176
 			default:
 				goto yy19
 			}
@@ -1747,10 +1797,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'B':
+			case 0x84:
 				fallthrough
-			case 'b':
-				goto yy175
+			case 0xA4:
+				goto yy177
 			default:
 				goto yy19
 			}
@@ -1758,8 +1808,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 0xA9:
-				goto yy176
+			case 'S':
+				fallthrough
+			case 's':
+				goto yy178
 			default:
 				goto yy19
 			}
@@ -1767,10 +1819,18 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'Z':
+			case 'I':
 				fallthrough
-			case 'z':
-				goto yy177
+			case 'i':
+				goto yy179
+			case 'R':
+				fallthrough
+			case 'r':
+				goto yy180
+			case 'Y':
+				fallthrough
+			case 'y':
+				goto yy181
 			default:
 				goto yy19
 			}
@@ -1778,10 +1838,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'N':
+			case 'I':
 				fallthrough
-			case 'n':
-				goto yy178
+			case 'i':
+				goto yy179
 			default:
 				goto yy19
 			}
@@ -1789,31 +1849,14 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'I':
+			case 0x84:
 				fallthrough
-			case 'i':
-				goto yy179
-			case 'L':
-				fallthrough
-			case 'l':
-				goto yy180
-			case 'N':
-				fallthrough
-			case 'n':
-				goto yy181
-			default:
-				goto yy19
-			}
-		yy120:
-			cursor++
-			yych = input[cursor]
-			switch yych {
 			case 0xA4:
 				goto yy182
 			default:
 				goto yy19
 			}
-		yy121:
+		yy120:
 			cursor++
 			yych = input[cursor]
 			switch yych {
@@ -1824,19 +1867,28 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			default:
 				goto yy19
 			}
+		yy121:
+			cursor++
+			yych = input[cursor]
+			switch yych {
+			case 'V':
+				fallthrough
+			case 'v':
+				goto yy184
+			default:
+				goto yy19
+			}
 		yy122:
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'R':
+			case 'A':
 				fallthrough
-			case 'r':
-				goto yy184
-			case 'Y':
+			case 'a':
 				goto yy185
-			case 'i':
-				goto yy164
-			case 'y':
+			case 'T':
+				fallthrough
+			case 't':
 				goto yy186
 			default:
 				goto yy19
@@ -1845,10 +1897,12 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'I':
+			case '\t', '\n':
 				fallthrough
-			case 'i':
-				goto yy164
+			case '\f', '\r':
+				fallthrough
+			case ' ':
+				goto yy187
 			default:
 				goto yy19
 			}
@@ -1856,8 +1910,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 0xA4:
-				goto yy187
+			case 'T':
+				fallthrough
+			case 't':
+				goto yy188
 			default:
 				goto yy19
 			}
@@ -1865,10 +1921,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'S':
+			case 'P':
 				fallthrough
-			case 's':
-				goto yy188
+			case 'p':
+				goto yy189
 			default:
 				goto yy19
 			}
@@ -1876,10 +1932,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'V':
+			case 'M':
 				fallthrough
-			case 'v':
-				goto yy189
+			case 'm':
+				goto yy190
 			default:
 				goto yy19
 			}
@@ -1887,13 +1943,9 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'A':
+			case 'U':
 				fallthrough
-			case 'a':
-				goto yy190
-			case 'T':
-				fallthrough
-			case 't':
+			case 'u':
 				goto yy191
 			default:
 				goto yy19
@@ -1902,11 +1954,9 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case '\t', '\n':
+			case 'T':
 				fallthrough
-			case '\f', '\r':
-				fallthrough
-			case ' ':
+			case 't':
 				goto yy192
 			default:
 				goto yy19
@@ -1915,14 +1965,12 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'A':
-				fallthrough
-			case 'a':
-				goto yy190
-			case 'T':
-				fallthrough
-			case 't':
+			case '0', '1', '2', '3':
+				yyt2 = cursor
 				goto yy193
+			case '4', '5', '6', '7', '8', '9':
+				yyt2 = cursor
+				goto yy194
 			default:
 				goto yy19
 			}
@@ -1930,10 +1978,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'T':
+			case 'L':
 				fallthrough
-			case 't':
-				goto yy194
+			case 'l':
+				goto yy87
 			default:
 				goto yy19
 			}
@@ -1941,10 +1989,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'P':
-				fallthrough
-			case 'p':
+			case 'I':
 				goto yy195
+			case 0xC4:
+				goto yy196
 			default:
 				goto yy19
 			}
@@ -1952,10 +2000,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'M':
+			case 'S':
 				fallthrough
-			case 'm':
-				goto yy196
+			case 's':
+				goto yy67
 			default:
 				goto yy19
 			}
@@ -1963,9 +2011,15 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'U':
+			case '\t', '\n':
 				fallthrough
-			case 'u':
+			case '\f', '\r':
+				fallthrough
+			case ' ':
+				goto yy129
+			case 'S':
+				fallthrough
+			case 's':
 				goto yy197
 			default:
 				goto yy19
@@ -1974,10 +2028,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'T':
+			case 'M':
 				fallthrough
-			case 't':
-				goto yy198
+			case 'm':
+				goto yy154
 			default:
 				goto yy19
 			}
@@ -1985,12 +2039,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case '0', '1', '2', '3':
-				yyt2 = cursor
-				goto yy199
-			case '4', '5', '6', '7', '8', '9':
-				yyt2 = cursor
-				goto yy200
+			case 'E':
+				fallthrough
+			case 'e':
+				goto yy198
 			default:
 				goto yy19
 			}
@@ -1998,8 +2050,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 0xC4:
-				goto yy201
+			case 0x9C:
+				fallthrough
+			case 0xBC:
+				goto yy130
 			default:
 				goto yy19
 			}
@@ -2007,10 +2061,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'S':
+			case 'R':
 				fallthrough
-			case 's':
-				goto yy69
+			case 'r':
+				goto yy87
 			default:
 				goto yy19
 			}
@@ -2018,10 +2072,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'L':
+			case 'U':
 				fallthrough
-			case 'l':
-				goto yy70
+			case 'u':
+				goto yy141
 			default:
 				goto yy19
 			}
@@ -2029,16 +2083,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case '\t', '\n':
+			case 'R':
 				fallthrough
-			case '\f', '\r':
-				fallthrough
-			case ' ':
-				goto yy135
-			case 'S':
-				fallthrough
-			case 's':
-				goto yy202
+			case 'r':
+				goto yy142
 			default:
 				goto yy19
 			}
@@ -2046,10 +2094,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'M':
+			case 'R':
 				fallthrough
-			case 'm':
-				goto yy158
+			case 'r':
+				goto yy199
 			default:
 				goto yy19
 			}
@@ -2057,10 +2105,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'E':
+			case 'A':
 				fallthrough
-			case 'e':
-				goto yy203
+			case 'a':
+				goto yy200
 			default:
 				goto yy19
 			}
@@ -2068,8 +2116,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 0xBC:
-				goto yy138
+			case 'I':
+				fallthrough
+			case 'i':
+				goto yy201
 			default:
 				goto yy19
 			}
@@ -2077,10 +2127,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'U':
+			case 'L':
 				fallthrough
-			case 'u':
-				goto yy146
+			case 'l':
+				goto yy202
 			default:
 				goto yy19
 			}
@@ -2088,10 +2138,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'R':
+			case 'N':
 				fallthrough
-			case 'r':
-				goto yy147
+			case 'n':
+				goto yy201
 			default:
 				goto yy19
 			}
@@ -2099,10 +2149,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'R':
+			case 'M':
 				fallthrough
-			case 'r':
-				goto yy204
+			case 'm':
+				goto yy87
 			default:
 				goto yy19
 			}
@@ -2110,10 +2160,8 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'A':
-				fallthrough
-			case 'a':
-				goto yy205
+			case 0xB1:
+				goto yy145
 			default:
 				goto yy19
 			}
@@ -2121,10 +2169,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'I':
+			case 'H':
 				fallthrough
-			case 'i':
-				goto yy206
+			case 'h':
+				goto yy87
 			default:
 				goto yy19
 			}
@@ -2132,10 +2180,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'L':
+			case 'S':
 				fallthrough
-			case 'l':
-				goto yy207
+			case 's':
+				goto yy87
 			default:
 				goto yy19
 			}
@@ -2143,43 +2191,12 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'N':
-				fallthrough
-			case 'n':
-				goto yy206
+			case 0xB1:
+				goto yy148
 			default:
 				goto yy19
 			}
 		yy150:
-			cursor++
-			yych = input[cursor]
-			switch yych {
-			case 0xB1:
-				goto yy208
-			default:
-				goto yy19
-			}
-		yy151:
-			cursor++
-			yych = input[cursor]
-			switch yych {
-			case 'H':
-				fallthrough
-			case 'h':
-				goto yy70
-			default:
-				goto yy19
-			}
-		yy152:
-			cursor++
-			yych = input[cursor]
-			switch yych {
-			case 0xB1:
-				goto yy209
-			default:
-				goto yy19
-			}
-		yy153:
 			cursor++
 			yych = input[cursor]
 			switch yych {
@@ -2188,11 +2205,44 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			case '\f', '\r':
 				fallthrough
 			case ' ':
-				goto yy135
+				goto yy129
 			case 'Z':
 				fallthrough
 			case 'z':
-				goto yy70
+				goto yy87
+			default:
+				goto yy19
+			}
+		yy151:
+			cursor++
+			yych = input[cursor]
+			switch yych {
+			case 'N':
+				fallthrough
+			case 'n':
+				goto yy87
+			default:
+				goto yy19
+			}
+		yy152:
+			cursor++
+			yych = input[cursor]
+			switch yych {
+			case 'M':
+				fallthrough
+			case 'm':
+				goto yy153
+			default:
+				goto yy19
+			}
+		yy153:
+			cursor++
+			yych = input[cursor]
+			switch yych {
+			case 'B':
+				fallthrough
+			case 'b':
+				goto yy203
 			default:
 				goto yy19
 			}
@@ -2200,10 +2250,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'N':
+			case 'B':
 				fallthrough
-			case 'n':
-				goto yy70
+			case 'b':
+				goto yy201
 			default:
 				goto yy19
 			}
@@ -2211,10 +2261,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'M':
+			case 'E':
 				fallthrough
-			case 'm':
-				goto yy157
+			case 'e':
+				goto yy152
 			default:
 				goto yy19
 			}
@@ -2222,10 +2272,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'B':
+			case 'U':
 				fallthrough
-			case 'b':
-				goto yy210
+			case 'u':
+				goto yy204
 			default:
 				goto yy19
 			}
@@ -2233,10 +2283,16 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'B':
+			case '\t', '\n':
 				fallthrough
-			case 'b':
-				goto yy211
+			case '\f', '\r':
+				fallthrough
+			case ' ':
+				goto yy129
+			case 'A':
+				fallthrough
+			case 'a':
+				goto yy67
 			default:
 				goto yy19
 			}
@@ -2244,10 +2300,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'B':
+			case 'S':
 				fallthrough
-			case 'b':
-				goto yy206
+			case 's':
+				goto yy205
 			default:
 				goto yy19
 			}
@@ -2255,10 +2311,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'E':
+			case 'T':
 				fallthrough
-			case 'e':
-				goto yy155
+			case 't':
+				goto yy179
 			default:
 				goto yy19
 			}
@@ -2266,10 +2322,22 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'U':
+			case '\t', '\n':
 				fallthrough
-			case 'u':
-				goto yy212
+			case '\f', '\r':
+				fallthrough
+			case ' ':
+				yyt3 = cursor
+				goto yy206
+			case ',':
+				fallthrough
+			case '.':
+				yyt3 = cursor
+				goto yy207
+			case 'I':
+				fallthrough
+			case 'i':
+				goto yy208
 			default:
 				goto yy19
 			}
@@ -2282,37 +2350,21 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			case '\f', '\r':
 				fallthrough
 			case ' ':
-				goto yy135
-			case 'A':
+				yyt3 = cursor
+				goto yy206
+			case ',':
 				fallthrough
-			case 'a':
-				goto yy69
+			case '.':
+				yyt3 = cursor
+				goto yy207
+			case 'L':
+				fallthrough
+			case 'l':
+				goto yy209
 			default:
 				goto yy19
 			}
 		yy162:
-			cursor++
-			yych = input[cursor]
-			switch yych {
-			case 'S':
-				fallthrough
-			case 's':
-				goto yy213
-			default:
-				goto yy19
-			}
-		yy163:
-			cursor++
-			yych = input[cursor]
-			switch yych {
-			case 'T':
-				fallthrough
-			case 't':
-				goto yy164
-			default:
-				goto yy19
-			}
-		yy164:
 			cursor++
 			yych = input[cursor]
 			switch yych {
@@ -2322,12 +2374,38 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 				fallthrough
 			case ' ':
 				yyt3 = cursor
-				goto yy214
+				goto yy206
 			case ',':
 				fallthrough
 			case '.':
 				yyt3 = cursor
-				goto yy215
+				goto yy207
+			case 'U':
+				fallthrough
+			case 'u':
+				goto yy210
+			default:
+				goto yy19
+			}
+		yy163:
+			cursor++
+			yych = input[cursor]
+			switch yych {
+			case 'I':
+				fallthrough
+			case 'i':
+				goto yy208
+			default:
+				goto yy19
+			}
+		yy164:
+			cursor++
+			yych = input[cursor]
+			switch yych {
+			case 'U':
+				fallthrough
+			case 'u':
+				goto yy211
 			default:
 				goto yy19
 			}
@@ -2341,16 +2419,16 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 				fallthrough
 			case ' ':
 				yyt3 = cursor
-				goto yy214
+				goto yy206
 			case ',':
 				fallthrough
 			case '.':
 				yyt3 = cursor
-				goto yy215
-			case 'L':
+				goto yy207
+			case 'E':
 				fallthrough
-			case 'l':
-				goto yy216
+			case 'e':
+				goto yy212
 			default:
 				goto yy19
 			}
@@ -2358,22 +2436,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case '\t', '\n':
+			case 'E':
 				fallthrough
-			case '\f', '\r':
-				fallthrough
-			case ' ':
-				yyt3 = cursor
-				goto yy214
-			case ',':
-				fallthrough
-			case '.':
-				yyt3 = cursor
-				goto yy215
-			case 'U':
-				fallthrough
-			case 'u':
-				goto yy217
+			case 'e':
+				goto yy212
 			default:
 				goto yy19
 			}
@@ -2381,22 +2447,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case '\t', '\n':
+			case 'C':
 				fallthrough
-			case '\f', '\r':
-				fallthrough
-			case ' ':
-				yyt3 = cursor
-				goto yy214
-			case ',':
-				fallthrough
-			case '.':
-				yyt3 = cursor
-				goto yy215
-			case 'I':
-				fallthrough
-			case 'i':
-				goto yy218
+			case 'c':
+				goto yy213
 			default:
 				goto yy19
 			}
@@ -2404,10 +2458,22 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'I':
+			case '\t', '\n':
 				fallthrough
-			case 'i':
-				goto yy218
+			case '\f', '\r':
+				fallthrough
+			case ' ':
+				yyt3 = cursor
+				goto yy206
+			case ',':
+				fallthrough
+			case '.':
+				yyt3 = cursor
+				goto yy207
+			case 'M':
+				fallthrough
+			case 'm':
+				goto yy179
 			default:
 				goto yy19
 			}
@@ -2415,10 +2481,20 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'U':
+			case '\t', '\n':
 				fallthrough
-			case 'u':
-				goto yy219
+			case '\f', '\r':
+				fallthrough
+			case ' ':
+				yyt3 = cursor
+				goto yy206
+			case ',':
+				fallthrough
+			case '.':
+				yyt3 = cursor
+				goto yy207
+			case 0xC3:
+				goto yy214
 			default:
 				goto yy19
 			}
@@ -2432,16 +2508,20 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 				fallthrough
 			case ' ':
 				yyt3 = cursor
-				goto yy214
+				goto yy206
 			case ',':
 				fallthrough
 			case '.':
 				yyt3 = cursor
-				goto yy215
+				goto yy207
 			case 'E':
 				fallthrough
 			case 'e':
-				goto yy220
+				goto yy215
+			case 'R':
+				fallthrough
+			case 'r':
+				goto yy216
 			default:
 				goto yy19
 			}
@@ -2449,10 +2529,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'E':
+			case 'V':
 				fallthrough
-			case 'e':
-				goto yy220
+			case 'v':
+				goto yy217
 			default:
 				goto yy19
 			}
@@ -2460,10 +2540,22 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'C':
+			case '\t', '\n':
 				fallthrough
-			case 'c':
-				goto yy221
+			case '\f', '\r':
+				fallthrough
+			case ' ':
+				yyt3 = cursor
+				goto yy206
+			case ',':
+				fallthrough
+			case '.':
+				yyt3 = cursor
+				goto yy207
+			case 'I':
+				fallthrough
+			case 'i':
+				goto yy218
 			default:
 				goto yy19
 			}
@@ -2477,16 +2569,20 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 				fallthrough
 			case ' ':
 				yyt3 = cursor
-				goto yy214
+				goto yy206
 			case ',':
 				fallthrough
 			case '.':
 				yyt3 = cursor
-				goto yy215
-			case 'M':
+				goto yy207
+			case 'U':
 				fallthrough
-			case 'm':
-				goto yy164
+			case 'u':
+				goto yy219
+			case 'V':
+				fallthrough
+			case 'v':
+				goto yy220
 			default:
 				goto yy19
 			}
@@ -2494,20 +2590,14 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case '\t', '\n':
+			case 'L':
 				fallthrough
-			case '\f', '\r':
+			case 'l':
+				goto yy221
+			case 'N':
 				fallthrough
-			case ' ':
-				yyt3 = cursor
-				goto yy214
-			case ',':
-				fallthrough
-			case '.':
-				yyt3 = cursor
-				goto yy215
-			case 0xC3:
-				goto yy222
+			case 'n':
+				goto yy179
 			default:
 				goto yy19
 			}
@@ -2521,35 +2611,24 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 				fallthrough
 			case ' ':
 				yyt3 = cursor
-				goto yy214
+				goto yy206
 			case ',':
 				fallthrough
 			case '.':
 				yyt3 = cursor
-				goto yy215
-			case 'E':
+				goto yy207
+			case 'I':
 				fallthrough
-			case 'e':
-				goto yy105
-			case 'R':
+			case 'Y':
 				fallthrough
-			case 'r':
-				goto yy223
+			case 'i':
+				fallthrough
+			case 'y':
+				goto yy179
 			default:
 				goto yy19
 			}
 		yy176:
-			cursor++
-			yych = input[cursor]
-			switch yych {
-			case 'V':
-				fallthrough
-			case 'v':
-				goto yy224
-			default:
-				goto yy19
-			}
-		yy177:
 			cursor++
 			yych = input[cursor]
 			switch yych {
@@ -2559,16 +2638,31 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 				fallthrough
 			case ' ':
 				yyt3 = cursor
-				goto yy214
+				goto yy206
 			case ',':
 				fallthrough
 			case '.':
 				yyt3 = cursor
-				goto yy215
+				goto yy207
+			case 'E':
+				fallthrough
 			case 'I':
 				fallthrough
+			case 'e':
+				fallthrough
 			case 'i':
-				goto yy225
+				goto yy179
+			default:
+				goto yy19
+			}
+		yy177:
+			cursor++
+			yych = input[cursor]
+			switch yych {
+			case 'N':
+				fallthrough
+			case 'n':
+				goto yy222
 			default:
 				goto yy19
 			}
@@ -2582,20 +2676,16 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 				fallthrough
 			case ' ':
 				yyt3 = cursor
-				goto yy214
+				goto yy206
 			case ',':
 				fallthrough
 			case '.':
 				yyt3 = cursor
-				goto yy215
-			case 'U':
-				fallthrough
-			case 'u':
-				goto yy226
-			case 'V':
-				fallthrough
-			case 'v':
-				goto yy227
+				goto yy207
+			case 'I':
+				goto yy223
+			case 0xC4:
+				goto yy224
 			default:
 				goto yy19
 			}
@@ -2603,14 +2693,18 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'L':
+			case '\t', '\n':
 				fallthrough
-			case 'l':
-				goto yy228
-			case 'N':
+			case '\f', '\r':
 				fallthrough
-			case 'n':
-				goto yy164
+			case ' ':
+				yyt3 = cursor
+				goto yy206
+			case ',':
+				fallthrough
+			case '.':
+				yyt3 = cursor
+				goto yy207
 			default:
 				goto yy19
 			}
@@ -2624,16 +2718,24 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 				fallthrough
 			case ' ':
 				yyt3 = cursor
-				goto yy214
+				goto yy206
 			case ',':
 				fallthrough
 			case '.':
 				yyt3 = cursor
-				goto yy215
-			case 'i':
+				goto yy207
+			case 'C':
 				fallthrough
-			case 'y':
-				goto yy164
+			case 'c':
+				goto yy225
+			case 'E':
+				fallthrough
+			case 'e':
+				goto yy159
+			case 'S', 'T':
+				fallthrough
+			case 's', 't':
+				goto yy179
 			default:
 				goto yy19
 			}
@@ -2647,16 +2749,16 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 				fallthrough
 			case ' ':
 				yyt3 = cursor
-				goto yy214
+				goto yy206
 			case ',':
 				fallthrough
 			case '.':
 				yyt3 = cursor
-				goto yy215
-			case 'e':
-				fallthrough
-			case 'i':
-				goto yy164
+				goto yy207
+			case 'I':
+				goto yy226
+			case 0xC4:
+				goto yy227
 			default:
 				goto yy19
 			}
@@ -2664,10 +2766,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'N':
+			case 'R':
 				fallthrough
-			case 'n':
-				goto yy229
+			case 'r':
+				goto yy228
 			default:
 				goto yy19
 			}
@@ -2681,14 +2783,16 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 				fallthrough
 			case ' ':
 				yyt3 = cursor
-				goto yy214
+				goto yy206
 			case ',':
 				fallthrough
 			case '.':
 				yyt3 = cursor
-				goto yy215
-			case 0xC4:
-				goto yy230
+				goto yy207
+			case 'A':
+				fallthrough
+			case 'a':
+				goto yy229
 			default:
 				goto yy19
 			}
@@ -2702,24 +2806,16 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 				fallthrough
 			case ' ':
 				yyt3 = cursor
-				goto yy214
+				goto yy206
 			case ',':
 				fallthrough
 			case '.':
 				yyt3 = cursor
-				goto yy215
-			case 'C':
-				fallthrough
-			case 'c':
-				goto yy231
+				goto yy207
 			case 'E':
 				fallthrough
 			case 'e':
-				goto yy163
-			case 'S', 'T':
-				fallthrough
-			case 's', 't':
-				goto yy164
+				goto yy230
 			default:
 				goto yy19
 			}
@@ -2727,8 +2823,22 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 0xC4:
-				goto yy232
+			case '\t', '\n':
+				fallthrough
+			case '\f', '\r':
+				fallthrough
+			case ' ':
+				yyt3 = cursor
+				goto yy206
+			case ',':
+				fallthrough
+			case '.':
+				yyt3 = cursor
+				goto yy207
+			case 'K':
+				fallthrough
+			case 'k':
+				goto yy179
 			default:
 				goto yy19
 			}
@@ -2742,14 +2852,16 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 				fallthrough
 			case ' ':
 				yyt3 = cursor
-				goto yy214
+				goto yy206
 			case ',':
 				fallthrough
 			case '.':
 				yyt3 = cursor
-				goto yy215
-			case 0xC4:
-				goto yy232
+				goto yy207
+			case 'O':
+				fallthrough
+			case 'o':
+				goto yy231
 			default:
 				goto yy19
 			}
@@ -2757,10 +2869,69 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'R':
+			case 'A':
 				fallthrough
-			case 'r':
-				goto yy233
+			case 'a':
+				yyt4 = cursor
+				goto yy53
+			case 'D':
+				fallthrough
+			case 'd':
+				yyt4 = cursor
+				goto yy54
+			case 'E':
+				fallthrough
+			case 'e':
+				yyt4 = cursor
+				goto yy55
+			case 'F':
+				fallthrough
+			case 'f':
+				yyt4 = cursor
+				goto yy56
+			case 'H':
+				fallthrough
+			case 'h':
+				yyt4 = cursor
+				goto yy57
+			case 'J':
+				fallthrough
+			case 'j':
+				yyt4 = cursor
+				goto yy58
+			case 'K':
+				fallthrough
+			case 'k':
+				yyt4 = cursor
+				goto yy59
+			case 'M':
+				fallthrough
+			case 'm':
+				yyt4 = cursor
+				goto yy60
+			case 'N':
+				fallthrough
+			case 'n':
+				yyt4 = cursor
+				goto yy61
+			case 'O':
+				fallthrough
+			case 'o':
+				yyt4 = cursor
+				goto yy232
+			case 'S':
+				fallthrough
+			case 's':
+				yyt4 = cursor
+				goto yy63
+			case 'T':
+				fallthrough
+			case 't':
+				yyt4 = cursor
+				goto yy64
+			case 0xC5:
+				yyt4 = cursor
+				goto yy65
 			default:
 				goto yy19
 			}
@@ -2774,16 +2945,16 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 				fallthrough
 			case ' ':
 				yyt3 = cursor
-				goto yy214
+				goto yy206
 			case ',':
 				fallthrough
 			case '.':
 				yyt3 = cursor
-				goto yy215
-			case 'A':
+				goto yy207
+			case 'O':
 				fallthrough
-			case 'a':
-				goto yy234
+			case 'o':
+				goto yy233
 			default:
 				goto yy19
 			}
@@ -2797,16 +2968,16 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 				fallthrough
 			case ' ':
 				yyt3 = cursor
-				goto yy214
+				goto yy206
 			case ',':
 				fallthrough
 			case '.':
 				yyt3 = cursor
-				goto yy215
-			case 'E':
+				goto yy207
+			case 'T':
 				fallthrough
-			case 'e':
-				goto yy235
+			case 't':
+				goto yy234
 			default:
 				goto yy19
 			}
@@ -2820,16 +2991,16 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 				fallthrough
 			case ' ':
 				yyt3 = cursor
-				goto yy214
+				goto yy206
 			case ',':
 				fallthrough
 			case '.':
 				yyt3 = cursor
-				goto yy215
-			case 'K':
+				goto yy207
+			case 'M':
 				fallthrough
-			case 'k':
-				goto yy164
+			case 'm':
+				goto yy235
 			default:
 				goto yy19
 			}
@@ -2837,9 +3008,9 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'O':
+			case 'B':
 				fallthrough
-			case 'o':
+			case 'b':
 				goto yy236
 			default:
 				goto yy19
@@ -2848,69 +3019,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'A':
+			case 'U':
 				fallthrough
-			case 'a':
-				yyt4 = cursor
-				goto yy55
-			case 'D':
-				fallthrough
-			case 'd':
-				yyt4 = cursor
-				goto yy56
-			case 'E':
-				fallthrough
-			case 'e':
-				yyt4 = cursor
-				goto yy57
-			case 'F':
-				fallthrough
-			case 'f':
-				yyt4 = cursor
-				goto yy58
-			case 'H':
-				fallthrough
-			case 'h':
-				yyt4 = cursor
-				goto yy59
-			case 'J':
-				fallthrough
-			case 'j':
-				yyt4 = cursor
-				goto yy60
-			case 'K':
-				fallthrough
-			case 'k':
-				yyt4 = cursor
-				goto yy61
-			case 'M':
-				fallthrough
-			case 'm':
-				yyt4 = cursor
-				goto yy62
-			case 'N':
-				fallthrough
-			case 'n':
-				yyt4 = cursor
-				goto yy63
-			case 'O':
-				fallthrough
-			case 'o':
-				yyt4 = cursor
-				goto yy237
-			case 'S':
-				fallthrough
-			case 's':
-				yyt4 = cursor
-				goto yy65
-			case 'T':
-				fallthrough
-			case 't':
-				yyt4 = cursor
-				goto yy66
-			case 0xC5:
-				yyt4 = cursor
-				goto yy67
+			case 'u':
+				goto yy148
 			default:
 				goto yy19
 			}
@@ -2924,16 +3036,31 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 				fallthrough
 			case ' ':
 				yyt3 = cursor
-				goto yy214
+				goto yy237
 			case ',':
-				fallthrough
-			case '.':
 				yyt3 = cursor
-				goto yy215
-			case 'O':
-				fallthrough
-			case 'o':
 				goto yy238
+			case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
+				goto yy194
+			case 'N':
+				fallthrough
+			case 'R':
+				fallthrough
+			case 'n':
+				fallthrough
+			case 'r':
+				yyt3 = cursor
+				goto yy239
+			case 'S':
+				fallthrough
+			case 's':
+				yyt3 = cursor
+				goto yy240
+			case 'T':
+				fallthrough
+			case 't':
+				yyt3 = cursor
+				goto yy241
 			default:
 				goto yy19
 			}
@@ -2947,16 +3074,29 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 				fallthrough
 			case ' ':
 				yyt3 = cursor
-				goto yy214
+				goto yy237
 			case ',':
-				fallthrough
-			case '.':
 				yyt3 = cursor
-				goto yy215
-			case 'O':
+				goto yy238
+			case 'N':
 				fallthrough
-			case 'o':
+			case 'R':
+				fallthrough
+			case 'n':
+				fallthrough
+			case 'r':
+				yyt3 = cursor
 				goto yy239
+			case 'S':
+				fallthrough
+			case 's':
+				yyt3 = cursor
+				goto yy240
+			case 'T':
+				fallthrough
+			case 't':
+				yyt3 = cursor
+				goto yy241
 			default:
 				goto yy19
 			}
@@ -2964,22 +3104,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case '\t', '\n':
+			case 'K':
 				fallthrough
-			case '\f', '\r':
-				fallthrough
-			case ' ':
-				yyt3 = cursor
-				goto yy214
-			case ',':
-				fallthrough
-			case '.':
-				yyt3 = cursor
-				goto yy215
-			case 'T':
-				fallthrough
-			case 't':
-				goto yy240
+			case 'k':
+				goto yy87
 			default:
 				goto yy19
 			}
@@ -2987,22 +3115,8 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case '\t', '\n':
-				fallthrough
-			case '\f', '\r':
-				fallthrough
-			case ' ':
-				yyt3 = cursor
-				goto yy214
-			case ',':
-				fallthrough
-			case '.':
-				yyt3 = cursor
-				goto yy215
-			case 'M':
-				fallthrough
-			case 'm':
-				goto yy241
+			case 0xB1:
+				goto yy195
 			default:
 				goto yy19
 			}
@@ -3010,9 +3124,9 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'B':
+			case 'T':
 				fallthrough
-			case 'b':
+			case 't':
 				goto yy242
 			default:
 				goto yy19
@@ -3021,10 +3135,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'U':
+			case 'M':
 				fallthrough
-			case 'u':
-				goto yy209
+			case 'm':
+				goto yy243
 			default:
 				goto yy19
 			}
@@ -3032,37 +3146,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case '\t', '\n':
+			case 'A':
 				fallthrough
-			case '\f', '\r':
-				fallthrough
-			case ' ':
-				yyt3 = cursor
-				goto yy243
-			case ',':
-				yyt3 = cursor
-				goto yy244
-			case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
-				goto yy200
-			case 'N':
-				fallthrough
-			case 'R':
-				fallthrough
-			case 'n':
-				fallthrough
-			case 'r':
-				yyt3 = cursor
-				goto yy245
-			case 'S':
-				fallthrough
-			case 's':
-				yyt3 = cursor
-				goto yy246
-			case 'T':
-				fallthrough
-			case 't':
-				yyt3 = cursor
-				goto yy247
+			case 'a':
+				goto yy151
 			default:
 				goto yy19
 			}
@@ -3070,35 +3157,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case '\t', '\n':
-				fallthrough
-			case '\f', '\r':
-				fallthrough
-			case ' ':
-				yyt3 = cursor
-				goto yy243
-			case ',':
-				yyt3 = cursor
-				goto yy244
-			case 'N':
-				fallthrough
 			case 'R':
 				fallthrough
-			case 'n':
-				fallthrough
 			case 'r':
-				yyt3 = cursor
-				goto yy245
-			case 'S':
-				fallthrough
-			case 's':
-				yyt3 = cursor
-				goto yy246
-			case 'T':
-				fallthrough
-			case 't':
-				yyt3 = cursor
-				goto yy247
+				goto yy83
 			default:
 				goto yy19
 			}
@@ -3106,8 +3168,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 0xB1:
-				goto yy248
+			case 'E':
+				fallthrough
+			case 'e':
+				goto yy137
 			default:
 				goto yy19
 			}
@@ -3115,10 +3179,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'T':
+			case 'E':
 				fallthrough
-			case 't':
-				goto yy249
+			case 'e':
+				goto yy67
 			default:
 				goto yy19
 			}
@@ -3126,10 +3190,14 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'M':
+			case 'E':
 				fallthrough
-			case 'm':
-				goto yy156
+			case 'e':
+				goto yy137
+			case 'R':
+				fallthrough
+			case 'r':
+				goto yy244
 			default:
 				goto yy19
 			}
@@ -3137,10 +3205,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'A':
+			case 'Z':
 				fallthrough
-			case 'a':
-				goto yy154
+			case 'z':
+				goto yy87
 			default:
 				goto yy19
 			}
@@ -3148,10 +3216,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'R':
+			case 'T':
 				fallthrough
-			case 'r':
-				goto yy250
+			case 't':
+				goto yy245
 			default:
 				goto yy19
 			}
@@ -3159,10 +3227,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'E':
-				fallthrough
-			case 'e':
-				goto yy27
+			case '1':
+				goto yy246
+			case '2':
+				goto yy247
 			default:
 				goto yy19
 			}
@@ -3170,10 +3238,12 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'E':
+			case '\t', '\n':
 				fallthrough
-			case 'e':
-				goto yy69
+			case '\f', '\r':
+				fallthrough
+			case ' ':
+				goto yy206
 			default:
 				goto yy19
 			}
@@ -3181,10 +3251,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'M':
+			case 'L':
 				fallthrough
-			case 'm':
-				goto yy70
+			case 'l':
+				goto yy179
 			default:
 				goto yy19
 			}
@@ -3192,10 +3262,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'S':
-				fallthrough
-			case 's':
-				goto yy70
+			case 'I':
+				goto yy248
+			case 0xC4:
+				goto yy249
 			default:
 				goto yy19
 			}
@@ -3203,10 +3273,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'R':
+			case 'S':
 				fallthrough
-			case 'r':
-				goto yy251
+			case 's':
+				goto yy159
 			default:
 				goto yy19
 			}
@@ -3214,14 +3284,22 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'E':
+			case '\t', '\n':
 				fallthrough
-			case 'e':
-				goto yy27
-			case 'R':
+			case '\f', '\r':
 				fallthrough
-			case 'r':
-				goto yy251
+			case ' ':
+				yyt3 = cursor
+				goto yy206
+			case ',':
+				fallthrough
+			case '.':
+				yyt3 = cursor
+				goto yy207
+			case 'S':
+				fallthrough
+			case 's':
+				goto yy250
 			default:
 				goto yy19
 			}
@@ -3229,10 +3307,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'Z':
+			case 'M':
 				fallthrough
-			case 'z':
-				goto yy70
+			case 'm':
+				goto yy233
 			default:
 				goto yy19
 			}
@@ -3240,10 +3318,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'T':
+			case 'E':
 				fallthrough
-			case 't':
-				goto yy252
+			case 'e':
+				goto yy251
 			default:
 				goto yy19
 			}
@@ -3251,10 +3329,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case '1':
-				goto yy253
-			case '2':
-				goto yy254
+			case 0x9C:
+				fallthrough
+			case 0xBC:
+				goto yy208
 			default:
 				goto yy19
 			}
@@ -3262,12 +3340,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case '\t', '\n':
+			case 'R':
 				fallthrough
-			case '\f', '\r':
-				fallthrough
-			case ' ':
-				goto yy214
+			case 'r':
+				goto yy179
 			default:
 				goto yy19
 			}
@@ -3275,8 +3351,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 0xC4:
-				goto yy255
+			case 'U':
+				fallthrough
+			case 'u':
+				goto yy219
 			default:
 				goto yy19
 			}
@@ -3284,10 +3362,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'S':
+			case 'R':
 				fallthrough
-			case 's':
-				goto yy163
+			case 'r':
+				goto yy220
 			default:
 				goto yy19
 			}
@@ -3295,14 +3373,109 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'L':
+			case 'R':
 				fallthrough
-			case 'l':
-				goto yy164
+			case 'r':
+				goto yy252
 			default:
 				goto yy19
 			}
 		yy219:
+			cursor++
+			yych = input[cursor]
+			switch yych {
+			case 'A':
+				fallthrough
+			case 'a':
+				goto yy253
+			default:
+				goto yy19
+			}
+		yy220:
+			cursor++
+			yych = input[cursor]
+			switch yych {
+			case 'I':
+				fallthrough
+			case 'i':
+				goto yy254
+			default:
+				goto yy19
+			}
+		yy221:
+			cursor++
+			yych = input[cursor]
+			switch yych {
+			case 'L':
+				fallthrough
+			case 'l':
+				goto yy255
+			default:
+				goto yy19
+			}
+		yy222:
+			cursor++
+			yych = input[cursor]
+			switch yych {
+			case 'N':
+				fallthrough
+			case 'n':
+				goto yy254
+			default:
+				goto yy19
+			}
+		yy223:
+			cursor++
+			yych = input[cursor]
+			switch yych {
+			case 'M':
+				fallthrough
+			case 'm':
+				goto yy179
+			default:
+				goto yy19
+			}
+		yy224:
+			cursor++
+			yych = input[cursor]
+			switch yych {
+			case 0xB1:
+				goto yy223
+			default:
+				goto yy19
+			}
+		yy225:
+			cursor++
+			yych = input[cursor]
+			switch yych {
+			case 'H':
+				fallthrough
+			case 'h':
+				goto yy179
+			default:
+				goto yy19
+			}
+		yy226:
+			cursor++
+			yych = input[cursor]
+			switch yych {
+			case 'S':
+				fallthrough
+			case 's':
+				goto yy179
+			default:
+				goto yy19
+			}
+		yy227:
+			cursor++
+			yych = input[cursor]
+			switch yych {
+			case 0xB1:
+				goto yy226
+			default:
+				goto yy19
+			}
+		yy228:
 			cursor++
 			yych = input[cursor]
 			switch yych {
@@ -3312,113 +3485,16 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 				fallthrough
 			case ' ':
 				yyt3 = cursor
-				goto yy214
+				goto yy206
 			case ',':
 				fallthrough
 			case '.':
 				yyt3 = cursor
-				goto yy215
-			case 'S':
+				goto yy207
+			case 'Z':
 				fallthrough
-			case 's':
-				goto yy256
-			default:
-				goto yy19
-			}
-		yy220:
-			cursor++
-			yych = input[cursor]
-			switch yych {
-			case 'M':
-				fallthrough
-			case 'm':
-				goto yy239
-			default:
-				goto yy19
-			}
-		yy221:
-			cursor++
-			yych = input[cursor]
-			switch yych {
-			case 'E':
-				fallthrough
-			case 'e':
-				goto yy257
-			default:
-				goto yy19
-			}
-		yy222:
-			cursor++
-			yych = input[cursor]
-			switch yych {
-			case 0xBC:
-				goto yy218
-			default:
-				goto yy19
-			}
-		yy223:
-			cursor++
-			yych = input[cursor]
-			switch yych {
-			case 'U':
-				fallthrough
-			case 'u':
-				goto yy226
-			default:
-				goto yy19
-			}
-		yy224:
-			cursor++
-			yych = input[cursor]
-			switch yych {
-			case 'R':
-				fallthrough
-			case 'r':
-				goto yy227
-			default:
-				goto yy19
-			}
-		yy225:
-			cursor++
-			yych = input[cursor]
-			switch yych {
-			case 'R':
-				fallthrough
-			case 'r':
-				goto yy258
-			default:
-				goto yy19
-			}
-		yy226:
-			cursor++
-			yych = input[cursor]
-			switch yych {
-			case 'A':
-				fallthrough
-			case 'a':
-				goto yy259
-			default:
-				goto yy19
-			}
-		yy227:
-			cursor++
-			yych = input[cursor]
-			switch yych {
-			case 'I':
-				fallthrough
-			case 'i':
-				goto yy260
-			default:
-				goto yy19
-			}
-		yy228:
-			cursor++
-			yych = input[cursor]
-			switch yych {
-			case 'L':
-				fallthrough
-			case 'l':
-				goto yy261
+			case 'z':
+				goto yy179
 			default:
 				goto yy19
 			}
@@ -3429,7 +3505,7 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			case 'N':
 				fallthrough
 			case 'n':
-				goto yy260
+				goto yy179
 			default:
 				goto yy19
 			}
@@ -3437,8 +3513,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 0xB1:
-				goto yy262
+			case 'M':
+				fallthrough
+			case 'm':
+				goto yy231
 			default:
 				goto yy19
 			}
@@ -3446,10 +3524,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'H':
+			case 'B':
 				fallthrough
-			case 'h':
-				goto yy164
+			case 'b':
+				goto yy256
 			default:
 				goto yy19
 			}
@@ -3457,12 +3535,51 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 0xB1:
-				goto yy263
+			case 'C':
+				fallthrough
+			case 'c':
+				goto yy122
+			case 'K':
+				fallthrough
+			case 'k':
+				goto yy124
 			default:
 				goto yy19
 			}
 		yy233:
+			cursor++
+			yych = input[cursor]
+			switch yych {
+			case 'B':
+				fallthrough
+			case 'b':
+				goto yy254
+			default:
+				goto yy19
+			}
+		yy234:
+			cursor++
+			yych = input[cursor]
+			switch yych {
+			case 'E':
+				fallthrough
+			case 'e':
+				goto yy230
+			default:
+				goto yy19
+			}
+		yy235:
+			cursor++
+			yych = input[cursor]
+			switch yych {
+			case 'U':
+				fallthrough
+			case 'u':
+				goto yy257
+			default:
+				goto yy19
+			}
+		yy236:
 			cursor++
 			yych = input[cursor]
 			switch yych {
@@ -3472,49 +3589,16 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 				fallthrough
 			case ' ':
 				yyt3 = cursor
-				goto yy214
+				goto yy206
 			case ',':
 				fallthrough
 			case '.':
 				yyt3 = cursor
-				goto yy215
-			case 'Z':
+				goto yy207
+			case 'A':
 				fallthrough
-			case 'z':
-				goto yy164
-			default:
-				goto yy19
-			}
-		yy234:
-			cursor++
-			yych = input[cursor]
-			switch yych {
-			case 'N':
-				fallthrough
-			case 'n':
-				goto yy164
-			default:
-				goto yy19
-			}
-		yy235:
-			cursor++
-			yych = input[cursor]
-			switch yych {
-			case 'M':
-				fallthrough
-			case 'm':
-				goto yy238
-			default:
-				goto yy19
-			}
-		yy236:
-			cursor++
-			yych = input[cursor]
-			switch yych {
-			case 'B':
-				fallthrough
-			case 'b':
-				goto yy264
+			case 'a':
+				goto yy159
 			default:
 				goto yy19
 			}
@@ -3522,12 +3606,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'C':
-				goto yy127
-			case 'c':
-				goto yy129
-			case 'k':
-				goto yy130
+			case '1':
+				goto yy258
+			case '2':
+				goto yy259
 			default:
 				goto yy19
 			}
@@ -3535,10 +3617,12 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'B':
+			case '\t', '\n':
 				fallthrough
-			case 'b':
-				goto yy265
+			case '\f', '\r':
+				fallthrough
+			case ' ':
+				goto yy237
 			default:
 				goto yy19
 			}
@@ -3546,9 +3630,9 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'B':
+			case 'D':
 				fallthrough
-			case 'b':
+			case 'd':
 				goto yy260
 			default:
 				goto yy19
@@ -3557,10 +3641,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'E':
+			case 'T':
 				fallthrough
-			case 'e':
-				goto yy235
+			case 't':
+				goto yy260
 			default:
 				goto yy19
 			}
@@ -3568,10 +3652,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'U':
+			case 'H':
 				fallthrough
-			case 'u':
-				goto yy266
+			case 'h':
+				goto yy260
 			default:
 				goto yy19
 			}
@@ -3579,22 +3663,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case '\t', '\n':
+			case 'O':
 				fallthrough
-			case '\f', '\r':
-				fallthrough
-			case ' ':
-				yyt3 = cursor
-				goto yy214
-			case ',':
-				fallthrough
-			case '.':
-				yyt3 = cursor
-				goto yy215
-			case 'A':
-				fallthrough
-			case 'a':
-				goto yy163
+			case 'o':
+				goto yy148
 			default:
 				goto yy19
 			}
@@ -3602,10 +3674,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case '1':
-				goto yy267
-			case '2':
-				goto yy268
+			case 'B':
+				fallthrough
+			case 'b':
+				goto yy261
 			default:
 				goto yy19
 			}
@@ -3613,12 +3685,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case '\t', '\n':
+			case 'E':
 				fallthrough
-			case '\f', '\r':
-				fallthrough
-			case ' ':
-				goto yy243
+			case 'e':
+				goto yy87
 			default:
 				goto yy19
 			}
@@ -3626,10 +3696,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'D':
+			case 'U':
 				fallthrough
-			case 'd':
-				goto yy269
+			case 'u':
+				goto yy226
 			default:
 				goto yy19
 			}
@@ -3637,10 +3707,8 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'T':
-				fallthrough
-			case 't':
-				goto yy269
+			case '9':
+				goto yy262
 			default:
 				goto yy19
 			}
@@ -3648,10 +3716,8 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'H':
-				fallthrough
-			case 'h':
-				goto yy269
+			case '0':
+				goto yy263
 			default:
 				goto yy19
 			}
@@ -3662,7 +3728,7 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			case 'K':
 				fallthrough
 			case 'k':
-				goto yy70
+				goto yy179
 			default:
 				goto yy19
 			}
@@ -3670,14 +3736,122 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'O':
-				fallthrough
-			case 'o':
-				goto yy209
+			case 0xB1:
+				goto yy248
 			default:
 				goto yy19
 			}
 		yy250:
+			cursor++
+			yych = input[cursor]
+			switch yych {
+			case 'T':
+				fallthrough
+			case 't':
+				goto yy264
+			default:
+				goto yy19
+			}
+		yy251:
+			cursor++
+			yych = input[cursor]
+			switch yych {
+			case 'M':
+				fallthrough
+			case 'm':
+				goto yy265
+			default:
+				goto yy19
+			}
+		yy252:
+			cursor++
+			yych = input[cursor]
+			switch yych {
+			case 'A':
+				fallthrough
+			case 'a':
+				goto yy229
+			default:
+				goto yy19
+			}
+		yy253:
+			cursor++
+			yych = input[cursor]
+			switch yych {
+			case 'R':
+				fallthrough
+			case 'r':
+				goto yy175
+			default:
+				goto yy19
+			}
+		yy254:
+			cursor++
+			yych = input[cursor]
+			switch yych {
+			case 'E':
+				fallthrough
+			case 'e':
+				goto yy215
+			default:
+				goto yy19
+			}
+		yy255:
+			cursor++
+			yych = input[cursor]
+			switch yych {
+			case 'E':
+				fallthrough
+			case 'e':
+				goto yy159
+			default:
+				goto yy19
+			}
+		yy256:
+			cursor++
+			yych = input[cursor]
+			switch yych {
+			case 'E':
+				fallthrough
+			case 'e':
+				goto yy215
+			case 'R':
+				fallthrough
+			case 'r':
+				goto yy266
+			default:
+				goto yy19
+			}
+		yy257:
+			cursor++
+			yych = input[cursor]
+			switch yych {
+			case 'Z':
+				fallthrough
+			case 'z':
+				goto yy179
+			default:
+				goto yy19
+			}
+		yy258:
+			cursor++
+			yych = input[cursor]
+			switch yych {
+			case '9':
+				goto yy267
+			default:
+				goto yy19
+			}
+		yy259:
+			cursor++
+			yych = input[cursor]
+			switch yych {
+			case '0':
+				goto yy268
+			default:
+				goto yy19
+			}
+		yy260:
 			cursor++
 			yych = input[cursor]
 			switch yych {
@@ -3686,119 +3860,9 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			case '\f', '\r':
 				fallthrough
 			case ' ':
-				goto yy135
-			case 'I':
-				fallthrough
-			case 'Y':
-				fallthrough
-			case 'i':
-				fallthrough
-			case 'y':
-				goto yy70
-			default:
-				goto yy19
-			}
-		yy251:
-			cursor++
-			yych = input[cursor]
-			switch yych {
-			case 'E':
-				fallthrough
-			case 'e':
-				goto yy70
-			default:
-				goto yy19
-			}
-		yy252:
-			cursor++
-			yych = input[cursor]
-			switch yych {
-			case 'U':
-				fallthrough
-			case 'u':
-				goto yy263
-			default:
-				goto yy19
-			}
-		yy253:
-			cursor++
-			yych = input[cursor]
-			switch yych {
-			case '9':
-				goto yy270
-			default:
-				goto yy19
-			}
-		yy254:
-			cursor++
-			yych = input[cursor]
-			switch yych {
-			case '0':
-				goto yy271
-			default:
-				goto yy19
-			}
-		yy255:
-			cursor++
-			yych = input[cursor]
-			switch yych {
-			case 0xB1:
-				goto yy272
-			default:
-				goto yy19
-			}
-		yy256:
-			cursor++
-			yych = input[cursor]
-			switch yych {
-			case 'T':
-				fallthrough
-			case 't':
-				goto yy273
-			default:
-				goto yy19
-			}
-		yy257:
-			cursor++
-			yych = input[cursor]
-			switch yych {
-			case 'M':
-				fallthrough
-			case 'm':
-				goto yy236
-			default:
-				goto yy19
-			}
-		yy258:
-			cursor++
-			yych = input[cursor]
-			switch yych {
-			case 'A':
-				fallthrough
-			case 'a':
-				goto yy234
-			default:
-				goto yy19
-			}
-		yy259:
-			cursor++
-			yych = input[cursor]
-			switch yych {
-			case 'R':
-				fallthrough
-			case 'r':
-				goto yy274
-			default:
-				goto yy19
-			}
-		yy260:
-			cursor++
-			yych = input[cursor]
-			switch yych {
-			case 'E':
-				fallthrough
-			case 'e':
-				goto yy105
+				goto yy237
+			case ',':
+				goto yy238
 			default:
 				goto yy19
 			}
@@ -3806,10 +3870,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'E':
+			case 'R':
 				fallthrough
-			case 'e':
-				goto yy163
+			case 'r':
+				goto yy244
 			default:
 				goto yy19
 			}
@@ -3817,10 +3881,8 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'M':
-				fallthrough
-			case 'm':
-				goto yy164
+			case '9':
+				goto yy269
 			default:
 				goto yy19
 			}
@@ -3828,10 +3890,8 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'S':
-				fallthrough
-			case 's':
-				goto yy164
+			case '0', '1', '2', '3':
+				goto yy269
 			default:
 				goto yy19
 			}
@@ -3839,10 +3899,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'R':
+			case 'O':
 				fallthrough
-			case 'r':
-				goto yy275
+			case 'o':
+				goto yy226
 			default:
 				goto yy19
 			}
@@ -3850,14 +3910,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'E':
+			case 'B':
 				fallthrough
-			case 'e':
-				goto yy105
-			case 'R':
-				fallthrough
-			case 'r':
-				goto yy275
+			case 'b':
+				goto yy270
 			default:
 				goto yy19
 			}
@@ -3865,10 +3921,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case 'Z':
+			case 'E':
 				fallthrough
-			case 'z':
-				goto yy164
+			case 'e':
+				goto yy179
 			default:
 				goto yy19
 			}
@@ -3877,7 +3933,7 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			yych = input[cursor]
 			switch yych {
 			case '9':
-				goto yy276
+				goto yy271
 			default:
 				goto yy19
 			}
@@ -3885,8 +3941,8 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case '0':
-				goto yy277
+			case '0', '1', '2', '3':
+				goto yy271
 			default:
 				goto yy19
 			}
@@ -3894,14 +3950,8 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case '\t', '\n':
-				fallthrough
-			case '\f', '\r':
-				fallthrough
-			case ' ':
-				goto yy243
-			case ',':
-				goto yy244
+			case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
+				goto yy272
 			default:
 				goto yy19
 			}
@@ -3909,8 +3959,10 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case '9':
-				goto yy278
+			case 'R':
+				fallthrough
+			case 'r':
+				goto yy266
 			default:
 				goto yy19
 			}
@@ -3918,108 +3970,12 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 			cursor++
 			yych = input[cursor]
 			switch yych {
-			case '0', '1', '2', '3':
-				goto yy278
+			case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
+				goto yy273
 			default:
 				goto yy19
 			}
 		yy272:
-			cursor++
-			yych = input[cursor]
-			switch yych {
-			case 'K':
-				fallthrough
-			case 'k':
-				goto yy164
-			default:
-				goto yy19
-			}
-		yy273:
-			cursor++
-			yych = input[cursor]
-			switch yych {
-			case 'O':
-				fallthrough
-			case 'o':
-				goto yy263
-			default:
-				goto yy19
-			}
-		yy274:
-			cursor++
-			yych = input[cursor]
-			switch yych {
-			case '\t', '\n':
-				fallthrough
-			case '\f', '\r':
-				fallthrough
-			case ' ':
-				yyt3 = cursor
-				goto yy214
-			case ',':
-				fallthrough
-			case '.':
-				yyt3 = cursor
-				goto yy215
-			case 'I':
-				fallthrough
-			case 'Y':
-				fallthrough
-			case 'i':
-				fallthrough
-			case 'y':
-				goto yy164
-			default:
-				goto yy19
-			}
-		yy275:
-			cursor++
-			yych = input[cursor]
-			switch yych {
-			case 'E':
-				fallthrough
-			case 'e':
-				goto yy164
-			default:
-				goto yy19
-			}
-		yy276:
-			cursor++
-			yych = input[cursor]
-			switch yych {
-			case '9':
-				goto yy279
-			default:
-				goto yy19
-			}
-		yy277:
-			cursor++
-			yych = input[cursor]
-			switch yych {
-			case '0', '1', '2', '3':
-				goto yy279
-			default:
-				goto yy19
-			}
-		yy278:
-			cursor++
-			yych = input[cursor]
-			switch yych {
-			case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
-				goto yy280
-			default:
-				goto yy19
-			}
-		yy279:
-			cursor++
-			yych = input[cursor]
-			switch yych {
-			case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
-				goto yy281
-			default:
-				goto yy19
-			}
-		yy280:
 			cursor++
 			yynmatch = 4
 			yypmatch[2] = yyt1
@@ -4038,7 +3994,7 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 				ok = true
 				return
 			}
-		yy281:
+		yy273:
 			cursor++
 			yynmatch = 4
 			yypmatch[2] = yyt1
@@ -4058,7 +4014,7 @@ func FindLongTextPattern(input string) (year, month, day string, ok bool) {
 				ok = true
 				return
 			}
-		yy282:
+		yy274:
 			{
 				return
 			}
