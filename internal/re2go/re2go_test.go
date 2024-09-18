@@ -383,5 +383,28 @@ func Test_FindLongTextPattern(t *testing.T) {
 	fail("Toplantı 31ts Haziran 2021'de yapıldı.")
 	fail("Onlar 14st Ekam 2023'te geldi.")
 	fail("Das Fest findet am 33. Aprıl 2008 statt.")
+}
 
+func Test_TimestampPatternSubmatch(t *testing.T) {
+	success := func(s, expected string) {
+		parts, _ := TimestampPatternSubmatch(s)
+		assert.Len(t, parts, 2)
+		assert.Equal(t, expected, parts[1])
+	}
+
+	fail := func(s string) {
+		parts, _ := TimestampPatternSubmatch(s)
+		assert.Empty(t, parts)
+	}
+
+	success("The event occurred on 2021-07-15 14:35:20.", "2021-07-15")
+	success("The meeting was logged at 1999-12-31 23:59:59.", "1999-12-31")
+	success("His flight landed on 2000-01-01T00:00:00.", "2000-01-01")
+	success("The system rebooted on 2005-06-10.12:45:30.", "2005-06-10")
+	success("She sent the email on 2022-08-03 09:12:45.", "2022-08-03")
+	success("The server crashed on 2010-09-15/17:30:05.", "2010-09-15")
+
+	fail("The event occurred on 2024-07-15 at 14:35:20.")
+	fail("The meeting was logged at 1999-13-31, 23:59:59.")
+	fail("The system rebooted on 2005-06-32 at 12:45:30.")
 }
