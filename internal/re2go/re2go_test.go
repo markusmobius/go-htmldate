@@ -334,3 +334,54 @@ func Test_MmYyyyPattern(t *testing.T) {
 	assertFail("The exam will be held on 8/20211.")
 	assertFail("We expect the results by 01/3020.")
 }
+
+func Test_FindLongTextPattern(t *testing.T) {
+	success := func(s, year, month, day string) {
+		y, m, d, ok := FindLongTextPattern(s)
+		assert.True(t, ok)
+		assert.Equal(t, year, y)
+		assert.Equal(t, month, m)
+		assert.Equal(t, day, d)
+	}
+
+	fail := func(s string) {
+		y, m, d, ok := FindLongTextPattern(s)
+		assert.False(t, ok)
+		assert.Empty(t, y)
+		assert.Empty(t, m)
+		assert.Empty(t, d)
+	}
+
+	success("I was born on January 1st, 2000.", "2000", "January", "1")
+	success("He arrived on February 29th, 2020.", "2020", "February", "29")
+	success("The conference is scheduled for 5th of March, 2021.", "2021", "March", "5")
+	success("They left on July 4, 1999.", "1999", "July", "4")
+	success("The event took place on 31st October 2005.", "2005", "October", "31")
+	success("Her birthday is on the 21st of August, 1998.", "1998", "August", "21")
+	success("We met on 12th July, 2010.", "2010", "July", "12")
+	success("His graduation was on 3rd of April 2002.", "2002", "April", "3")
+	success("The anniversary party is on 9th September 2022.", "2022", "September", "9")
+	success("She started work on November 11, 2018.", "2018", "November", "11")
+	success("Er wurde am 1. Januar 2000 geboren.", "2000", "Januar", "1")
+	success("Die Konferenz fand am 15. März 2022 statt.", "2022", "März", "15")
+	success("Sie reiste am 31. Oktober 1999 ab.", "1999", "Oktober", "31")
+	success("Wir feiern am 20. Juli 2021.", "2021", "Juli", "20")
+	success("Der Vertrag begann am 4. April 2005.", "2005", "April", "4")
+	success("Tatildeydik 12 Temmuz 2019.", "2019", "Temmuz", "12")
+	success("Onlar 5 Haziran 2020'de taşındı.", "2020", "Haziran", "5")
+	success("Mezuniyet töreni 18. Kasım 2003'te gerçekleşti.", "2003", "Kasım", "18")
+	success("Toplantı 29 Şubat 2020'de yapılacak.", "2020", "Şubat", "29")
+	success("Festival 10 Ağustos 2022'de başlayacak.", "2022", "Ağustos", "10")
+
+	fail("The meeting is set for 11 Januarie, 2023.")
+	fail("He was born on 29th of February, 2107.")
+	fail("We went on March 41, 2001.")
+	fail("She celebrated her birthday on 16sd May, 2020.")
+	fail("They arrived on 31st of the April, 2021.")
+	fail("Er kam am 32. Januir 2001 an.")
+	fail("Das Treffen war am 29, Februar 1995.")
+	fail("Toplantı 31ts Haziran 2021'de yapıldı.")
+	fail("Onlar 14st Ekam 2023'te geldi.")
+	fail("Das Fest findet am 33. Aprıl 2008 statt.")
+
+}
