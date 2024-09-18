@@ -408,3 +408,188 @@ func Test_TimestampPatternSubmatch(t *testing.T) {
 	fail("The meeting was logged at 1999-13-31, 23:59:59.")
 	fail("The system rebooted on 2005-06-32 at 12:45:30.")
 }
+
+func Test_CopyrightPattern(t *testing.T) {
+	success := func(s, expectedMatch, expectedYear string) {
+		indexes := CopyrightPattern(s)
+		assert.Len(t, indexes, 1)
+
+		match := s[indexes[0][0]:indexes[0][1]]
+		assert.Equal(t, expectedMatch, match)
+
+		year := s[indexes[0][2]:indexes[0][3]]
+		assert.Equal(t, expectedYear, year)
+	}
+
+	fail := func(s string) {
+		indexes := CopyrightPattern(s)
+		assert.Empty(t, indexes)
+	}
+
+	success("© 1998-2022 All rights reserved.", "© 1998-2022 ", "2022")
+	success("Copyright 2000-2019 by Example Corp.", "Copyright 2000-2019 ", "2019")
+	success("This content is © 2021.", "© 2021.", "2021")
+	success("&copy; 1995-2020 by the author.", "&copy; 1995-2020 ", "2020")
+	success("Published under (c) 2010-2021 terms.", "(c) 2010-2021 ", "2021")
+	success("© 2023 Example Company.", "© 2023 ", "2023")
+	success("Copyright 1997-2018. All rights reserved.", "Copyright 1997-2018.", "2018")
+	success("&copy; 1999-2020 Corporation.", "&copy; 1999-2020 ", "2020")
+	success("(c) 1996-2021, All rights reserved.", "(c) 1996-2021,", "2021")
+	success("© 1995-2010 by John Doe.", "© 1995-2010 ", "2010")
+
+	fail("Copyright 1925-3030.")
+	fail("&copy; 1989-1995 by the publisher.")
+	fail("Published in 2024 under (c).")
+}
+
+func Test_ThreePattern(t *testing.T) {
+	success := func(s, expectedMatch string) {
+		indexes := ThreePattern(s)
+		assert.Len(t, indexes, 1)
+
+		match := s[indexes[0][2]:indexes[0][3]]
+		assert.Equal(t, expectedMatch, match)
+	}
+
+	fail := func(s string) {
+		indexes := ThreePattern(s)
+		assert.Empty(t, indexes)
+	}
+
+	success("https://example.com/2023/08/15/0", "2023/08/15")
+	success("http://mysite.org/blog/2022/07/01/1", "2022/07/01")
+	success("https://website.com/articles/1999/12/31/0", "1999/12/31")
+	success("http://news.net/view/2020/11/05/1", "2020/11/05")
+	success("https://demo.org/path/2021/06/20/0", "2021/06/20")
+	success("http://content.com/reports/2023/02/28/1", "2023/02/28")
+	success("https://example.net/events/2019/09/17/0", "2019/09/17")
+	success("http://archive.org/2020/10/10/1", "2020/10/10")
+	success("https://site.com/posts/2022/03/05/0", "2022/03/05")
+	success("http://data.net/log/2021/04/30/1", "2021/04/30")
+
+	fail("http://example.com/2023/8/15/0")
+	fail("https://mysite.org/blog/2022/07/323/1")
+	fail("http://website.com/articles/1999-12-31/0")
+	fail("https://news.net/view/2020/11/05")
+	fail("http://demo.org/path/202/06/20/0")
+}
+
+func Test_ThreeLoosePattern(t *testing.T) {
+	success := func(s, expectedMatch string) {
+		indexes := ThreeLoosePattern(s)
+		assert.Len(t, indexes, 1)
+
+		match := s[indexes[0][2]:indexes[0][3]]
+		assert.Equal(t, expectedMatch, match)
+	}
+
+	fail := func(s string) {
+		indexes := ThreeLoosePattern(s)
+		assert.Empty(t, indexes)
+	}
+
+	success("https://example.com/2023/08/15/details", "2023/08/15")
+	success("http://mysite.org/archive/1999-12-31/info", "1999-12-31")
+	success("https://website.com/posts/2021.07.01/summary", "2021.07.01")
+	success("http://news.net/view/2020/11/05/updates", "2020/11/05")
+	success("https://demo.org/files/2019-09-17/report", "2019-09-17")
+	success("http://content.com/docs/2022/03/05/document", "2022/03/05")
+	success("https://example.net/data/2023.02.28/record", "2023.02.28")
+	success("http://archive.org/2020/10/10/article", "2020/10/10")
+	success("https://site.com/media/2018-06-21/photo", "2018-06-21")
+	success("http://data.net/files/2021.04.30/details", "2021.04.30")
+
+	fail("https://example.com/2023/8/15/details")
+	fail("http://mysite.org/archive/19999-12-32/info")
+	fail("https://website.com/posts/2021/07//01/summary")
+	fail("http://news.net/view/202-11-05/updates")
+	fail("https://demo.org/files/202/06/20/report")
+}
+
+func Test_DateStringsPattern(t *testing.T) {
+	success := func(s, expectedMatch string) {
+		indexes := DateStringsPattern(s)
+		assert.Len(t, indexes, 1)
+
+		match := s[indexes[0][2]:indexes[0][3]]
+		assert.Equal(t, expectedMatch, match)
+	}
+
+	fail := func(s string) {
+		indexes := DateStringsPattern(s)
+		assert.Empty(t, indexes)
+	}
+
+	success("The file was created on X19501230X.", "X19501230X")
+	success("I found document from Y19891101Y in the archives.", "Y19891101Y")
+	success("The report was due by Z20050321Z, but it arrived late.", "Z20050321Z")
+	success("Our event took place on A20190214A and was a great success.", "A20190214A")
+	success("He said the date is B19740615B, so we should proceed accordingly.", "B19740615B")
+	success("They moved into the house on M19651201M after signing the papers.", "M19651201M")
+	success("The deadline for the submission is C20071130C, don't miss it.", "C20071130C")
+	success("The last update was on W20230815W, according to the logs.", "W20230815W")
+	success("Her birthday is on V19820602V, you should send her a card.", "V19820602V")
+	success("The system was reset on K19991225K, and everything worked fine.", "K19991225K")
+
+	fail("The meeting happened on 195101330, but we missed the announcement.")
+	fail("He arrived on B119741131B, which seems like an invalid date.")
+}
+
+func Test_YyyyMmPattern(t *testing.T) {
+	success := func(s, expectedMatch string) {
+		indexes := YyyyMmPattern(s)
+		assert.Len(t, indexes, 1)
+
+		match := s[indexes[0][2]:indexes[0][3]]
+		assert.Equal(t, expectedMatch, match)
+	}
+
+	fail := func(s string) {
+		indexes := YyyyMmPattern(s)
+		assert.Empty(t, indexes)
+	}
+
+	success("The invoice was sent on X2023/08X, please confirm.", "2023/08")
+	success("Our meeting is scheduled for Y2019-04Y at noon.", "2019-04")
+	success("The event happened on Z2020.12Z, and it was amazing.", "2020.12")
+	success("We received the package on X2005-03X in good condition.", "2005-03")
+	success("The product was released in Y2021.09Y after much anticipation.", "2021.09")
+	success("Please review the document dated Z2010-11Z as soon as possible.", "2010-11")
+	success("The last update was on A2022/07A, and it worked perfectly.", "2022/07")
+	success("We expect the shipment in W2008/01W by the end of the week.", "2008/01")
+	success("Her passport was issued on T2018-10T before the trip.", "2018-10")
+	success("The article was published in N2023.06N last week.", "2023.06")
+
+	fail("The order was placed on X2023/13X, but that date seems incorrect.")
+	fail("The document is from Y2019-00Y, which doesn't look right.")
+	fail("I checked the record dated Z2022.14Z, but found no information.")
+	fail("His visa expired in W2009/15W, which cannot be valid.")
+	fail("The delivery is scheduled for T2018-00T, but that date is impossible.")
+}
+
+func Test_SimplePattern(t *testing.T) {
+	success := func(s, expectedMatch string) {
+		indexes := SimplePattern(s)
+		assert.Len(t, indexes, 1)
+
+		match := s[indexes[0][2]:indexes[0][3]]
+		assert.Equal(t, expectedMatch, match)
+	}
+
+	fail := func(s string) {
+		indexes := SimplePattern(s)
+		assert.Empty(t, indexes)
+	}
+
+	success("The company was founded in 1998 and grew rapidly.", "1998")
+	success("He graduated from university in 2003 with honors.", "2003")
+	success("Our project began in 2020 and is still ongoing.", "2020")
+	success("The concert took place in 1999 and was unforgettable.", "1999")
+	success("She was born in 2015, just a few years ago.", "2015")
+	success("The law was passed in 2005 and is now in effect.", "2005")
+
+	fail("The company was established in 1989, before the tech boom.")
+	fail("She was born in 2050, in a future world.")
+	fail("His graduation was in 2090, which sounds impossible.")
+	fail("The document mentioned a date from 1985, long before the project began.")
+}
