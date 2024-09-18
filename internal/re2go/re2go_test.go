@@ -239,3 +239,98 @@ func Test_IdiosyncracyPatternSubmatch(t *testing.T) {
 	assertFail("Duyuru 05/7/2019'da yaımlandı, gün ve ay tam değil.")
 	assertFail("Rapor 10-10-21’de yayımlandı, eksik yıl formatı.")
 }
+
+func Test_SelectYmdPattern(t *testing.T) {
+	assertSuccess := func(s string, expected string) {
+		indexes := SelectYmdPattern(s)
+		assert.Len(t, indexes, 1)
+
+		match := s[indexes[0][0]:indexes[0][1]]
+		assert.Equal(t, expected, match)
+	}
+
+	assertFail := func(s string) {
+		indexes := SelectYmdPattern(s)
+		assert.Empty(t, indexes)
+	}
+
+	assertSuccess("The event occurred on 12/08/2023 and was a success.", " 12/08/2023 ")
+	assertSuccess("Document finalized on 15.03.2022, as noted.", " 15.03.2022,")
+	assertSuccess("The meeting was scheduled for 01-01-2020.", " 01-01-2020.")
+	assertSuccess("The system update happened on 05/07/2019.", " 05/07/2019.")
+	assertSuccess("Please note the update on 10.10.2021.", " 10.10.2021.")
+	assertSuccess("The last revision was on 30/11/2020.", " 30/11/2020.")
+	assertSuccess("The article was published on 22-02-2021.", " 22-02-2021.")
+	assertSuccess("The records show 01/12/2022 as the latest entry.", " 01/12/2022 ")
+	assertSuccess("The software was released on 15.09.2018.", " 15.09.2018.")
+	assertSuccess("The new policy is effective from 25/05/2023.", " 25/05/2023.")
+
+	assertFail("The report was due on 2023/12/08, incorrect format.")
+	assertFail("The project started on 15.03.22, missing full year.")
+	assertFail("Event scheduled for 05/07/19, missing full year.")
+	assertFail("The update happened 10/10/21, missing separators.")
+}
+
+func Test_SlashesPattern(t *testing.T) {
+	assertSuccess := func(s string, expected string) {
+		indexes := SlashesPattern(s)
+		assert.Len(t, indexes, 1)
+
+		match := s[indexes[0][0]:indexes[0][1]]
+		assert.Equal(t, expected, match)
+	}
+
+	assertFail := func(s string) {
+		indexes := SlashesPattern(s)
+		assert.Empty(t, indexes)
+	}
+
+	assertSuccess("http://example.com/test/12/05/21/sample", "/12/05/21/")
+	assertSuccess("https://mysite.org/article/9/4/99/about", "/9/4/99/")
+	assertSuccess("https://website.com/post/03/11/20/page", "/03/11/20/")
+	assertSuccess("http://news.net/view/30.10.99/info", "/30.10.99/")
+	assertSuccess("https://example.org/entry/31.01.20/about", "/31.01.20/")
+	assertSuccess("http://domain.com/path/3/12/29/article", "/3/12/29/")
+	assertSuccess("https://randomsite.net/page/01.11.21/details", "/01.11.21/")
+	assertSuccess("http://othersite.com/report/15.08.19/section", "/15.08.19/")
+	assertSuccess("https://demo.com/blog/29.09.99/post", "/29.09.99/")
+	assertSuccess("http://sample.net/path/30.05.29/test", "/30.05.29/")
+
+	assertFail("http://example.com/test/42/13/21/sample")
+	assertFail("https://mysite.org/article/9/4/210/about")
+	assertFail("https://website.com/post/40.12.20/page")
+	assertFail("http://news.net/view/30-10-99/info")
+	assertFail("https://example.org/entry/31.23.20/about")
+}
+
+func Test_MmYyyyPattern(t *testing.T) {
+	assertSuccess := func(s string, expected string) {
+		indexes := MmYyyyPattern(s)
+		assert.Len(t, indexes, 1)
+
+		match := s[indexes[0][0]:indexes[0][1]]
+		assert.Equal(t, expected, match)
+	}
+
+	assertFail := func(s string) {
+		indexes := MmYyyyPattern(s)
+		assert.Empty(t, indexes)
+	}
+
+	assertSuccess("I have an appointment on 09/2023 at the clinic.", " 09/2023 ")
+	assertSuccess("The meeting was rescheduled to 3.2022.", " 3.2022.")
+	assertSuccess("We will start the project by 07-2021.", " 07-2021.")
+	assertSuccess("His birthday is 12.2025, and we're planning a surprise.", " 12.2025,")
+	assertSuccess("She moved to the new city in 04/2020.", " 04/2020.")
+	assertSuccess("The contract starts from 01-2024.", " 01-2024.")
+	assertSuccess("The event took place on 8/2019.", " 8/2019.")
+	assertSuccess("We completed the survey in 06.2021.", " 06.2021.")
+	assertSuccess("The package was delivered on 10-2022.", " 10-2022.")
+	assertSuccess("Their vacation is scheduled for 11/2026.", " 11/2026.")
+
+	assertFail("He left on 22/2021, which was unexpected.")
+	assertFail("Her visit is scheduled for 02-219.")
+	assertFail("I submitted the paper on 07.22.")
+	assertFail("The exam will be held on 8/20211.")
+	assertFail("We expect the results by 01/3020.")
+}
