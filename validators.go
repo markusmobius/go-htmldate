@@ -18,10 +18,9 @@
 package htmldate
 
 import (
+	"regexp"
 	"strconv"
 	"time"
-
-	"github.com/markusmobius/go-htmldate/internal/regexp"
 )
 
 type yearCandidate struct {
@@ -118,7 +117,12 @@ func checkExtractedReference(reference int64, opts Options) time.Time {
 
 // plausibleYearFilter filters the date patterns to find plausible years only.
 // Unlike in the original, here we sort it as well by the highest frequency.
-func plausibleYearFilter(htmlString string, rxPattern, rxYearPattern *regexp.Regexp, toComplete bool, opts Options) []yearCandidate {
+func plausibleYearFilter(
+	htmlString string,
+	patternFinder fnRe2GoFinder,
+	rxYearPattern *regexp.Regexp,
+	toComplete bool, opts Options,
+) []yearCandidate {
 	// Prepare min and max year
 	minYear := opts.MinDate.Year()
 	maxYear := opts.MaxDate.Year()
@@ -128,7 +132,7 @@ func plausibleYearFilter(htmlString string, rxPattern, rxYearPattern *regexp.Reg
 	mapMatchCount := make(map[string]int)
 	mapMatchRawString := make(map[string]string)
 
-	for _, idxs := range rxPattern.FindAllStringSubmatchIndex(htmlString, -1) {
+	for _, idxs := range patternFinder(htmlString) {
 		var match string
 		if len(idxs) > 2 {
 			match = htmlString[idxs[2]:idxs[3]]
@@ -198,7 +202,7 @@ func plausibleYearFilter(htmlString string, rxPattern, rxYearPattern *regexp.Reg
 }
 
 // filterYmdCandidate filters free text candidates in the YMD format.
-func filterYmdCandidate(bestMatch []string, pattern *regexp.Regexp, copYear int, opts Options) time.Time {
+func filterYmdCandidate(bestMatch []string, pattern string, copYear int, opts Options) time.Time {
 	if len(bestMatch) < 4 {
 		return timeZero
 	}
@@ -213,7 +217,7 @@ func filterYmdCandidate(bestMatch []string, pattern *regexp.Regexp, copYear int,
 
 	if copYear == 0 || dt.Year() >= copYear {
 		s := dt.Format("2006-01-02")
-		log.Debug().Msgf("date found for pattern %s: %s", pattern.String(), s)
+		log.Debug().Msgf("date found for pattern %s: %s", pattern, s)
 		return dt
 	}
 

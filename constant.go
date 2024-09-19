@@ -19,12 +19,14 @@ package htmldate
 
 import (
 	"fmt"
-	stdregex "regexp"
+	"regexp"
 	"time"
 
 	dps "github.com/markusmobius/go-dateparser"
-	"github.com/markusmobius/go-htmldate/internal/regexp"
+	"github.com/markusmobius/go-htmldate/internal/re2go"
 )
+
+type fnRe2GoFinder func(string) [][]int
 
 var (
 	timeZero       = time.Time{}
@@ -74,25 +76,7 @@ var (
 		`(?P<month>%[2]s)[\-/.](?P<year>%[1]s)`+
 		`)(?:\D|$)`, rxYear, rxMonth)
 
-	// TODO: check "août"
-	rxMonths = `` +
-		`January?|February?|March|A[pv]ril|Ma[iy]|Jun[ei]|Jul[iy]|August|September|O[ck]tober|November|De[csz]ember|` +
-		`Jan|Feb|M[aä]r|Apr|Jun|Jul|Aug|Sep|O[ck]t|Nov|De[cz]|` +
-		`Januari|Februari|Maret|Mei|Agustus|` +
-		`Jänner|Feber|März|` +
-		`janvier|février|mars|juin|juillet|aout|septembre|octobre|novembre|décembre|` +
-		`Ocak|Şubat|Mart|Nisan|Mayıs|Haziran|Temmuz|Ağustos|Eylül|Ekim|Kasım|Aralık|` +
-		`Oca|Şub|Mar|Nis|Haz|Tem|Ağu|Eyl|Eki|Kas|Ara`
-	rxLongTextPattern = compileRegexF(`(?i)`+
-		`(?P<month>%[2]s)\s(?P<day>%[3]s)(?:st|nd|rd|th)?,? (?P<year>%[1]s)`+
-		`|`+
-		`(?P<day>%[3]s)(?:st|nd|rd|th|\.)? (?:of )?(?P<month>%[2]s)[,.]? (?P<year>%[1]s)`,
-		rxYear, rxMonths, rxDay)
-
 	rxCompleteUrl = compileRegexF(`(?i)\D(%[1]s)[/_-](%[2]s)[/_-](%[3]s)(?:\D|$)`,
-		rxYear, rxMonth, rxDay)
-
-	rxTimestampPattern = compileRegexF(`(?i)(%[1]s-%[2]s-%[3]s).[0-9]{2}:[0-9]{2}:[0-9]{2}`,
 		rxYear, rxMonth, rxDay)
 
 	rxTextDatePattern = regexp.MustCompile(`(?i)[.:,_/ -]|^\d+$`)
@@ -109,56 +93,31 @@ var (
 		`®` + // ©
 		``)
 
-	rxEnPattern = regexp.MustCompile(`(?i)(?:date[^0-9"]{0,20}|updated|published|on)(?:[ :])*?([0-9]{1,4})[./]([0-9]{1,2})[./]([0-9]{2,4})`)
-	rxDePattern = regexp.MustCompile(`(?i)(?:Datum|Stand|Veröffentlicht am):? ?([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{2,4})`)
-	rxTrPattern = regexp.MustCompile(`(?i)` +
-		`(?:güncellen?me|yayı(?:m|n)lan?ma) *?(?:tarihi)? *?:? *?([0-9]{1,2})[./]([0-9]{1,2})[./]([0-9]{2,4})` +
-		`|` +
-		`([0-9]{1,2})[./]([0-9]{1,2})[./]([0-9]{2,4}) *?(?:'de|'da|'te|'ta|’de|’da|’te|’ta|tarihinde) *(?:güncellendi|yayı(?:m|n)landı)`)
-
-	// TODO: merge all idiosyncracy pattern
-	// rxIdiosyncracyPattern = regexp.MustCompile(`(?i)` +
-	// `(?:date[^0-9"]{0,20}|updated|published|on)(?:[ :])*?([0-9]{1,4})[./]([0-9]{1,2})[./]([0-9]{2,4})` + // EN
-	// `|` +
-	// `(?i)(?:Datum|Stand|Veröffentlicht am):? ?([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{2,4})` + // DE
-	// `|` +
-	// `(?:güncellen?me|yayı(?:m|n)lan?ma) *?(?:tarihi)? *?:? *?([0-9]{1,2})[./]([0-9]{1,2})[./]([0-9]{2,4})` +
-	// `|` +
-	// `([0-9]{1,2})[./]([0-9]{1,2})[./]([0-9]{2,4}) *?(?:'de|'da|'te|'ta|’de|’da|’te|’ta|tarihinde) *(?:güncellendi|yayı(?:m|n)landı)`) // TR
-
 	// Extensive search patterns
-	rxYearPattern        = compileRegexF(`^\D?(%s)`, rxYear)
-	rxCopyrightPattern   = compileRegexF(`(?:©|\&copy;|Copyright|\(c\))\D*(?:%[1]s-)?(%[1]s)\D`, rxYear)
-	rxThreePattern       = regexp.MustCompile(`/([0-9]{4}/[0-9]{2}/[0-9]{2})[01/]`)
-	rxThreeCatch         = regexp.MustCompile(`([0-9]{4})/([0-9]{2})/([0-9]{2})`)
-	rxThreeLoosePattern  = regexp.MustCompile(`\D([0-9]{4}[/.-][0-9]{2}[/.-][0-9]{2})\D`)
-	rxThreeLooseCatch    = regexp.MustCompile(`([0-9]{4})[/.-]([0-9]{2})[/.-]([0-9]{2})`)
-	rxSelectYmdPattern   = regexp.MustCompile(`\D([0-3]?[0-9][/.-][01]?[0-9][/.-][0-9]{4})\D`)
-	rxSelectYmdYear      = compileRegexF(`(%s)\D?$`, rxYear)
-	rxYmdYear            = compileRegexF(`^(%s)`, rxYear)
-	rxDateStringsPattern = regexp.MustCompile(`(\D19[0-9]{2}[01][0-9][0-3][0-9]\D|\D20[0-9]{2}[01][0-9][0-3][0-9]\D)`)
-	rxDateStringsCatch   = compileRegexF(`(%s)([01][0-9])([0-3][0-9])`, rxYear)
-	rxSlashesPattern     = regexp.MustCompile(`\D([0-3]?[0-9]/[01]?[0-9]/[0129][0-9]|[0-3][0-9]\.[01][0-9]\.[0129][0-9])\D`)
-	rxSlashesYear        = regexp.MustCompile(`([0-9]{2})$`)
-	rxYyyyMmPattern      = regexp.MustCompile(`\D([12][0-9]{3}[/.-](?:1[0-2]|0[1-9]))\D`)
-	rxYyyyMmCatch        = compileRegexF(`(%s)[/.-](1[0-2]|0[1-9])`, rxYear)
-	rxMmYyyyPattern      = regexp.MustCompile(`\D([01]?[0-9][/.-][12][0-9]{3})\D`)
-	rxMmYyyyYear         = compileRegexF(`(%s)\D?$`, rxYear)
-	rxSimplePattern      = compileRegexF(`\D(%s)\D`, rxYear)
-	rxSimpleW3Cleaner    = compileRegexF(`w3.org\D(%s)\D`, rxYear)
+	rxYearPattern      = compileRegexF(`^\D?(%s)`, rxYear)
+	rxThreeCatch       = regexp.MustCompile(`([0-9]{4})/([0-9]{2})/([0-9]{2})`)
+	rxThreeLooseCatch  = regexp.MustCompile(`([0-9]{4})[/.-]([0-9]{2})[/.-]([0-9]{2})`)
+	rxSelectYmdYear    = compileRegexF(`(%s)\D?$`, rxYear)
+	rxYmdYear          = compileRegexF(`^(%s)`, rxYear)
+	rxDateStringsCatch = compileRegexF(`(%s)([01][0-9])([0-3][0-9])`, rxYear)
+	rxSlashesYear      = regexp.MustCompile(`([0-9]{2})$`)
+	rxYyyyMmCatch      = compileRegexF(`(%s)[/.-](1[0-2]|0[1-9])`, rxYear)
+	rxMmYyyyYear       = compileRegexF(`(%s)\D?$`, rxYear)
+	rxSimpleW3Cleaner  = compileRegexF(`w3.org\D(%s)\D`, rxYear)
 
 	rxThreeComponents = []struct {
-		Pattern *regexp.Regexp
+		Name    string
+		Pattern fnRe2GoFinder
 		Catcher *regexp.Regexp
 	}{
-		{rxThreePattern, rxThreeCatch},
-		{rxThreeLoosePattern, rxThreeLooseCatch},
+		{"ThreePattern", re2go.ThreePattern, rxThreeCatch},
+		{"ThreeLoosePattern", re2go.ThreeLoosePattern, rxThreeLooseCatch},
 	}
 
 	// Time patterns
 	rxCommonTime = regexp.MustCompile(`(?i)(?:\D|^)(\d{1,2})(?::|\s*h\s*)(\d{1,2})(?::(\d{1,2})(?:\.\d+)?)?(?:\s*((?:a|p)\.?m\.?))?`)
-	rxTzCode     = stdregex.MustCompile(`(?i)(?:\s|^)([-+])(\d{2})(?::?(\d{2}))?`)
-	rxIsoTime    = stdregex.MustCompile(`(?i)(\d{2}):(\d{2})(?::(\d{2})(?:\.\d+)?)?(Z|[+-]\d{2}(?::?\d{2})?)`)
+	rxTzCode     = regexp.MustCompile(`(?i)(?:\s|^)([-+])(\d{2})(?::?(\d{2}))?`)
+	rxIsoTime    = regexp.MustCompile(`(?i)(\d{2}):(\d{2})(?::(\d{2})(?:\.\d+)?)?(Z|[+-]\d{2}(?::?\d{2})?)`)
 
 	rxLastJsonBracket = regexp.MustCompile(`(?i)\s*\}$`)
 )
