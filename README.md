@@ -30,7 +30,7 @@ By default Go-HtmlDate will run in extensive mode. You can disabled it by settin
 
 ## Status
 
-This package is stable enough for use and up to date with the original `htmldate` [v1.8.1][2] (commit [6dde09e][3]). However, since time extraction is a brand new feature which doesn't exist in the original, use it with care. So far it works quite nicely on most news sites that I've tried, but it still needs more testing.
+This package is stable enough for use and up to date with the original `htmldate` [v1.9.1][2] (commit [3e2a230][3]). However, since time extraction is a brand new feature which doesn't exist in the original, use it with care. So far it works quite nicely on most news sites that I've tried, but it still needs more testing.
 
 When time extraction is enabled, there are some behaviors that I'd like to note:
 
@@ -110,8 +110,8 @@ Here is the result when tested in my PC (Intel i7-8550U @ 4.000GHz, RAM 16 GB):
 
 |           Package           | Precision | Recall | Accuracy | F-Score | Speed (s) |
 | :-------------------------: | :-------: | :----: | :------: | :-----: | :-------: |
-|   `htmldate` v1.8.1 fast    |   0.881   | 0.924  |  0.821   |  0.902  |   7.039   |
-| `htmldate` v1.8.1 extensive |   0.868   | 0.993  |  0.863   |  0.926  |  11.507   |
+|   `htmldate` v1.9.1 fast    |   0.881   | 0.924  |  0.821   |  0.902  |   7.039   |
+| `htmldate` v1.9.1 extensive |   0.868   | 0.993  |  0.863   |  0.926  |  11.507   |
 |     `go-htmldate` fast      |   0.882   | 0.925  |  0.823   |  0.903  |   0.767   |
 |   `go-htmldate` extensive   |   0.870   | 0.993  |  0.865   |  0.928  |   1.682   |
 
@@ -153,8 +153,8 @@ Like the original, `go-htmldate` is distributed under the [Apache v2.0](LICENSE)
 
 [0]: https://github.com/adbar/htmldate
 [1]: https://github.com/adbar
-[2]: https://github.com/adbar/htmldate/tree/v1.8.1
-[3]: https://github.com/adbar/htmldate/commit/6dde09e
+[2]: https://github.com/adbar/htmldate/tree/v1.9.1
+[3]: https://github.com/adbar/htmldate/commit/3e2a230
 [dcg]: https://dataculturegroup.org
 [ref-badge]: https://pkg.go.dev/badge/github.com/markusmobius/go-htmldate.svg
 [ref-link]: https://pkg.go.dev/github.com/markusmobius/go-htmldate
