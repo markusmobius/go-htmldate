@@ -298,4 +298,6 @@ func Test_tryExternalDateParser(t *testing.T) {
 	// https://github.com/scrapinghub/dateparser/issues/680
 	assert.Equal(t, "", parse("2.2250738585072011e-308"))
 	assert.Equal(t, "", parse("⁰⁴⁵₀₁₂"))
+
+	assert.Equal(t, "2017-09-01", parse("Fri | September 1 | 2017"))
 }

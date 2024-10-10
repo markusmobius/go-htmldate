@@ -441,7 +441,7 @@ func correctYear(year int) int {
 // trySwapValues swap day and month values if it seems feaaible.
 func trySwapValues(day, month int) (int, int) {
 	if month > 12 && day <= 12 {
-		day, month = month, day
+		return month, day
 	}
 	return day, month
 }

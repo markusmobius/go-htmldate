@@ -661,12 +661,11 @@ func searchPage(htmlString string, opts Options) (string, time.Time) {
 	var copRawString string
 	rawString, bestMatch := searchPattern(htmlString, re2go.CopyrightPattern, rxYearPattern, rxYearPattern, opts)
 	if len(bestMatch) > 0 {
-		log.Debug().Msgf("copyright detected: %s", bestMatch[0])
-		bestMatchVal, err := strconv.Atoi(bestMatch[0])
-		if err == nil && bestMatchVal >= opts.MinDate.Year() && bestMatchVal <= opts.MaxDate.Year() {
-			log.Debug().Msgf("copyright year/footer pattern found: %d", bestMatchVal)
+		year, _ := strconv.Atoi(bestMatch[0])
+		if _, valid := validateDateParts(year, 1, 1, opts); valid {
+			log.Debug().Msgf("copyright year/footer pattern found: %d", year)
 			copRawString = rawString
-			copYear = bestMatchVal
+			copYear = year
 		}
 	}
 

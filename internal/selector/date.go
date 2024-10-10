@@ -17,7 +17,7 @@ func SlowDate(n *html.Node) bool {
 	}
 }
 
-// ..//footer | .//small | //*[(self::div or self::h2 or self::h3 or self::h4 or self::li or self::p or self::span or self::time or self::ul)], then date selector.
+// ..//footer | .//small | //*[self::div or self::h2 or self::h3 or self::h4 or self::li or self::p or self::span or self::time or self::ul], then date selector.
 func FastDate(n *html.Node) bool {
 	switch dom.TagName(n) {
 	case "footer", "small":

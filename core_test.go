@@ -18,11 +18,14 @@
 package htmldate
 
 import (
+	"fmt"
 	"io"
 	"regexp"
+	"strings"
 	"testing"
 	"time"
 
+	"github.com/go-shiori/dom"
 	"github.com/markusmobius/go-htmldate/internal/re2go"
 	"github.com/stretchr/testify/assert"
 )
@@ -773,6 +776,34 @@ func Test_findTime(t *testing.T) {
 	check("19:08:00 +0100", "07h08 p.m. +0100", true)
 }
 
+func Test_findDate(t *testing.T) {
+	// Helper function
+	check := func(expectedOutput, htmlString, url string, deferUrl bool) {
+		r := strings.NewReader(htmlString)
+		doc, _ := dom.FastParse(r)
+		opts := Options{URL: url, DeferUrlExtractor: deferUrl}
+
+		var output string
+		_, dt, err := findDate(doc, opts)
+		if !dt.IsZero() && err == nil {
+			output = dt.Format("2006-01-02")
+		}
+
+		msg := fmt.Sprintf("DEFER=%v %s", deferUrl, htmlString)
+		assert.Equal(t, expectedOutput, output, msg)
+	}
+
+	htmlString := `
+	<html>
+		<head><meta property="og:published_time" content="2017-09-01"/></head>
+		<body></body>
+	</html>`
+	url := "https://example.org/2017/08/30/this.html"
+
+	check("2017-09-01", htmlString, url, true)
+	check("2017-08-30", htmlString, url, false)
+}
+
 func Test_compareReference(t *testing.T) {
 	opts := Options{
 		MinDate: defaultMinDate,
@@ -897,6 +928,9 @@ func Test_searchPage(t *testing.T) {
 
 	_, dt = searchPage(`<html><body><p> © Company 2014-2019 </p></body></html>`, opts)
 	assert.Equal(t, "2019-01-01", format(dt))
+
+	_, dt = searchPage(`<html><body><p> &copy; Copyright 1999-2020 Asia Pacific Star. All rights reserved.</p></body></html>`, opts)
+	assert.Equal(t, "2020-01-01", format(dt))
 
 	_, dt = searchPage(`<html><head><link xmlns="http://www.w3.org/1999/xhtml"/></head></html>`, opts)
 	assert.Equal(t, "", format(dt))
