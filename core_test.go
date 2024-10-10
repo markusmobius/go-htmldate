@@ -929,6 +929,9 @@ func Test_searchPage(t *testing.T) {
 	_, dt = searchPage(`<html><body><p> © Company 2014-2019 </p></body></html>`, opts)
 	assert.Equal(t, "2019-01-01", format(dt))
 
+	_, dt = searchPage(`<html><body><p> &copy; Copyright 1999-2020 Asia Pacific Star. All rights reserved.</p></body></html>`, opts)
+	assert.Equal(t, "2020-01-01", format(dt))
+
 	_, dt = searchPage(`<html><head><link xmlns="http://www.w3.org/1999/xhtml"/></head></html>`, opts)
 	assert.Equal(t, "", format(dt))
 
