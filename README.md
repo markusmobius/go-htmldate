@@ -104,7 +104,7 @@ go run scripts/comparison/*.go
 For the test, we use 1,000 documents which taken from two sources:
 
 - 725 documents from BBAW collection by Adrien Barbaresi, Shiyang Chen, and Lukas Kozmus.
-- 275 documents from [Data Culture Group][dcg] from Northeastern University for additional English news.
+- 275 documents from [Data Culture Group][dcg] from Northeastern University for additional worldwide news.
 
 Here is the result when tested in my PC (Intel i7-8550U @ 4.000GHz, RAM 16 GB):
 
