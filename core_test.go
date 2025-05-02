@@ -776,15 +776,15 @@ func Test_findTime(t *testing.T) {
 	check("19:08:00 +0100", "07h08 p.m. +0100", true)
 }
 
-func Test_findDate(t *testing.T) {
+func Test_FromDocument_Deferred(t *testing.T) {
 	// Helper function
-	check := func(expectedOutput, htmlString, url string, deferUrl bool) {
+	check := func(expectedOutput, htmlString string, deferUrl bool) {
 		r := strings.NewReader(htmlString)
 		doc, _ := dom.FastParse(r)
-		opts := Options{URL: url, DeferUrlExtractor: deferUrl}
+		opts := Options{DeferUrlExtractor: deferUrl}
 
 		var output string
-		_, dt, err := findDate(doc, opts)
+		dt, err := FromDocument(doc, opts)
 		if !dt.IsZero() && err == nil {
 			output = dt.Format("2006-01-02")
 		}
@@ -795,13 +795,14 @@ func Test_findDate(t *testing.T) {
 
 	htmlString := `
 	<html>
-		<head><meta property="og:published_time" content="2017-09-01"/></head>
+		<head>
+			<link rel="canonical" href="https://example.org/2017/08/30/this.html"/>
+			<meta property="og:published_time" content="2017-09-01"/>
+		</head>
 		<body></body>
 	</html>`
-	url := "https://example.org/2017/08/30/this.html"
-
-	check("2017-09-01", htmlString, url, true)
-	check("2017-08-30", htmlString, url, false)
+	check("2017-09-01", htmlString, true)
+	check("2017-08-30", htmlString, false)
 }
 
 func Test_compareReference(t *testing.T) {

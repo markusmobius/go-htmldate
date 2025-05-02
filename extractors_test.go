@@ -100,6 +100,8 @@ func Test_fastParse(t *testing.T) {
 	assert.Equal(t, "2020-01-01", parse("2020-1"))
 	assert.Equal(t, "2020-01-01", parse("2020.01"))
 	assert.Equal(t, "1998-01-01", parse("1998-01"))
+	assert.Equal(t, "1998-01-01", parse("01-1998"))
+	assert.Equal(t, "", parse("13-1998"))
 	assert.Equal(t, "1998-10-10", parse("10.10.98"))
 	assert.Equal(t, "2004-12-12", parse("abcd 20041212 efgh"))
 	assert.Equal(t, "2004-02-12", parse("abcd 2004-2-12 efgh"))
