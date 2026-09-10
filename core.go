@@ -44,7 +44,7 @@ func init() {
 	}).With().Timestamp().Logger().Level(zerolog.Disabled)
 }
 
-// FromReader extract publish date from the specified reader.
+// FromReader extracts a publication or modification date from HTML read from r.
 func FromReader(r io.Reader, opts Options) (Result, error) {
 	// Parse html document
 	doc, err := dom.Parse(r)
@@ -52,18 +52,19 @@ func FromReader(r io.Reader, opts Options) (Result, error) {
 		return resultZero, err
 	}
 
-	return FromDocument(doc, opts)
+	return fromDocument(doc, opts, false)
 }
 
-// FromDocument extract publish date from the specified html document.
+// FromDocument extracts a publication or modification date without modifying doc.
 func FromDocument(doc *html.Node, opts Options) (Result, error) {
+	return fromDocument(doc, opts, true)
+}
+
+func fromDocument(doc *html.Node, opts Options, cloneDocument bool) (Result, error) {
 	// Make sure document exist
 	if doc == nil {
 		return resultZero, fmt.Errorf("document is empty")
 	}
-
-	// Clone document so the original kept untouched
-	doc = dom.Clone(doc, true)
 
 	// Set default options
 	if opts.MinDate.IsZero() {
@@ -71,7 +72,7 @@ func FromDocument(doc *html.Node, opts Options) (Result, error) {
 	}
 
 	if opts.MaxDate.IsZero() {
-		opts.MaxDate = defaultMaxDate
+		opts.MaxDate = defaultMaxDate()
 	}
 
 	// If URL is not defined in options, look in elements
@@ -99,7 +100,7 @@ func FromDocument(doc *html.Node, opts Options) (Result, error) {
 	}
 
 	// Extract date
-	rawString, date, err := findDate(doc, opts)
+	rawString, date, err := findDate(doc, opts, cloneDocument)
 	if err != nil {
 		return resultZero, err
 	}
@@ -133,7 +134,7 @@ func FromDocument(doc *html.Node, opts Options) (Result, error) {
 }
 
 // findDate extract publish date from the specified html document.
-func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
+func findDate(doc *html.Node, opts Options, cloneDocument bool) (string, time.Time, error) {
 	// If not deferred, check URL first
 	var urlDate time.Time
 	if opts.URL != "" {
@@ -167,8 +168,10 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 	}
 
 	// First, prune tree
-	prunedDoc := dom.Clone(doc, true)
-	prunedDoc = cleanDocument(prunedDoc)
+	if cloneDocument {
+		doc = dom.Clone(doc, true)
+	}
+	prunedDoc := cleanDocument(doc)
 	discardUnwanted(prunedDoc)
 
 	// Define selectors + text content
@@ -198,16 +201,6 @@ func findDate(doc *html.Node, opts Options) (string, time.Time, error) {
 	if !timeResult.IsZero() {
 		return rawString, timeResult, nil
 	}
-
-	// TODO: for now, we'll stop searching in discarded elements
-	// Search in the discarded elements (currently: footers and archive.org banner)
-	// for _, subTree := range discarded {
-	// 	dateElements := htmlxpath.Find(subTree, dateXpathQuery)
-	// 	rawString, dateResult := examineOtherElements(dateElements, opts)
-	// 	if !dateResult.IsZero() {
-	// 		return rawString, dateResult, nil
-	// 	}
-	// }
 
 	// Conversion to string
 	var htmlString string
@@ -682,11 +675,7 @@ func searchPage(htmlString string, opts Options) (string, time.Time) {
 	}
 
 	// Handle YYYY-MM-DD/DD-MM-YYYY, normalize candidates first
-	candidates := plausibleYearFilter(htmlString, re2go.SelectYmdPattern, rxSelectYmdYear, false, opts)
-	candidates = normalizeCandidates(candidates, opts)
-
-	rawString, bestMatch = selectCandidate(candidates, rxYmdPattern, rxYmdYear, opts)
-	result := filterYmdCandidate(bestMatch, "SelectYmdPattern", copYear, opts)
+	rawString, result := searchNormalized(htmlString, re2go.SelectYmdPattern, rxSelectYmdYear, "SelectYmdPattern", copYear, false, opts)
 	if !result.IsZero() {
 		return rawString, result
 	}
@@ -699,11 +688,7 @@ func searchPage(htmlString string, opts Options) (string, time.Time) {
 	}
 
 	// Handle DD?/MM?/YYYY, normalize candidates first
-	candidates = plausibleYearFilter(htmlString, re2go.SlashesPattern, rxSlashesYear, true, opts)
-	candidates = normalizeCandidates(candidates, opts)
-
-	rawString, bestMatch = selectCandidate(candidates, rxYmdPattern, rxYmdYear, opts)
-	result = filterYmdCandidate(bestMatch, "SlashesPattern", copYear, opts)
+	rawString, result = searchNormalized(htmlString, re2go.SlashesPattern, rxSlashesYear, "SlashesPattern", copYear, true, opts)
 	if !result.IsZero() {
 		return rawString, result
 	}
@@ -723,42 +708,7 @@ func searchPage(htmlString string, opts Options) (string, time.Time) {
 	}
 
 	// Second option
-	candidates = plausibleYearFilter(htmlString, re2go.MmYyyyPattern, rxMmYyyyYear, false, opts)
-
-	// Revert DD-MM-YYYY patterns before sorting
-	uniquePatterns := []string{}
-	mapPatternCount := make(map[string]int)
-	mapPatternRawString := make(map[string]string)
-
-	for _, candidate := range candidates {
-		parts, _ := rxFindNamedStringSubmatch(rxYmPattern, candidate.Pattern)
-		if len(parts) == 0 {
-			continue
-		}
-
-		year, _ := strconv.Atoi(parts["year"])
-		month, _ := strconv.Atoi(parts["month"])
-		newPattern := fmt.Sprintf("%04d-%02d-01", year, month)
-
-		if _, exist := mapPatternCount[newPattern]; !exist {
-			uniquePatterns = append(uniquePatterns, newPattern)
-			mapPatternRawString[newPattern] = candidate.RawString
-		}
-
-		mapPatternCount[newPattern] += candidate.Count
-	}
-
-	candidates = make([]yearCandidate, len(uniquePatterns))
-	for i, pattern := range uniquePatterns {
-		candidates[i] = yearCandidate{
-			Pattern:   pattern,
-			Count:     mapPatternCount[pattern],
-			RawString: mapPatternRawString[pattern],
-		}
-	}
-
-	rawString, bestMatch = selectCandidate(candidates, rxYmdPattern, rxYmdYear, opts)
-	result = filterYmdCandidate(bestMatch, "MmYyyyPattern", copYear, opts)
+	rawString, result = searchNormalized(htmlString, re2go.MmYyyyPattern, rxMmYyyyYear, "MmYyyyPattern", copYear, false, opts)
 	if !result.IsZero() {
 		return rawString, result
 	}
@@ -819,6 +769,13 @@ func searchPattern(htmlString string, patternFinder fnRe2GoFinder, rxCatchPatter
 	return selectCandidate(candidates, rxCatchPattern, rxYearPattern, opts)
 }
 
+func searchNormalized(htmlString string, patternFinder fnRe2GoFinder, yearPattern *regexp.Regexp, patternName string, copYear int, incomplete bool, opts Options) (string, time.Time) {
+	candidates := plausibleYearFilter(htmlString, patternFinder, yearPattern, incomplete, opts)
+	candidates = normalizeCandidates(candidates, opts)
+	rawString, bestMatch := selectCandidate(candidates, rxYmdPattern, rxYmdYear, opts)
+	return rawString, filterYmdCandidate(bestMatch, patternName, copYear, opts)
+}
+
 // selectCandidate selects a candidate among the most frequent matches.
 func selectCandidate(candidates []yearCandidate, catchPattern, yearPattern *regexp.Regexp, opts Options) (string, []string) {
 	// Make sure candidates exist and less than `maxPossibleCandidates`
@@ -870,6 +827,7 @@ func selectCandidate(candidates []yearCandidate, catchPattern, yearPattern *rege
 	counts := make([]int, nBestCandidate)
 	patterns := make([]string, nBestCandidate)
 	validations := make([]bool, nBestCandidate)
+	minYear, maxYear := opts.MinDate.Year(), opts.MaxDate.Year()
 
 	for i, candidate := range bestOnes {
 		// Separate struct value
@@ -880,7 +838,7 @@ func selectCandidate(candidates []yearCandidate, catchPattern, yearPattern *rege
 		yearParts := yearPattern.FindStringSubmatch(candidate.Pattern)
 		if len(yearParts) >= 2 {
 			years[i], _ = strconv.Atoi(yearParts[1])
-			_, validations[i] = validateDateParts(years[i], 1, 1, opts)
+			validations[i] = minYear <= years[i] && years[i] <= maxYear
 		}
 	}
 

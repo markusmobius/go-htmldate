@@ -29,6 +29,23 @@ type yearCandidate struct {
 	RawString string
 }
 
+func defaultMaxDate() time.Time {
+	today := time.Now()
+	return time.Date(today.Year(), today.Month(), today.Day(), 23, 59, 59, 999999999, time.UTC)
+}
+
+func correctYear(year int) int {
+	if year < 100 {
+		if year >= 90 {
+			year += 1900
+		} else {
+			year += 2000
+		}
+	}
+
+	return year
+}
+
 // validateDateParts checks if date parts can be used to generate a valid date
 func validateDateParts(year, month, day int, opts Options) (time.Time, bool) {
 	// Make sure year is in Gregorian era
@@ -173,15 +190,9 @@ func plausibleYearFilter(
 		}
 
 		// Make sure the year is valid
-		var potentialYear int
-		if !toComplete {
-			potentialYear = yearVal
-		} else if yearVal < 100 {
-			if yearVal >= 90 {
-				potentialYear = 1900 + yearVal
-			} else {
-				potentialYear = 2000 + yearVal
-			}
+		potentialYear := yearVal
+		if toComplete {
+			potentialYear = correctYear(yearVal)
 		}
 
 		if potentialYear < minYear || potentialYear > maxYear {
@@ -220,19 +231,6 @@ func filterYmdCandidate(bestMatch []string, pattern string, copYear int, opts Op
 		log.Debug().Msgf("date found for pattern %s: %s", pattern, s)
 		return dt
 	}
-
-	// TODO: test and improve
-	// if opts.UseOriginalDate {
-	// 	if copYear == 0 || dt.Year() <= copYear {
-	// 		log.Debug().Msgf("original date found for pattern %s: %s", pattern.String(), str)
-	// 		return dt
-	// 	}
-	// } else {
-	// 	if copYear == 0 || dt.Year() >= copYear {
-	// 		log.Debug().Msgf("date found for pattern %s: %s", pattern.String(), str)
-	// 		return dt
-	// 	}
-	// }
 
 	return timeZero
 }

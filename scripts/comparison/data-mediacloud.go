@@ -76,7 +76,7 @@ var mediacloudData = []comparisonEntry{
 	}, {
 		URL:       "https://www.ukrinform.ru/rubric-kyiv/3103218-policia-napravila-delo-minera-stolicnogo-metro-v-sud.html",
 		File:      "1716561772.html",
-		Date:      "nan",
+		Date:      "2020-09-20",
 		Fast:      "2020-09-20",
 		Extensive: "2020-09-20",
 	}, {
@@ -118,7 +118,7 @@ var mediacloudData = []comparisonEntry{
 	}, {
 		URL:       "https://news.yam.md/ro/story/10939686",
 		File:      "1716324024.html",
-		Date:      "nan",
+		Date:      "2020-09-20",
 		Fast:      "2020-09-20",
 		Extensive: "2020-09-20",
 	}, {
@@ -202,7 +202,7 @@ var mediacloudData = []comparisonEntry{
 	}, {
 		URL:       "https://news.google.com/__i/rss/rd/articles/CBMibWh0dHBzOi8vd3d3Lm51Lm5sL2Zvcm11bGUtMS82MDgwMDIxL3ZlcnN0YXBwZW4tbm90ZWVydC16ZXNkZS10aWpkLWluLWRlcmRlLXRyYWluaW5nLXJ1c3Npc2NoZS1ncmFuZC1wcml4Lmh0bWzSAWxodHRwczovL3d3dy5udS5ubC9mb3JtdWxlLTEvNjA4MDAyMS92ZXJzdGFwcGVuLW5vdGVlcnQtemVzZGUtdGlqZC1pbi1kZXJkZS10cmFpbmluZy1ydXNzaXNjaGUtZ3JhbmQtcHJpeC5hbXA?oc=5",
 		File:      "1721884119.html",
-		Date:      "2020-06-14",
+		Date:      "2020-09-26",
 		Fast:      "2020-09-26",
 		Extensive: "2020-09-26",
 	}, {
@@ -238,7 +238,7 @@ var mediacloudData = []comparisonEntry{
 	}, {
 		URL:       "https://news.biglobe.ne.jp/entertainment/0215/ori_200215_7568645051.html",
 		File:      "1521513101.html",
-		Date:      "nan",
+		Date:      "2020-02-15",
 		Fast:      "2020-02-15",
 		Extensive: "2020-02-15",
 	}, {
@@ -358,13 +358,13 @@ var mediacloudData = []comparisonEntry{
 	}, {
 		URL:       "https://www.divyabhaskar.co.in/local/gujarat/vadodara/news/chhetu-patel-a-resident-of-the-united-states-died-due-to-corona-wife-under-treatment-127088788.html",
 		File:      "1565998355.html",
-		Date:      "nan",
+		Date:      "2020-04-02",
 		Fast:      "2020-04-02",
 		Extensive: "2020-04-02",
 	}, {
 		URL:       "https://www.divyabhaskar.co.in/local/gujarat/rajkot/news/people-who-are-scared-of-corona-call-and-say-i-see-corona-in-my-hand-and-foot-127064846.html",
 		File:      "1561643340.html",
-		Date:      "nan",
+		Date:      "2020-03-28",
 		Fast:      "2020-03-28",
 		Extensive: "2020-03-28",
 	}, {
@@ -502,13 +502,13 @@ var mediacloudData = []comparisonEntry{
 	}, {
 		URL:       "https://www.farodevigo.es/deportes/2020/07/05/andres-iniesta-recuerdos-son-magicos/2309843.html?utm_source=rss",
 		File:      "1653186688.html",
-		Date:      "2020-05-07",
+		Date:      "2020-07-05",
 		Fast:      "2020-07-05",
 		Extensive: "2020-07-05",
 	}, {
 		URL:       "http://www.andaluciainformacion.es/andalucia/895957/imbroda-revela-que-padecio-y-supero-el-coronavirus-el-pasado-marzo/",
 		File:      "1598244597.html",
-		Date:      "2020-06-05",
+		Date:      "2020-05-06",
 		Fast:      "2020-05-06",
 		Extensive: "2020-05-06",
 	}, {
@@ -556,7 +556,7 @@ var mediacloudData = []comparisonEntry{
 	}, {
 		URL:       "http://www.radionacional.com.ar/comunidad-regional-de-calamuchita-rechazo-la-idea-de-una-capsula-turistica/",
 		File:      "1730863222.html",
-		Date:      "2020-06-10",
+		Date:      "2020-10-06",
 		Fast:      "2020-10-06",
 		Extensive: "2020-10-06",
 	}, {
@@ -592,7 +592,7 @@ var mediacloudData = []comparisonEntry{
 	}, {
 		URL:       "https://www.seattlepi.com/sports/article/Tiz-the-Law-draws-No-17-post-as-3-5-Kentucky-15530833.php",
 		File:      "1699121936.html",
-		Date:      "nan",
+		Date:      "2020-09-01",
 		Fast:      "2020-09-01",
 		Extensive: "2020-09-01",
 	}, {
@@ -610,7 +610,7 @@ var mediacloudData = []comparisonEntry{
 	}, {
 		URL:       "https://tucson.com/news/national/college-football-player-arrested-on-murder-charge-in-georgia/article_c7e4b901-9d60-5895-a288-73911df10bd3.html",
 		File:      "1725250200.html",
-		Date:      "nan",
+		Date:      "2020-09-30",
 		Fast:      "2020-09-30",
 		Extensive: "2020-09-30",
 	}, {
@@ -640,7 +640,7 @@ var mediacloudData = []comparisonEntry{
 	}, {
 		URL:       "https://www.breakingsoup.com/south-park-characters-fill-empty-seats-at-denver-broncos-games/",
 		File:      "1732261760.html",
-		Date:      "nan",
+		Date:      "2020-09-28",
 		Fast:      "2020-09-28",
 		Extensive: "2020-09-28",
 	}, {
@@ -652,7 +652,7 @@ var mediacloudData = []comparisonEntry{
 	}, {
 		URL:       "https://www.news18.com/news/business/rbi-prescribes-five-pillared-approach-guard-against-cybersecurity-threats-for-urban-co-op-banks-2906047.html",
 		File:      "1720285564.html",
-		Date:      "2020-08-24",
+		Date:      "2020-09-24",
 		Fast:      "2020-09-24",
 		Extensive: "2020-09-24",
 	}, {
@@ -736,7 +736,7 @@ var mediacloudData = []comparisonEntry{
 	}, {
 		URL:       "https://www.moneycontrol.com/news/business/goldman-sachs-says-india’s-fy21-gdp-may-plummet-tomulti-decade-low16bleakest-forecast-so-far_13654421.html",
 		File:      "1572317591.html",
-		Date:      "nan",
+		Date:      "2020-04-08",
 		Fast:      "2020-04-08",
 		Extensive: "2020-04-08",
 	}, {
@@ -754,7 +754,7 @@ var mediacloudData = []comparisonEntry{
 	}, {
 		URL:       "https://thefrontierpost.com/two-newborns-die-for-want-of-oxygen-at-bhakkar-hospital/",
 		File:      "1535415671.html",
-		Date:      "nan",
+		Date:      "2020-03-01",
 		Fast:      "2020-03-01",
 		Extensive: "2020-03-01",
 	}, {
@@ -796,7 +796,7 @@ var mediacloudData = []comparisonEntry{
 	}, {
 		URL:       "https://sanfrancisco.cbslocal.com/2020/09/16/55th-acm-awards-winners-list/",
 		File:      "1713311346.html",
-		Date:      "2020-08-16",
+		Date:      "2020-09-16",
 		Fast:      "2020-09-16",
 		Extensive: "2020-09-16",
 	}, {
@@ -868,7 +868,7 @@ var mediacloudData = []comparisonEntry{
 	}, {
 		URL:       "http://feeds.reuters.com/~r/reuters/businessNews/~3/UjOBluJTi0o/volkswagens-skoda-auto-2019-deliveries-dip-to-1-24-million-cars-due-to-weaker-sales-in-china-idUSKBN1ZC1DA",
 		File:      "1493638362.html",
-		Date:      "nan",
+		Date:      "2020-01-13",
 		Fast:      "2020-01-13",
 		Extensive: "2020-01-13",
 	}, {
@@ -952,7 +952,7 @@ var mediacloudData = []comparisonEntry{
 	}, {
 		URL:       "https://www.couriermail.com.au/news/national/98yearold-wwii-veteran-beats-covid19-receives-ovation-from-hospital-staff/video/ca6ce285879e2291307f3fc8148670aa",
 		File:      "1588233953.html",
-		Date:      "nan",
+		Date:      "2020-04-24",
 		Fast:      "2020-04-24",
 		Extensive: "2020-04-24",
 	}, {
@@ -982,7 +982,7 @@ var mediacloudData = []comparisonEntry{
 	}, {
 		URL:       "https://globalnews.ca/news/6620622/syria-turkey-strikes-conflict/",
 		File:      "1536545428.html",
-		Date:      "2020-03-06",
+		Date:      "2020-03-02",
 		Fast:      "2020-03-02",
 		Extensive: "2020-03-02",
 	}, {
@@ -1012,7 +1012,7 @@ var mediacloudData = []comparisonEntry{
 	}, {
 		URL:       "http://optimussearch.com.ph/2020/06/02/no-membership-required-best-and-free-online-dating-websites-in-los-angeles/",
 		File:      "1677010256.html",
-		Date:      "nan",
+		Date:      "2020-06-02",
 		Fast:      "2020-06-02",
 		Extensive: "2020-06-02",
 	}, {
@@ -1030,7 +1030,7 @@ var mediacloudData = []comparisonEntry{
 	}, {
 		URL:       "https://globalnews.ca/news/7278919/kamala-harris-fact-check-us-vice-president/",
 		File:      "1684405920.html",
-		Date:      "2020-09-15",
+		Date:      "2020-08-15",
 		Fast:      "2020-08-15",
 		Extensive: "2020-08-15",
 	}, {
@@ -1066,13 +1066,13 @@ var mediacloudData = []comparisonEntry{
 	}, {
 		URL:       "http://www.haniotika-nea.gr/ton-epiasan-tin-ora-poy-prospathoyse-na-klepsei-aytokinita/",
 		File:      "1687581723.html",
-		Date:      "2020-09-24",
+		Date:      "2020-08-19",
 		Fast:      "2020-08-19",
 		Extensive: "2020-08-19",
 	}, {
 		URL:       "https://www.nzz.ch/international/neue-us-sanktionen-erschuettern-die-syrische-wirtschaft-ld.1560586",
 		File:      "1635095370.html",
-		Date:      "2020-06-17",
+		Date:      "2020-06-15",
 		Fast:      "2020-06-15",
 		Extensive: "2020-06-15",
 	}, {
@@ -1126,19 +1126,19 @@ var mediacloudData = []comparisonEntry{
 	}, {
 		URL:       "https://vratza.com/obshtina-b-vratsa-b-specheli-proekt-za-izgrazhdaneto-na-dopalnitelen-korpus-na/",
 		File:      "1766087391.html",
-		Date:      "nan",
+		Date:      "2020-11-10",
 		Fast:      "2020-11-10",
 		Extensive: "2020-11-10",
 	}, {
 		URL:       "https://www.youm7.com/story/2020/8/24/وزير-الرى-يشهد-توقيع-عقد-دراسة-تحديد-السحب-الآمن-للخزانات/4943459",
 		File:      "1691196862.html",
-		Date:      "2020-09-24",
+		Date:      "2020-08-24",
 		Fast:      "2020-08-24",
 		Extensive: "2020-08-24",
 	}, {
 		URL:       "https://www.alyaum.com/articles/6291787/القارات-السبع/طهران-تدفن-زادة-وتتهم-المعارضة-الإيرانية-باغتياله",
 		File:      "1784190729.html",
-		Date:      "2020-01-12",
+		Date:      "2020-12-01",
 		Fast:      "2020-12-01",
 		Extensive: "2020-12-01",
 	}, {

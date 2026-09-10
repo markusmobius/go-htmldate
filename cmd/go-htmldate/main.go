@@ -58,16 +58,16 @@ func main() {
 	rootCmd := &cobra.Command{
 		Use:   "go-htmldate [flags] [source]",
 		Run:   rootCmdHandler,
-		Short: "Extract publish date from a HTML file or url",
+		Short: "Extract publication or modification dates from an HTML file or URL",
 		Args:  cobra.ExactArgs(1),
 	}
 
 	// Register persistent flags
 	flags := rootCmd.PersistentFlags()
-	flags.Bool("time", false, "extract publish time as well")
-	flags.Bool("ori", false, "extract original date instead of the the most recent one")
-	flags.BoolP("verbose", "v", false, "enable log message")
-	flags.IntP("timeout", "t", 30, "timeout for downloading web page in seconds")
+	flags.Bool("time", false, "extract the time as well as the date")
+	flags.Bool("ori", false, "extract the publication date instead of the most recent date")
+	flags.BoolP("verbose", "v", false, "enable debug logging")
+	flags.IntP("timeout", "t", 30, "web page download timeout in seconds")
 	flags.Bool("skip-tls", false, "skip X.509 (TLS) certificate verification")
 	flags.StringP("format", "f", defaultFormat, "set custom date output format")
 	flags.StringP("user-agent", "u", defaultUserAgent, "set custom user agent")

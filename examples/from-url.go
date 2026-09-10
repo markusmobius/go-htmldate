@@ -18,7 +18,7 @@ func main() {
 	defer resp.Body.Close()
 
 	// Prepare configuration
-	// Here we want the publish date instead of last modified
+	// Request the most recent date, including the time when available.
 	opts := htmldate.Options{
 		UseOriginalDate: false,
 		EnableLog:       true,
@@ -31,7 +31,7 @@ func main() {
 		panic(err)
 	}
 
-	// Print result if date found
+	// Print the result if a date was found.
 	if !res.IsZero() {
 		fmt.Printf("Date        : %s\n", res.Format("2006-01-02"))
 		fmt.Printf("Has time    : %v\n", res.HasTime)

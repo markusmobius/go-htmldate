@@ -807,13 +807,13 @@ var defaultComparisonData = []comparisonEntry{
 	}, {
 		URL:       "https://www.uusisuomi.fi/uutiset/sanna-marin-tapasi-angela-merkelin-myos-saksa-haluaa-pitaa-kiinni-maataloustuista-meidan-nakemyksiamme-suurimpana-nettomaksajana-ei-ole-otettu-riittavasti-huomioon/b29c11d3-9590-4045-8e2c-a568f9f24617",
 		File:      "uusisuomi.fi.angela.html",
-		Date:      "2019-02-19",
+		Date:      "2020-02-19",
 		Fast:      "2020-02-19",
 		Extensive: "2020-02-19",
 	}, {
 		URL:       "https://yle.fi/uutiset/3-11212601",
 		File:      "yle.fi.3-11212601.html",
-		Date:      "2019-02-19",
+		Date:      "2020-02-19",
 		Fast:      "2020-02-19",
 		Extensive: "2020-02-19",
 	}, {
@@ -1089,7 +1089,7 @@ var defaultComparisonData = []comparisonEntry{
 	}, {
 		URL:       "https://zahlenzauberin.wordpress.com/2012/08/22/was-zum-horen-in-den-ferien/",
 		File:      "zahlenzauberin.wordpress.com.ferien.html",
-		Date:      "2010-08-22",
+		Date:      "2012-08-22",
 		Fast:      "2012-08-22",
 		Extensive: "2012-08-22",
 	}, {
@@ -1335,7 +1335,7 @@ var defaultComparisonData = []comparisonEntry{
 	}, {
 		URL:       "https://www.theplanetarypress.com/2020/01/management-of-intact-forestlands-by-indigenous-peoples-key-to-protecting-climate/",
 		File:      "theplanetarypress.com.forestlands.html",
-		Date:      "2020-01-19",
+		Date:      "2020-01-17",
 		Fast:      "2020-01-17",
 		Extensive: "2020-01-17",
 	}, {
@@ -1425,7 +1425,7 @@ var defaultComparisonData = []comparisonEntry{
 	}, {
 		URL:       "https://www.tomshardware.com/uk/news/where-and-how-to-buy-rtx-3080-3090-3070",
 		File:      "tomshardware.com.rtx.html",
-		Date:      "2020-11-02",
+		Date:      "2020-11-04",
 		Fast:      "2020-11-04",
 		Extensive: "2020-11-04",
 	}, {
@@ -1497,7 +1497,7 @@ var defaultComparisonData = []comparisonEntry{
 	}, {
 		URL:       "https://diem25.org/the-eus-green-deal-isnt-enough-save-from-climate-catastrophe/",
 		File:      "diem25.org.climate.html",
-		Date:      "2020-12-12",
+		Date:      "2020-10-12",
 		Fast:      "2020-10-12",
 		Extensive: "2020-10-12",
 	}, {
@@ -1581,7 +1581,7 @@ var defaultComparisonData = []comparisonEntry{
 	}, {
 		URL:       "https://mywakenews.wordpress.com/2016/07/09/nwo-psyop-unitedwestrike-radio-marathon/",
 		File:      "mywakenews.wordpress.com.psyop.html",
-		Date:      "2016-06-09",
+		Date:      "2016-07-09",
 		Fast:      "2016-07-09",
 		Extensive: "2016-07-09",
 	}, {
@@ -2079,7 +2079,7 @@ var defaultComparisonData = []comparisonEntry{
 	}, {
 		URL:       "https://berkutschi.com/de/front/news/10759-marius-lindvik-gewinnt-in-willingen",
 		File:      "berkutschi.com-willingen.html",
-		Date:      "2022-01-31",
+		Date:      "2022-01-30",
 		Fast:      "2022-01-30",
 		Extensive: "2022-01-30",
 	}, {
@@ -2511,7 +2511,7 @@ var defaultComparisonData = []comparisonEntry{
 	}, {
 		URL:       "https://www.ekiba.de/detail/nachricht-seite/id/35204-trauern-digital-am-ewigkeitssonntag/?default=true",
 		File:      "ekiba.de-trauer.html",
-		Date:      "2021-12-12",
+		Date:      "2021-11-12",
 		Fast:      "",
 		Extensive: "2021-11-13",
 	}, {
@@ -2757,7 +2757,7 @@ var defaultComparisonData = []comparisonEntry{
 	}, {
 		URL:       "https://www.handwerksblatt.de/themen-specials/coronaschutz-im-betrieb/2g-3g-was-gilt-beim-friseurbesuch",
 		File:      "handwerksblatt.de-Friseurbesuch.html",
-		Date:      "2022-01-01",
+		Date:      "2022-01-14",
 		Fast:      "2022-01-21",
 		Extensive: "2022-01-21",
 	}, {
@@ -3201,7 +3201,7 @@ var defaultComparisonData = []comparisonEntry{
 	}, {
 		URL:       "https://redtri.com/best-jokes-for-kids/slide/1",
 		File:      "redtri.com.jokes.html",
-		Date:      "2020-11-03",
+		Date:      "2021-09-19",
 		Fast:      "2021-09-19",
 		Extensive: "2021-09-19",
 	}, {
@@ -3273,7 +3273,7 @@ var defaultComparisonData = []comparisonEntry{
 	}, {
 		URL:       "https://www.selbst.de/wurmkiste-39572.html",
 		File:      "selbst.de-wurmkiste.html",
-		Date:      "2022-01-22",
+		Date:      "2021-02-22",
 		Fast:      "2021-02-22",
 		Extensive: "2021-02-22",
 	}, {
@@ -3375,7 +3375,7 @@ var defaultComparisonData = []comparisonEntry{
 	}, {
 		URL:       "https://www.tennismagazin.de/news/zverev-zieht-ins-viertelfinale-von-montpellier-ein/",
 		File:      "tennismagazin.de-viertelfinale.html",
-		Date:      "2022-02-04",
+		Date:      "2022-02-03",
 		Fast:      "2022-02-03",
 		Extensive: "2022-02-03",
 	}, {
@@ -3417,7 +3417,7 @@ var defaultComparisonData = []comparisonEntry{
 	}, {
 		URL:       "https://www.tierwelt.ch/news/natur-umwelt/immer-mehr-modemarken-werden-pelzfrei-so-erkennen-sie-echtpelz-im-laden",
 		File:      "tierwelt.ch-plez.html",
-		Date:      "2022-02-02",
+		Date:      "2022-02-01",
 		Fast:      "2022-02-01",
 		Extensive: "2022-02-01",
 	}, {
@@ -3507,7 +3507,7 @@ var defaultComparisonData = []comparisonEntry{
 	}, {
 		URL:       "https://www.wochenblatt.com/landwirtschaft/agrarpolitik/heinen-esser-offen-fuer-existenzgruendungspraemie-12810183.html",
 		File:      "wochenblatt.com-Heinen-Essen.html",
-		Date:      "2022-02-21",
+		Date:      "2022-01-21",
 		Fast:      "2022-01-21",
 		Extensive: "2022-01-21",
 	}, {
@@ -4587,7 +4587,7 @@ var defaultComparisonData = []comparisonEntry{
 	}, {
 		URL:       "https://popkultur.de/homosexuelle-schauspieler/",
 		File:      "Popkultur.de-Schauspieler.html",
-		Date:      "2023-05-06",
+		Date:      "2023-06-05",
 		Fast:      "2023-06-05",
 		Extensive: "2023-06-05",
 	}, {

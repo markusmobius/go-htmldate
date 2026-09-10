@@ -31,18 +31,13 @@ import (
 	"golang.org/x/net/html"
 )
 
-// discardUnwanted removes unwanted sections of an HTML document and
-// return the discarded elements as a list.
-func discardUnwanted(doc *html.Node) []*html.Node {
-	var discardedElements []*html.Node
+// discardUnwanted removes unwanted sections of an HTML document.
+func discardUnwanted(doc *html.Node) {
 	for _, elem := range selector.QueryAll(doc, selector.Discard) {
 		if elem.Parent != nil {
 			elem.Parent.RemoveChild(elem)
-			discardedElements = append(discardedElements, elem)
 		}
 	}
-
-	return discardedElements
 }
 
 // extractUrlDate extract the date out of an URL string complying
@@ -424,18 +419,6 @@ func regexParse(s string, opts Options) time.Time {
 	}
 
 	return timeZero
-}
-
-func correctYear(year int) int {
-	if year < 100 {
-		if year >= 90 {
-			year += 1900
-		} else {
-			year += 2000
-		}
-	}
-
-	return year
 }
 
 // trySwapValues swap day and month values if it seems feaaible.

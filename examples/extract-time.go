@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	// This has complete date + time + timezone
+	// Example with a date, time, and timezone.
 	url := "https://edition.cnn.com/2021/07/13/politics/donald-trump-books-last-days-2020/index.html"
 	result, err := processURL(url)
 	checkError(err)
@@ -25,7 +25,7 @@ func main() {
 	fmt.Printf("Timezone: %s (offset %d seconds)\n", name, offset)
 	fmt.Println()
 
-	// This has date + time, no timezone
+	// Example with a date and time but no explicit timezone.
 	url = "https://arstechnica.com/gaming/2021/07/steam-deck-is-valves-switch-like-portable-pc-starting-at-399-this-december/"
 	result, err = processURL(url)
 	checkError(err)
@@ -37,17 +37,17 @@ func main() {
 	fmt.Printf("Has timezone: %v\n", result.HasTimezone)
 	fmt.Println()
 
-	// This has date only
+	// Example with a date only.
 	url = "https://www.steamdeck.com/en/"
 	result, err = processURL(url)
 	checkError(err)
 
-	fmt.Println("Date only, no time and timezone")
+	fmt.Println("Date only, no time or timezone")
 	fmt.Printf("Date        : %s\n", result.Format("2006-01-02"))
 	fmt.Printf("Has time    : %v\n", result.HasTime)
 	fmt.Printf("Has timezone: %v\n", result.HasTimezone)
 
-	// Output should look like this:
+	// Example output (live pages may change):
 	//
 	// Complete date + time + timezone
 	// Date        : 2021-07-13
@@ -62,7 +62,7 @@ func main() {
 	// Time        : 05:08:00
 	// Has timezone: false
 	//
-	// Date only, no time and timezone
+	// Date only, no time or timezone
 	// Date        : 2021-01-01
 	// Has time    : false
 	// Has timezone: false

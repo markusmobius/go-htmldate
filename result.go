@@ -4,27 +4,25 @@ import "time"
 
 var resultZero = Result{}
 
-// Result is the result of date time extraction.
+// Result contains an extracted date and optional time and timezone information.
 type Result struct {
-	// DateTime is the extracted date time.
+	// DateTime is the extracted date, including the time and timezone when found.
 	DateTime time.Time
-	// HasTime specifies whether the result contains time or not.
+	// HasTime reports whether a time was extracted.
 	HasTime bool
-	// HasTimezone specifies whether the result contains timezone or not.
-	// Useful for differentiating UTC timezone or timezone not found.
+	// HasTimezone reports whether an explicit timezone was extracted.
+	// It distinguishes a detected UTC timezone from the UTC fallback.
 	HasTimezone bool
-	// SrcString is the source where the date and time extracted.
+	// SrcString is the normalized source text used for extraction.
 	SrcString string
 }
 
-// IsZero reports whether the result is empty or not.
-// Wrapper for `Result.DateTime.IsZero`.
+// IsZero reports whether DateTime is zero.
 func (r Result) IsZero() bool {
 	return r.DateTime.IsZero()
 }
 
-// Format returns a textual representation of the time value formatted according to
-// the specified layout. Wrapper for `Result.DateTime.Format`.
+// Format formats DateTime using a Go reference-time layout.
 func (r Result) Format(layout string) string {
 	return r.DateTime.Format(layout)
 }

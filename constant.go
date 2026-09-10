@@ -31,7 +31,6 @@ type fnRe2GoFinder func(string) [][]int
 var (
 	timeZero       = time.Time{}
 	defaultMinDate = time.Date(1995, 1, 1, 0, 0, 0, 0, time.UTC)
-	defaultMaxDate = time.Now().AddDate(1, 0, 0)
 
 	externalParser = &dps.Parser{
 		ParserTypes: []dps.ParserType{

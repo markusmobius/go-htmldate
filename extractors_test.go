@@ -29,15 +29,40 @@ func Test_tryDiscard(t *testing.T) {
 	rawHtml := `<html><body><div id="wm-ipp">000</div><div>AAA</div></body></html>`
 	r := strings.NewReader(rawHtml)
 	doc, _ := dom.FastParse(r)
-	discarded := discardUnwanted(doc)
-	assert.Len(t, discarded, 1)
+	discardUnwanted(doc)
+	assert.Nil(t, dom.QuerySelector(doc, "#wm-ipp"))
+	assert.Contains(t, dom.TextContent(doc), "AAA")
+}
+
+func Test_jsonSearch_ContinuesAcrossBlocks(t *testing.T) {
+	rawHTML := `<html><head>
+	<script type="application/ld+json">{"dateCreated": null, "datePublished": "invalid", "dateModified": "invalid"}</script>
+	<script type="application/ld+json">{"dateUnrelated": "2016-01-01"}</script>
+	<script type="application/settings+json">{"datePublished": "2017-09-01", "dateModified": "2018-10-02"}</script>
+	</head><body></body></html>`
+	doc, err := dom.FastParse(strings.NewReader(rawHTML))
+	if !assert.NoError(t, err) {
+		return
+	}
+	for _, original := range []bool{false, true} {
+		_, date := jsonSearch(doc, Options{
+			UseOriginalDate: original,
+			MinDate:         defaultMinDate,
+			MaxDate:         defaultMaxDate(),
+		})
+		expected := "2018-10-02"
+		if original {
+			expected = "2017-09-01"
+		}
+		assert.Equal(t, expected, date.Format("2006-01-02"))
+	}
 }
 
 func Test_tryDateExpr(t *testing.T) {
 	// Helper function
 	opts := Options{
 		MinDate: defaultMinDate,
-		MaxDate: defaultMaxDate,
+		MaxDate: defaultMaxDate(),
 	}
 
 	try := func(s string) string {
@@ -79,7 +104,7 @@ func Test_tryDateExpr(t *testing.T) {
 func Test_fastParse(t *testing.T) {
 	opts := Options{
 		MinDate:   defaultMinDate,
-		MaxDate:   defaultMaxDate,
+		MaxDate:   defaultMaxDate(),
 		EnableLog: true,
 	}
 
@@ -125,7 +150,7 @@ func Test_fastParse(t *testing.T) {
 func Test_regexParse(t *testing.T) {
 	opts := Options{
 		MinDate: defaultMinDate,
-		MaxDate: defaultMaxDate,
+		MaxDate: defaultMaxDate(),
 	}
 
 	parse := func(s string) string {
@@ -292,7 +317,8 @@ func Test_tryExternalDateParser(t *testing.T) {
 	assert.Equal(t, "1900-01-01", parse("1 January 1900"))
 
 	// https://github.com/scrapinghub/dateparser/issues/406
-	assert.Equal(t, "2018-12-04", parse("2018-04-12 17:20:03.12345678999a"))
+	assert.Equal(t, "2018-04-12", parse("2018-04-12 17:20:03"))
+	assert.Equal(t, "2018-04-12", parse("2018-04-12 17:20:03.12345678999a"))
 
 	// https://github.com/scrapinghub/dateparser/issues/685
 	assert.Equal(t, "", parse("12345678912 days"))

@@ -23,37 +23,38 @@ import (
 	dps "github.com/markusmobius/go-dateparser"
 )
 
-// Options is configuration for the extractor.
+// Options configures date extraction.
 type Options struct {
-	// ExtractTime specify if we want to extract publish time as well along the date. Still WIP.
+	// ExtractTime enables experimental extraction of the time and timezone
+	// along with the date.
 	ExtractTime bool
 
-	// UseOriginalDate specify whether to extract the original date (e.g. publication date) instead
-	// of most recent one (e.g. last modified, updated time).
+	// UseOriginalDate requests the original publication date instead of the
+	// most recent date, such as the last-modified date.
 	UseOriginalDate bool
 
-	// URL is the URL for the webpage.
+	// URL is the page URL. If empty, the extractor looks for a canonical link.
 	URL string
 
 	// MinDate is the earliest acceptable date.
 	MinDate time.Time
 
-	// MaxDate is the latest acceptable date.
+	// MaxDate is the latest acceptable date. If zero, it defaults to the end of
+	// the current local calendar day, represented in UTC.
 	MaxDate time.Time
 
-	// EnableLog specify whether log should be enabled or not.
+	// EnableLog enables debug logging.
 	EnableLog bool
 
-	// SkipExtensiveSearch specify whether to skip pattern-based opportunistic text search or not
-	// using the external `dateparser` library. Note: this extensive search might be quite slow,
-	// so use as necessary.
+	// SkipExtensiveSearch selects fast mode, skipping additional text searches
+	// and calls to the external date parser.
 	SkipExtensiveSearch bool
 
-	// DeferUrlExtractor specify whether to use URL extractor only as backup to
-	// prioritize full expressions.
+	// DeferUrlExtractor defers use of a URL date until metadata and JSON dates
+	// have been checked.
 	DeferUrlExtractor bool
 
-	// DateParserConfig is configuration for the external `dateparser`. Only used extensive search
-	// is enabled (`SkipExtensiveSearch=false`).
+	// DateParserConfig configures the external go-dateparser library. It is
+	// used only when SkipExtensiveSearch is false.
 	DateParserConfig *dps.Configuration
 }

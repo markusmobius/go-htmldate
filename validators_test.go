@@ -24,6 +24,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func Test_correctYear(t *testing.T) {
+	for year, expected := range map[int]int{
+		0: 2000, 89: 2089, 90: 1990, 99: 1999, 100: 100, 2010: 2010,
+	} {
+		assert.Equal(t, expected, correctYear(year))
+	}
+}
+
 func Test_validateDate(t *testing.T) {
 	tt := func(y, m, d int) time.Time {
 		return time.Date(y, time.Month(m), d, 0, 0, 0, 0, time.UTC)
@@ -37,7 +45,7 @@ func Test_validateDate(t *testing.T) {
 
 		opts := Options{
 			MinDate: defaultMinDate,
-			MaxDate: defaultMaxDate,
+			MaxDate: defaultMaxDate(),
 		}
 
 		if len(customOpts) > 0 {

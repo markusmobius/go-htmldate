@@ -20,6 +20,8 @@ package htmldate
 import (
 	"fmt"
 	"io"
+	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"testing"
@@ -29,6 +31,127 @@ import (
 	"github.com/markusmobius/go-htmldate/internal/re2go"
 	"github.com/stretchr/testify/assert"
 )
+
+func Test_FromDocument_PreservesDocument(t *testing.T) {
+	rawHTML := `<html><head></head><body><div id="wm-ipp">2001-01-01</div><div class="date"><svg><text>1999-01-01</text></svg>2017-09-01</div></body></html>`
+	doc, err := dom.FastParse(strings.NewReader(rawHTML))
+	if !assert.NoError(t, err) {
+		return
+	}
+	originalHTML := dom.OuterHTML(doc)
+
+	for _, extensive := range []bool{false, true} {
+		opts := Options{
+			UseOriginalDate:     true,
+			SkipExtensiveSearch: !extensive,
+		}
+		result, err := FromDocument(doc, opts)
+		assert.NoError(t, err)
+		assert.Equal(t, "2017-09-01", result.Format("2006-01-02"))
+		assert.Equal(t, originalHTML, dom.OuterHTML(doc))
+		readerResult, err := FromReader(strings.NewReader(rawHTML), opts)
+		assert.NoError(t, err)
+		assert.Equal(t, result, readerResult)
+	}
+}
+
+func Test_FromDocument_DateBounds(t *testing.T) {
+	today := defaultMaxDate()
+	tomorrow := today.AddDate(0, 0, 1)
+	assert.Equal(t, 23, today.Hour())
+	assert.Equal(t, 59, today.Minute())
+	assert.Equal(t, 59, today.Second())
+	assert.Equal(t, 999999999, today.Nanosecond())
+	assert.Equal(t, time.UTC, today.Location())
+
+	cases := []struct {
+		name     string
+		date     time.Time
+		maxDate  time.Time
+		expected string
+	}{
+		{"today", today, time.Time{}, today.Format("2006-01-02")},
+		{"tomorrow", tomorrow, time.Time{}, ""},
+		{"explicit maximum", tomorrow, tomorrow, tomorrow.Format("2006-01-02")},
+		{"past maximum", today, today.AddDate(0, 0, -1), ""},
+	}
+	for _, testCase := range cases {
+		t.Run(testCase.name, func(t *testing.T) {
+			rawHTML := fmt.Sprintf(`<html><head><meta property="article:published_time" content="%s"></head><body></body></html>`, testCase.date.Format("2006-01-02"))
+			result, err := FromReader(strings.NewReader(rawHTML), Options{
+				UseOriginalDate:     true,
+				SkipExtensiveSearch: true,
+				MaxDate:             testCase.maxDate,
+			})
+			assert.NoError(t, err)
+			if testCase.expected == "" {
+				limit := testCase.maxDate
+				if limit.IsZero() {
+					limit = today
+				}
+				assert.False(t, result.DateTime.After(limit))
+			} else {
+				assert.Equal(t, testCase.expected, result.Format("2006-01-02"))
+			}
+		})
+	}
+}
+
+func Test_FromDocument_KnownPythonDeviations(t *testing.T) {
+	cases := []struct {
+		name         string
+		path         string
+		originalDate string
+		modifiedDate string
+	}{
+		{"engadget_non_iso_json", "mediacloud/1711803974.html", "2020-09-15", "2020-09-15"},
+		{"baltimore_creation_precedence", "mediacloud/1805697156.html", "2020-12-22", "2020-12-23"},
+		{"elbalad_utc_metadata", "mediacloud/1806793639.html", "2020-12-24", "2020-12-24"},
+		{"nmb_attribute_order", "comparison/nmb-media.de.ebay.html", "2018-06-22", "2018-08-29"},
+		{"handelsblatt_creation_fallback", "comparison/d20cc6511c6f4cb3bad3a1e57435456d.html", "2019-10-18", "2019-10-19"},
+		{"handelsblatt_border_creation_fallback", "comparison/handelsblatt.com.grenzschliessungen.html", "2020-04-27", "2020-07-08"},
+	}
+	modes := []struct {
+		name      string
+		original  bool
+		extensive bool
+	}{
+		{"original_fast", true, false},
+		{"original_extensive", true, true},
+		{"modified_fast", false, false},
+		{"modified_extensive", false, true},
+	}
+	for _, testCase := range cases {
+		t.Run(testCase.name, func(t *testing.T) {
+			source, err := os.Open(filepath.Join("test-files", testCase.path))
+			if !assert.NoError(t, err) {
+				return
+			}
+			defer source.Close()
+
+			doc, err := dom.Parse(source)
+			if !assert.NoError(t, err) {
+				return
+			}
+			for _, mode := range modes {
+				t.Run(mode.name, func(t *testing.T) {
+					expected := testCase.modifiedDate
+					if mode.original {
+						expected = testCase.originalDate
+					}
+					result, err := FromDocument(doc, Options{
+						UseOriginalDate:     mode.original,
+						SkipExtensiveSearch: !mode.extensive,
+						MinDate:             time.Date(1995, 1, 1, 0, 0, 0, 0, time.UTC),
+						MaxDate:             time.Date(2026, 9, 10, 23, 59, 59, 999999999, time.UTC),
+					})
+					assert.NoError(t, err)
+					assert.Equal(t, expected, result.Format("2006-01-02"))
+				})
+			}
+		})
+	}
+}
 
 func Test_HtmlDate(t *testing.T) {
 	// Variables
@@ -808,7 +931,7 @@ func Test_FromDocument_Deferred(t *testing.T) {
 func Test_compareReference(t *testing.T) {
 	opts := Options{
 		MinDate: defaultMinDate,
-		MaxDate: defaultMaxDate,
+		MaxDate: defaultMaxDate(),
 	}
 
 	_, res := compareReference("", 0, "AAAA", opts)
@@ -829,7 +952,7 @@ func Test_selectCandidate(t *testing.T) {
 	// Initiate variables and helper function
 	rxYear := regexp.MustCompile(`^([0-9]{4})`)
 	rxCatch := regexp.MustCompile(`([0-9]{4})-([0-9]{2})-([0-9]{2})`)
-	opts := Options{MinDate: defaultMinDate, MaxDate: defaultMaxDate}
+	opts := Options{MinDate: defaultMinDate, MaxDate: defaultMaxDate()}
 
 	// Nonsense
 	candidates := createCandidates("20208956", "20208956", "20208956",
@@ -863,6 +986,13 @@ func Test_selectCandidate(t *testing.T) {
 	_, result = selectCandidate(candidates, rxCatch, rxYear, opts)
 	assert.Equal(t, "2016-12-23", result[0])
 
+	opts.MinDate = time.Date(2016, 7, 1, 0, 0, 0, 0, time.UTC)
+	opts.UseOriginalDate = true
+	candidates = createCandidates("2016-07-12", "2016-12-23", "2017-08-11")
+	_, result = selectCandidate(candidates, rxCatch, rxYear, opts)
+	if assert.NotEmpty(t, result) {
+		assert.Equal(t, "2016-07-12", result[0])
+	}
 }
 
 func Test_searchPage(t *testing.T) {
@@ -870,7 +1000,7 @@ func Test_searchPage(t *testing.T) {
 	var dt time.Time
 	opts := Options{
 		MinDate: defaultMinDate,
-		MaxDate: defaultMaxDate,
+		MaxDate: defaultMaxDate(),
 	}
 
 	// Helper function
@@ -942,7 +1072,7 @@ func Test_searchPage(t *testing.T) {
 
 func Test_searchPattern(t *testing.T) {
 	// Variables
-	opts := Options{MinDate: defaultMinDate, MaxDate: defaultMaxDate}
+	opts := Options{MinDate: defaultMinDate, MaxDate: defaultMaxDate()}
 
 	// First pattern, YYYY MM
 	pattern := re2go.TestSpYyyyMmPattern

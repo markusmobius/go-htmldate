@@ -18,6 +18,8 @@
 package main
 
 import (
+	"encoding/json"
+	"flag"
 	"fmt"
 	"os"
 	fp "path/filepath"
@@ -35,6 +37,20 @@ var log = zerolog.New(zerolog.ConsoleWriter{
 }).With().Timestamp().Logger()
 
 func main() {
+	jsonOutput := flag.Bool("json", false, "output per-page original and modified dates as JSON lines")
+	minDate := flag.String("min-date", "", "earliest acceptable date (YYYY-MM-DD)")
+	maxDate := flag.String("max-date", "", "latest acceptable date, inclusive (YYYY-MM-DD)")
+	flag.Parse()
+	opts := htmldate.Options{
+		UseOriginalDate: true,
+		MinDate:         parseDateBound(*minDate),
+		MaxDate:         parseDateBound(*maxDate),
+	}
+	if !opts.MaxDate.IsZero() {
+		opts.MaxDate = opts.MaxDate.AddDate(0, 0, 1).Add(-time.Nanosecond)
+	}
+	encoder := json.NewEncoder(os.Stdout)
+
 	var (
 		nDocument      int
 		evFast         evaluationResult
@@ -49,14 +65,20 @@ func main() {
 		// Open file
 		doc, err := openFile(entry.File)
 		if err != nil {
+			if *jsonOutput {
+				log.Fatal().Err(err).Msgf("failed to open %s", entry.File)
+			}
 			log.Error().Msgf("failed to open %s: %v", entry.File, err)
 			continue
 		}
 
 		// Fast htmldate
 		start := time.Now()
-		fastResult, err := runHtmlDate(doc, false)
+		fastResult, err := runHtmlDate(doc, false, opts)
 		if err != nil {
+			if *jsonOutput {
+				log.Fatal().Err(err).Msgf("fast error in %s", entry.URL)
+			}
 			log.Error().Msgf("fast error in %s: %v", entry.URL, err)
 		}
 
@@ -67,8 +89,11 @@ func main() {
 
 		// Extensive htmldate
 		start = time.Now()
-		extensiveResult, err := runHtmlDate(doc, true)
+		extensiveResult, err := runHtmlDate(doc, true, opts)
 		if err != nil {
+			if *jsonOutput {
+				log.Fatal().Err(err).Msgf("extensive error in %s", entry.URL)
+			}
 			log.Error().Msgf("extensive error in %s: %v", entry.URL, err)
 		}
 
@@ -76,6 +101,30 @@ func main() {
 		ev = evaluateResult(extensiveResult, entry)
 		evExtensive = mergeEvaluationResult(evExtensive, ev)
 		evExtensive.Duration += duration
+
+		if *jsonOutput {
+			modifiedOpts := opts
+			modifiedOpts.UseOriginalDate = false
+			modifiedFast, err := runHtmlDate(doc, false, modifiedOpts)
+			if err != nil {
+				log.Fatal().Err(err).Msgf("modified fast error in %s", entry.URL)
+			}
+			modifiedExtensive, err := runHtmlDate(doc, true, modifiedOpts)
+			if err != nil {
+				log.Fatal().Err(err).Msgf("modified extensive error in %s", entry.URL)
+			}
+			entry.Fast = fastResult
+			entry.Extensive = extensiveResult
+			output := struct {
+				comparisonEntry
+				ModifiedFast      string
+				ModifiedExtensive string
+			}{entry, modifiedFast, modifiedExtensive}
+			if err := encoder.Encode(output); err != nil {
+				log.Fatal().Err(err).Msg("failed to write JSON result")
+			}
+			continue
+		}
 
 		// Log the difference with original code
 		if fastResult != entry.Fast || extensiveResult != entry.Extensive {
@@ -94,6 +143,10 @@ func main() {
 		nDocument++
 	}
 
+	if *jsonOutput {
+		return
+	}
+
 	fmt.Printf("N Documents: %d\n\n", nDocument)
 
 	fmt.Printf("Fast: %s\n", evFast.info())
@@ -101,6 +154,17 @@ func main() {
 
 	fmt.Printf("Extensive: %s\n", evExtensive.info())
 	fmt.Printf("\t%s\n\n", evExtensive.scoreInfo())
+}
+
+func parseDateBound(value string) time.Time {
+	if value == "" {
+		return time.Time{}
+	}
+	date, err := time.Parse("2006-01-02", value)
+	if err != nil {
+		log.Fatal().Err(err).Msgf("invalid date bound %q", value)
+	}
+	return date
 }
 
 func openFile(name string) (*html.Node, error) {
@@ -130,12 +194,8 @@ func openFile(name string) (*html.Node, error) {
 	return dom.Parse(f)
 }
 
-func runHtmlDate(doc *html.Node, extensive bool) (string, error) {
-	opts := htmldate.Options{
-		UseOriginalDate:     true,
-		SkipExtensiveSearch: !extensive,
-	}
-
+func runHtmlDate(doc *html.Node, extensive bool, opts htmldate.Options) (string, error) {
+	opts.SkipExtensiveSearch = !extensive
 	res, err := htmldate.FromDocument(doc, opts)
 	if err != nil {
 		return "", err

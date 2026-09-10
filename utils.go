@@ -30,11 +30,8 @@ import (
 
 // cleanDocument cleans the document by discarding unwanted elements.
 func cleanDocument(doc *html.Node) *html.Node {
-	// Clone doc
-	clone := dom.Clone(doc, true)
-
 	// Remove comments
-	// removeHtmlCommentNode(clone)
+	// removeHtmlCommentNode(doc)
 
 	// Remove useless nodes
 	tagNames := []string{
@@ -50,13 +47,13 @@ func cleanDocument(doc *html.Node) *html.Node {
 		// "figure", "input", "layer", "param", "source"
 	}
 
-	for _, node := range dom.GetAllNodesWithTag(clone, tagNames...) {
+	for _, node := range dom.GetAllNodesWithTag(doc, tagNames...) {
 		if node.Parent != nil {
 			node.Parent.RemoveChild(node)
 		}
 	}
 
-	return clone
+	return doc
 }
 
 // removeHtmlCommentNode removes all `html.CommentNode` in document.
@@ -142,8 +139,7 @@ func strLimit(s string, limit int) string {
 // normalizeSpaces converts all whitespaces to normal spaces, remove multiple adjacent
 // whitespaces and trim the string.
 func normalizeSpaces(s string) string {
-	s = strings.Join(strings.Fields(s), " ")
-	return strings.TrimSpace(s)
+	return strings.Join(strings.Fields(s), " ")
 }
 
 func rxFindNamedStringSubmatch(rx *regexp.Regexp, s string) (map[string]string, string) {

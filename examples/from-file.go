@@ -19,7 +19,7 @@ func main() {
 	defer f.Close()
 
 	// Prepare configuration
-	// Here we want the publish date instead of last modified
+	// Request the publication date rather than the last-modified date.
 	opts := htmldate.Options{
 		UseOriginalDate:     true,
 		EnableLog:           true,
@@ -32,7 +32,7 @@ func main() {
 		panic(err)
 	}
 
-	// Print result if date found
+	// Print the result if a date was found.
 	if !res.IsZero() {
 		fmt.Println(res.Format("2006-01-02"))
 	}
