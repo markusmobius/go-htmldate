@@ -123,9 +123,9 @@ The checked-in matchers were generated with re2go 4.1. To regenerate them, insta
 
 ### Version Comparison
 
-Measured on **2026-09-14**, comparing Go-HtmlDate v1.9.3 (`79c39d1`) with v1.10.1 (`0f04a39`) on the same **1,000 pre-parsed DOMs**. Each cell is the median of **eight timed runs**, with one complete corpus pass per run: **64 timed passes total**. HTML parsing, file loading and network requests are excluded.
+Measured on **2026-09-14**, comparing Go-HtmlDate v1.9.3 (`79c39d1`) with v1.10.1 before the pruning improvement (`0f04a39`) on the same **1,000 pre-parsed DOMs**. Each cell is the median of **eight timed runs**, with one complete corpus pass per run: **64 timed passes total**. HTML parsing, file loading and network requests are excluded.
 
-| Mode | Old Go v1.9.3, ms/1,000 pages | New Go v1.10.1, ms/1,000 pages | Old / New |
+| Mode | Old Go v1.9.3, ms/1,000 pages | Go v1.10.1 before pruning, ms/1,000 pages | Old / New |
 | :--- | ---------------------------: | ----------------------------: | --------: |
 | Publication, fast | 733.54 | 451.89 | 1.62x |
 | Publication, extensive | 1,275.83 | 933.30 | 1.37x |
@@ -148,6 +148,19 @@ python3 scripts/comparison/benchmark.py --runs 8 --cpu 2 --output /tmp/htmldate-
 
 Choose an available logical CPU with `--cpu` and a new output path for each run. Individual operations have a 60-second timeout and measurement requests share a six-minute overall deadline. Failed runs retain their completed samples and are not retried automatically.
 
+### DOM Pruning
+
+v1.10.1 also avoids copying the full DOM when pruning caller-owned documents. On **2026-09-14**, the same 1,000-page corpus and extraction settings were measured with **500 samples per version/mode**, eight untimed warmups and **4,000 fully interleaved timed passes**. Each round includes both implementations in all four modes; the baseline is v1.10.1 before pruning, not v1.9.3.
+
+| Mode | Before pruning, ms/1,000 pages | With pruning, ms/1,000 pages | Before / After | Fewer Allocated Bytes |
+| :--- | ----------------------------: | --------------------------: | -------------: | --------------------: |
+| Publication, fast | 366.38 | 243.95 | 1.50x | 60.39% |
+| Publication, extensive | 990.28 | 807.81 | 1.23x | 44.29% |
+| Last modified, fast | 400.35 | 253.05 | 1.58x | 60.89% |
+| Last modified, extensive | 1,022.69 | 847.58 | 1.21x | 44.31% |
+
+Times are medians; ratios divide the before/after medians. Allocated bytes are per pass, not peak memory. Output hashes matched throughout. The [raw report](scripts/comparison/benchmark-pruning-v1.10.1.json) retains all samples, binary hashes and balanced randomized execution order. Timings remain environment-dependent; these ratios are separate from, and should not be multiplied by, the earlier version comparison.
+
 ## Comparison with Original
 
 Checked on **2026-09-14**, Go-HtmlDate **v1.10.1** and the [Python reference][3] produce identical dates on the 1,000-entry comparison corpus in all four modes: **4,000/4,000 matching outputs**. The corpus contains 725 BBAW entries and 275 from the [Data Culture Group][dcg]; repeated entries are retained.
@@ -168,9 +181,9 @@ This is a correctness comparison on saved HTML, including HTML repair, not a tim
 - Updated Go-DateParser from v1.2.4 to v1.4.7 and adopted shared Go-Dateutil v2.9.1 for parsing, Unicode helpers and CPython-compatible ISO/timestamp handling.
 - Matched Python's JSON/script precedence, attribute order and HTML repair, resolving the earlier date-selection differences.
 - Corrected ISO-week and compact-date handling, Unicode digit gates, incomplete-date defaults, timezone-aware bounds and local Unix-reference dates.
-- Removed unnecessary DOM copies while preserving caller-owned documents and surrounding text; the default maximum date now follows the current local day on each call.
+- Added read-only DOM pruning to avoid full-tree copies while preserving caller-owned documents and surrounding text; the default maximum date now follows the current local day on each call.
 
-The public Go API, CLI and optional time/timezone extraction are retained. The measured extraction speed improvements are shown in the [version comparison](#version-comparison).
+The public Go API, CLI and optional time/timezone extraction are retained. Measured extraction improvements are shown in the [version comparison](#version-comparison) and [DOM pruning benchmark](#dom-pruning).
 
 ## Additional Notes
 

@@ -172,11 +172,11 @@ func findDate(doc *html.Node, opts Options, cloneDocument bool) (string, time.Ti
 	}
 
 	// First, prune tree
-	if cloneDocument {
-		doc = dom.Clone(doc, true)
+	if !cloneDocument {
+		cleanDocument(doc)
+		discardUnwanted(doc)
 	}
-	prunedDoc := cleanDocument(doc)
-	discardUnwanted(prunedDoc)
+	prunedDoc := prunedDocument{root: doc, alreadyPruned: !cloneDocument}
 
 	// Define selectors + text content
 	var dateSelector selector.Rule
@@ -187,32 +187,32 @@ func findDate(doc *html.Node, opts Options, cloneDocument bool) (string, time.Ti
 	}
 
 	// Then look for expressions
-	dateElements := selector.QueryAll(prunedDoc, dateSelector)
-	rawString, dateResult := examineOtherElements(dateElements, opts)
+	dateElements := prunedDoc.queryAll(dateSelector)
+	rawString, dateResult := examineOtherElementsWithText(dateElements, opts, prunedDoc.text)
 	if !dateResult.IsZero() {
 		return rawString, dateResult, nil
 	}
 
 	// Try title elements
-	titleElements := dom.QuerySelectorAll(prunedDoc, "title, h1")
-	rawString, dateResult = examineOtherElements(titleElements, opts)
+	titleElements := prunedDoc.querySelectorAll("title, h1")
+	rawString, dateResult = examineOtherElementsWithText(titleElements, opts, prunedDoc.text)
 	if !dateResult.IsZero() {
 		return rawString, dateResult, nil
 	}
 
 	// Try <time> elements
-	rawString, timeResult := examineTimeElements(prunedDoc, opts)
+	rawString, timeResult := examineTimeCandidates(prunedDoc.tagged("time"), opts, prunedDoc.initialText)
 	if !timeResult.IsZero() {
 		return rawString, timeResult, nil
 	}
 
 	// Conversion to string
 	var htmlString string
-	htmlNode := dom.QuerySelector(prunedDoc, "html")
-	if htmlNode != nil {
-		htmlString = dom.OuterHTML(htmlNode)
+	htmlNodes := prunedDoc.querySelectorAll("html")
+	if len(htmlNodes) != 0 {
+		htmlString = prunedDoc.outerHTML(htmlNodes[0])
 	} else {
-		htmlString = dom.InnerHTML(prunedDoc)
+		htmlString = prunedDoc.innerHTML(doc)
 	}
 
 	// String search using regex timestamp
@@ -224,7 +224,7 @@ func findDate(doc *html.Node, opts Options, cloneDocument bool) (string, time.Ti
 	}
 
 	// Try URL from image metadata
-	rawString, imgResult := metaImgSearch(prunedDoc, opts)
+	rawString, imgResult := metaImgSearchElements(prunedDoc.querySelectorAll(`meta[property="og:image"]`), opts)
 	if !imgResult.IsZero() {
 		return rawString, imgResult, nil
 	}
@@ -242,7 +242,7 @@ func findDate(doc *html.Node, opts Options, cloneDocument bool) (string, time.Ti
 		// TODO: further tests & decide according to original_date
 		var refValue int64
 		var refString string
-		for _, segment := range selector.QueryAllTextNodes(prunedDoc, selector.FreeText) {
+		for _, segment := range prunedDoc.queryAllTextNodes(selector.FreeText) {
 			// Basic filter: minimum could be 8 or 9
 			text := normalizeSpaces(segment.Data)
 			nText := utf8.RuneCountInString(text)
@@ -553,8 +553,10 @@ func examineAbbrElements(doc *html.Node, opts Options) (string, time.Time) {
 // examineTimeElements scans the page for <time> elements and check if their content
 // contains an eligible date.
 func examineTimeElements(doc *html.Node, opts Options) (string, time.Time) {
-	elements := dom.GetElementsByTagName(doc, "time")
+	return examineTimeCandidates(dom.GetElementsByTagName(doc, "time"), opts, etreeText)
+}
 
+func examineTimeCandidates(elements []*html.Node, opts Options, initialText func(*html.Node) string) (string, time.Time) {
 	// Make sure elements exist and less than `maxPossibleCandidates`
 	if nElements := len(elements); nElements == 0 || nElements >= maxPossibleCandidates {
 		return "", timeZero
@@ -565,7 +567,7 @@ func examineTimeElements(doc *html.Node, opts Options) (string, time.Time) {
 	var refString string
 	for _, elem := range elements {
 		var shortcutFlag bool
-		text := normalizeSpaces(etreeText(elem))
+		text := normalizeSpaces(initialText(elem))
 		class := strings.TrimSpace(dom.GetAttribute(elem, "class"))
 		dateTime := strings.TrimSpace(dom.GetAttribute(elem, "datetime"))
 		pubDate := strings.TrimSpace(dom.GetAttribute(elem, "pubdate"))
@@ -628,6 +630,10 @@ func examineText(text string, opts Options) (string, time.Time) {
 // examineOtherElements scans the specified elements and check if their content
 // contains an eligible date.
 func examineOtherElements(elements []*html.Node, opts Options) (string, time.Time) {
+	return examineOtherElementsWithText(elements, opts, dom.TextContent)
+}
+
+func examineOtherElementsWithText(elements []*html.Node, opts Options, textContent func(*html.Node) string) (string, time.Time) {
 	// Make sure elements exist and less than `maxPossibleCandidates`
 	if nElements := len(elements); nElements == 0 || nElements >= maxPossibleCandidates {
 		return "", timeZero
@@ -635,7 +641,7 @@ func examineOtherElements(elements []*html.Node, opts Options) (string, time.Tim
 
 	for _, elem := range elements {
 		// Trim text content
-		text := dom.TextContent(elem)
+		text := textContent(elem)
 		titleAttr := dom.GetAttribute(elem, "title")
 
 		for _, text := range []string{text, titleAttr} {

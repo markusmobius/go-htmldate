@@ -59,26 +59,23 @@ func cleanDocument(doc *html.Node) *html.Node {
 	// removeHtmlCommentNode(doc)
 
 	// Remove useless nodes
-	tagNames := []string{
-		// Embed elements
-		"object", "embed", "applet",
-		// Frame elements
-		"frame", "frameset", "noframes", "iframe",
-		// Others
-		"label", "map", "math",
-		"audio", "canvas", "datalist",
-		"picture", "rdf", "svg", "track", "video",
-		// TODO: to be considered
-		// "figure", "input", "layer", "param", "source"
-	}
-
-	for _, node := range dom.GetAllNodesWithTag(doc, tagNames...) {
-		if node.Parent != nil {
+	for _, node := range dom.GetElementsByTagName(doc, "*") {
+		if isCleanedTag(node.Data) && node.Parent != nil {
 			node.Parent.RemoveChild(node)
 		}
 	}
 
 	return doc
+}
+
+func isCleanedTag(tag string) bool {
+	switch tag {
+	case "object", "embed", "applet", "frame", "frameset", "noframes", "iframe",
+		"label", "map", "math", "audio", "canvas", "datalist", "picture", "rdf",
+		"svg", "track", "video":
+		return true
+	}
+	return false
 }
 
 // removeHtmlCommentNode removes all `html.CommentNode` in document.

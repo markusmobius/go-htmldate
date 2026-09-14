@@ -165,6 +165,17 @@ func Test_PythonReferenceDates(t *testing.T) {
 					if !assert.NoError(t, err, testCase.File) {
 						return
 					}
+					document, err := dom.Parse(strings.NewReader(repairHTML(input)))
+					if !assert.NoError(t, err, testCase.File) {
+						return
+					}
+					before := dom.OuterHTML(document)
+					viewResult, err := FromDocument(document, opts)
+					if !assert.NoError(t, err, testCase.File) {
+						return
+					}
+					assert.Equal(t, result, viewResult, "case %d %s", index, testCase.File)
+					assert.Equal(t, before, dom.OuterHTML(document), "input changed in case %d %s", index, testCase.File)
 					date = result.DateTime
 				}
 				actual := ""
@@ -380,6 +391,78 @@ func Test_FromDocument_PreservesDocument(t *testing.T) {
 		readerResult, err := FromReader(strings.NewReader(rawHTML), opts)
 		assert.NoError(t, err)
 		assert.Equal(t, result, readerResult)
+	}
+}
+
+func Test_FromDocument_PruningPaths(t *testing.T) {
+	inputs := []string{
+		`<div class="date"><label>1999-01-01</label>2017-09-01</div>`,
+		`<h1><math><mi>1999-01-01</mi></math>2017-09-01</h1>`,
+		`<time><label>1999-01-01</label>2017-09-01<span>tail</span></time>`,
+		`<div id="wm-ipp">1999-01-01T01:02:03</div><p>2017-09-01T01:02:03</p>`,
+		`<div id="wm-ipp"><meta property="og:image" content="https://example.org/1999/01/01/a.jpg"></div><meta property="og:image" content="https://example.org/2017/09/01/b.jpg">`,
+		`<object><p>1999-01-01</p></object><p>Published on September 1, 2017.</p>`,
+	}
+	for _, input := range inputs {
+		document, err := dom.FastParse(strings.NewReader("<html><head></head><body>" + input + "</body></html>"))
+		if !assert.NoError(t, err) {
+			continue
+		}
+		before := dom.OuterHTML(document)
+		for _, original := range []bool{false, true} {
+			for _, extensive := range []bool{false, true} {
+				opts := Options{
+					UseOriginalDate: original, SkipExtensiveSearch: !extensive,
+					MinDate: time.Date(1995, 1, 1, 0, 0, 0, 0, time.UTC),
+					MaxDate: time.Date(2026, 9, 13, 23, 59, 59, 999999999, time.UTC),
+				}
+				expected, expectedError := fromDocument(dom.Clone(document, true), opts, false)
+				actual, actualError := FromDocument(document, opts)
+				assert.Equal(t, expectedError, actualError)
+				assert.Equal(t, expected, actual, input)
+				assert.Equal(t, before, dom.OuterHTML(document))
+			}
+		}
+	}
+}
+
+func Test_PrunedDocument_View(t *testing.T) {
+	inputs := []string{
+		`<html><body><div id="wm-ipp">2001-01-01</div><div class="date"><svg><text>1999-01-01</text></svg>2017-09-01<span> tail</span></div></body></html>`,
+		`<html><body>before<!--keep--><object><p>hidden</p></object>after<p><label>hidden</label>visible <b>bold</b> tail</p></body></html>`,
+		`<html><body><div id="wm-ipp-base"><div id="wm-ipp">hidden</div></div><p>kept</p></body></html>`,
+		`<!DOCTYPE html PUBLIC "public-id" "system-id"><html><body><p title="&quot;&amp;&lt;&gt;&#39;">&amp;&lt;&gt;&#39;</p><!--a &lt; b--><br><img src="image.png"></body></html>`,
+		"<html><body><pre>\n\nkept</pre><listing>\n\nkept</listing><textarea>\n\n&lt;kept&gt;</textarea></body></html>",
+		`<html><head><script>if (a < b && c > d) { value = "&"; }</script><style>a > b { content: "&"; }</style></head><body><noscript><p>literal & text</p></noscript><xmp><p>literal & text</p></xmp></body></html>`,
+		`<html><body><p>before</p><plaintext>after <p>literal & text</p></body></html>`,
+		`<html><body><svg><script>if (a &lt; b) { c &amp; d }</script><foreignObject><p>kept &amp; text</p></foreignObject></svg></body></html>`,
+	}
+	for _, input := range inputs {
+		document, err := dom.FastParse(strings.NewReader(input))
+		if !assert.NoError(t, err) {
+			continue
+		}
+		before := dom.OuterHTML(document)
+		roots := dom.QuerySelectorAll(document, "html, body, .date, p, script, style, noscript, xmp, plaintext, svg")
+		roots = append(roots, document)
+		for _, root := range roots {
+			expected := cleanDocument(dom.Clone(root, true))
+			discardUnwanted(expected)
+			view := prunedDocument{root: root}
+			assert.Equal(t, dom.OuterHTML(expected), view.outerHTML(root), dom.TagName(root))
+			assert.Equal(t, dom.InnerHTML(expected), view.innerHTML(root), dom.TagName(root))
+			actualElements := view.elements()
+			expectedElements := dom.GetElementsByTagName(expected, "*")
+			if !assert.Len(t, actualElements, len(expectedElements)) {
+				continue
+			}
+			for index, element := range actualElements {
+				assert.Equal(t, dom.TagName(expectedElements[index]), dom.TagName(element))
+				assert.Equal(t, dom.TextContent(expectedElements[index]), view.text(element))
+				assert.Equal(t, etreeText(expectedElements[index]), view.initialText(element))
+			}
+		}
+		assert.Equal(t, before, dom.OuterHTML(document))
 	}
 }
 
