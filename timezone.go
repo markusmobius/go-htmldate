@@ -1,10 +1,52 @@
 package htmldate
 
 import (
+	"os"
 	"strconv"
 	"strings"
 	"time"
+
+	dateutilparser "github.com/markusmobius/go-dateutil/v2/parser"
 )
+
+type dateutilEnvironment struct {
+	location   *time.Location
+	timezone   dateutilparser.LocalTimezone
+	parserYear int
+}
+
+var localDateutilEnvironment = newDateutilEnvironment(localDateLocation())
+
+func localDateLocation() *time.Location {
+	if name, configured := os.LookupEnv("TZ"); configured {
+		if name == "" {
+			return time.UTC
+		}
+		if location, err := time.LoadLocation(strings.TrimPrefix(name, ":")); err == nil {
+			return location
+		}
+	}
+	return time.Local
+}
+
+func newDateutilEnvironment(location *time.Location) dateutilEnvironment {
+	year := time.Now().In(location).Year()
+	standardName, standardOffset := time.Date(year, 1, 1, 12, 0, 0, 0, location).Zone()
+	daylightName, daylightOffset := time.Date(year, 7, 1, 12, 0, 0, 0, location).Zone()
+	if standardOffset > daylightOffset {
+		standardName, daylightName = daylightName, standardName
+		standardOffset, daylightOffset = daylightOffset, standardOffset
+	}
+	return dateutilEnvironment{
+		location: location,
+		timezone: dateutilparser.LocalTimezone{
+			StandardName: standardName, DaylightName: daylightName,
+			StandardOffset: standardOffset, DaylightOffset: daylightOffset,
+			IsDST: func(instant time.Time) bool { return instant.In(location).IsDST() },
+		},
+		parserYear: year,
+	}
+}
 
 // parseTimezoneCode returns the location for the specified timezone code.
 func parseTimezoneCode(tzCode string) *time.Location {

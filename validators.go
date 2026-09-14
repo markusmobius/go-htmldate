@@ -21,6 +21,9 @@ import (
 	"regexp"
 	"strconv"
 	"time"
+
+	cpydatetime "github.com/markusmobius/go-dateutil/v2/compat/datetime"
+	dateutilparser "github.com/markusmobius/go-dateutil/v2/parser"
 )
 
 type yearCandidate struct {
@@ -30,8 +33,9 @@ type yearCandidate struct {
 }
 
 func defaultMaxDate() time.Time {
-	today := time.Now()
-	return time.Date(today.Year(), today.Month(), today.Day(), 23, 59, 59, 999999999, time.UTC)
+	location := localDateutilEnvironment.location
+	today := time.Now().In(location)
+	return time.Date(today.Year(), today.Month(), today.Day(), 23, 59, 59, 999999000, location)
 }
 
 func correctYear(year int) int {
@@ -48,8 +52,7 @@ func correctYear(year int) int {
 
 // validateDateParts checks if date parts can be used to generate a valid date
 func validateDateParts(year, month, day int, opts Options) (time.Time, bool) {
-	// Make sure year is in Gregorian era
-	if year < 1582 {
+	if year < 1 || year > 9999 {
 		return timeZero, false
 	}
 
@@ -89,19 +92,38 @@ func validateDateParts(year, month, day int, opts Options) (time.Time, bool) {
 
 // validateDate checks if date is valid and within the possible date.
 func validateDate(date time.Time, opts Options) bool {
-	// If time is zero, it's not valid
-	if date.IsZero() {
+	return validateParsedDate(dateutilparser.Result{Time: date}, opts)
+}
+
+func validateParsedDate(date dateutilparser.Result, opts Options) bool {
+	return validateParsedDateInLocation(date, opts, localDateutilEnvironment.location)
+}
+
+func validateParsedDateInLocation(date dateutilparser.Result, opts Options, location *time.Location) bool {
+	if date.Time.IsZero() {
 		return false
 	}
 
-	// If min date specified, make sure our date is after that
-	if !opts.MinDate.IsZero() && date.Before(opts.MinDate) {
+	if !opts.MinDate.IsZero() && date.Time.Year() < opts.MinDate.Year() ||
+		!opts.MaxDate.IsZero() && date.Time.Year() > opts.MaxDate.Year() {
 		return false
 	}
 
-	// If max date specified, make sure our date is before that
-	if !opts.MaxDate.IsZero() && date.After(opts.MaxDate) {
+	timestamp, err := cpydatetime.Timestamp(date, location, date.Fold)
+	if err != nil {
 		return false
+	}
+	for index, bound := range []time.Time{opts.MinDate, opts.MaxDate} {
+		if bound.IsZero() {
+			continue
+		}
+		_, offset := bound.Zone()
+		limit, err := cpydatetime.Timestamp(dateutilparser.Result{
+			Time: bound, Aware: true, Offset: time.Duration(offset) * time.Second,
+		}, location, false)
+		if err != nil || index == 0 && timestamp < limit || index == 1 && timestamp > limit {
+			return false
+		}
 	}
 
 	return true

@@ -18,14 +18,14 @@
 package htmldate
 
 import (
-	"encoding/json"
 	"strconv"
 	"strings"
 	"time"
-	"unicode/utf8"
 
 	"github.com/go-shiori/dom"
 	dps "github.com/markusmobius/go-dateparser"
+	cpydatetime "github.com/markusmobius/go-dateutil/v2/compat/datetime"
+	dateutilparser "github.com/markusmobius/go-dateutil/v2/parser"
 	"github.com/markusmobius/go-htmldate/internal/re2go"
 	"github.com/markusmobius/go-htmldate/internal/selector"
 	"golang.org/x/net/html"
@@ -70,11 +70,6 @@ func tryDateExpr(s string, opts Options) (string, time.Time) {
 	s = normalizeSpaces(s)
 	s = strLimit(s, maxSegmentLen)
 
-	// If string less than 6 runes, stop
-	if utf8.RuneCountInString(s) < 6 {
-		return s, timeZero
-	}
-
 	// Formal constraint: 4 to 18 digits
 	nDigit := getDigitCount(s)
 	if nDigit < 4 || nDigit > 18 {
@@ -112,16 +107,26 @@ func tryDateExpr(s string, opts Options) (string, time.Time) {
 // In the original Python library, this function is named `custom_parse`, but I
 // renamed it to `fastParse` because I think it's more suitable to its purpose.
 func fastParse(s string, opts Options) time.Time {
-	// 1. Try YYYYMMDD without regex first
-	// This also handle '201709011234' which not covered by dateparser
-	if len(s) >= 8 && isDigit(s[4:8]) {
-		year, _ := strconv.Atoi(s[:4])
-		month, _ := strconv.Atoi(s[4:6])
-		day, _ := strconv.Atoi(s[6:8])
-
-		if dt, valid := validateDateParts(year, month, day, opts); valid {
-			log.Debug().Msgf("fast parse found Y-M-D without separator: %s", s[:8])
-			return dt
+	prefix := []rune(strLimit(s, 8))
+	if isDigit(string(prefix[:min(4, len(prefix))])) {
+		if isDigit(string(prefix[min(4, len(prefix)):])) {
+			if digits, decimal := dateutilparser.ASCIIDecimal(string(prefix)); decimal && len(digits) > 6 {
+				year, _ := strconv.Atoi(digits[:4])
+				month, _ := strconv.Atoi(digits[4:6])
+				day, _ := strconv.Atoi(digits[6:])
+				if candidate, valid := validateDateParts(year, month, day, opts); valid {
+					return candidate
+				}
+			}
+		} else {
+			parsed, err := cpydatetime.FromISOFormat(s)
+			if err != nil {
+				if candidate := dateutilFallback(s, opts); !candidate.IsZero() {
+					return candidate
+				}
+			} else if validateParsedDate(parsed, opts) {
+				return time.Date(parsed.Time.Year(), parsed.Time.Month(), parsed.Time.Day(), 0, 0, 0, 0, time.UTC)
+			}
 		}
 	}
 
@@ -134,7 +139,7 @@ func fastParse(s string, opts Options) time.Time {
 		day, _ := strconv.Atoi(text[6:8])
 
 		if dt, valid := validateDateParts(year, month, day, opts); valid {
-			log.Debug().Msgf("fast parse found Y-M-D without separator: %s", s[:8])
+			log.Debug().Msgf("fast parse found Y-M-D without separator: %s", text)
 			return dt
 		}
 	}
@@ -184,6 +189,36 @@ func fastParse(s string, opts Options) time.Time {
 	return timeZero
 }
 
+func dateutilFallback(s string, opts Options) time.Time {
+	environment := localDateutilEnvironment
+	now := time.Now().In(environment.location)
+	if opts.DateParserConfig != nil && !opts.DateParserConfig.CurrentTime.IsZero() {
+		now = opts.DateParserConfig.CurrentTime
+	} else if !externalDpsConfig.CurrentTime.IsZero() {
+		now = externalDpsConfig.CurrentTime
+	}
+	_, offset := now.Zone()
+	instant, instantErr := cpydatetime.Timestamp(dateutilparser.Result{
+		Time: now, Aware: true, Offset: time.Duration(offset) * time.Second,
+	}, environment.location, false)
+	first, firstErr := cpydatetime.Timestamp(dateutilparser.Result{Time: now}, environment.location, false)
+	fold := false
+	if instantErr == nil && firstErr == nil && instant != first {
+		second, secondErr := cpydatetime.Timestamp(dateutilparser.Result{Time: now}, environment.location, true)
+		fold = secondErr == nil && instant == second
+	}
+	return dateutilFallbackInEnvironment(s, opts, now, fold, environment)
+}
+
+func dateutilFallbackInEnvironment(s string, opts Options, now time.Time, fold bool, environment dateutilEnvironment) time.Time {
+	defaultDate := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
+	parsed, err := dateutilparser.ParseWithLocalTimezone(s, defaultDate, environment.parserYear, environment.timezone, fold)
+	if err != nil || !validateParsedDateInLocation(parsed, opts, environment.location) {
+		return timeZero
+	}
+	return time.Date(parsed.Time.Year(), parsed.Time.Month(), parsed.Time.Day(), 0, 0, 0, 0, time.UTC)
+}
+
 // externalDateParser uses go-dateparser package to extensively look for date.
 func externalDateParser(s string, opts Options) time.Time {
 	var cfg *dps.Configuration
@@ -194,8 +229,11 @@ func externalDateParser(s string, opts Options) time.Time {
 	}
 
 	dt, _ := externalParser.Parse(cfg, s)
-	if validateDate(dt.Time, opts) {
-		return dt.Time
+	if !dt.Time.IsZero() {
+		formatted := time.Date(dt.Time.Year(), dt.Time.Month(), dt.Time.Day(), 0, 0, 0, 0, time.UTC)
+		if validateDate(formatted, opts) {
+			return formatted
+		}
 	}
 
 	return timeZero
@@ -203,121 +241,31 @@ func externalDateParser(s string, opts Options) time.Time {
 
 // jsonSearch looks for JSON time patterns in JSON sections of the document.
 func jsonSearch(doc *html.Node, opts Options) (string, time.Time) {
-	// Prepare targetKeys to look for
-	var targetKeys map[string]struct{}
+	pattern := rxJSONModified
 	if opts.UseOriginalDate {
-		targetKeys = sliceToMap("datePublished", "dateCreated")
-	} else {
-		targetKeys = sliceToMap("dateModified")
+		pattern = rxJSONPublished
 	}
 
-	// Prepare function to capture date texts recursively
-	var capturedTexts []jsonCapturedText
-	var findDateTexts func(obj map[string]interface{})
-	findDateTexts = func(obj map[string]interface{}) {
-		for key, value := range obj {
-			switch v := value.(type) {
-			case string:
-				if inMap(key, targetKeys) {
-					capturedTexts = append(capturedTexts, jsonCapturedText{
-						Key:  key,
-						Text: normalizeSpaces(v),
-					})
-				}
-
-			case map[string]interface{}:
-				findDateTexts(v)
-
-			case []interface{}:
-				for _, item := range v {
-					itemObject, isObject := item.(map[string]interface{})
-					if isObject {
-						findDateTexts(itemObject)
-					}
-				}
-			}
-		}
-	}
-
-	// Look throughout the HTML tree
-	ldJsonScripts := dom.QuerySelectorAll(doc, `script[type="application/ld+json"]`)
-	settingsJsonScripts := dom.QuerySelectorAll(doc, `script[type="application/settings+json"]`)
-	scriptNodes := append(ldJsonScripts, settingsJsonScripts...)
-
-	for _, elem := range scriptNodes {
-		// Get the json text inside the script
-		jsonText := dom.TextContent(elem)
-		jsonText = strings.TrimSpace(jsonText)
-		log.Debug().Msgf("found JSON: %s", strLimit(jsonText, 200))
-
-		// First, decode JSON text assuming it as array of object
-		var err error
-		arrayData := []map[string]interface{}{}
-		err = json.Unmarshal([]byte(jsonText), &arrayData)
-		if err == nil {
-			for _, data := range arrayData {
-				findDateTexts(data)
-			}
+	for _, elem := range dom.QuerySelectorAll(doc, `script[type="application/ld+json"], script[type="application/settings+json"]`) {
+		text := etreeText(elem)
+		if !strings.Contains(text, `"date`) {
 			continue
 		}
-
-		// If it's not array, decode JSON text assuming it as an object
-		// There are some web pages whose JSON+LD contains additional trailing closing bracket
-		// which make JSON decoder failed. So, here if the JSON decoder failed we'll remove
-		// the last trailing bracket then try again.
-		objData := map[string]interface{}{}
-		for {
-			err = json.Unmarshal([]byte(jsonText), &objData)
-			if err == nil {
-				break
-			}
-
-			tmp := rxLastJsonBracket.ReplaceAllString(jsonText, "")
-			if tmp == jsonText {
-				break
-			}
-
-			jsonText = tmp
-		}
-
-		if err == nil {
-			findDateTexts(objData)
+		indexes := pattern.FindStringSubmatchIndex(text)
+		if len(indexes) < 4 {
 			continue
 		}
-
-		// At this point JSON decoder has failed
-		log.Debug().Msgf("failed to decode JSON: %v", err)
-	}
-
-	// Parse date for each captured texts
-	var dates []jsonCapturedDate
-	for _, capturedText := range capturedTexts {
-		dt := fastParse(capturedText.Text, opts)
-		if validateDate(dt, opts) {
-			dates = append(dates, jsonCapturedDate{
-				Text: capturedText.Text,
-				Date: dt,
-			})
+		date, err := time.Parse("2006-1-2", text[indexes[2]:indexes[3]])
+		if err != nil || !validateDate(date, opts) {
+			continue
 		}
-	}
-
-	if len(dates) == 0 {
-		return "", timeZero
-	}
-
-	log.Debug().Msgf("captured dates: %v", dates)
-
-	// Find the best date
-	var best jsonCapturedDate
-	for _, cd := range dates {
-		if best.Date.IsZero() ||
-			(opts.UseOriginalDate && cd.Date.Before(best.Date)) ||
-			(!opts.UseOriginalDate && cd.Date.After(best.Date)) {
-			best = cd
+		end := indexes[3]
+		if closing := strings.IndexByte(text[indexes[2]:], '"'); closing >= 0 {
+			end = indexes[2] + closing
 		}
+		return normalizeSpaces(text[indexes[2]:end]), date
 	}
-
-	return best.Text, best.Date
+	return "", timeZero
 }
 
 // idiosyncrasiesSearch looks for author-written dates throughout the web page.
@@ -427,14 +375,4 @@ func trySwapValues(day, month int) (int, int) {
 		return month, day
 	}
 	return day, month
-}
-
-type jsonCapturedText struct {
-	Key  string
-	Text string
-}
-
-type jsonCapturedDate struct {
-	Text string
-	Date time.Time
 }

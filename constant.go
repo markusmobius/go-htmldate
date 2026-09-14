@@ -30,7 +30,7 @@ type fnRe2GoFinder func(string) [][]int
 
 var (
 	timeZero       = time.Time{}
-	defaultMinDate = time.Date(1995, 1, 1, 0, 0, 0, 0, time.UTC)
+	defaultMinDate = time.Date(1995, 1, 1, 0, 0, 0, 0, localDateutilEnvironment.location)
 
 	externalParser = &dps.Parser{
 		ParserTypes: []dps.ParserType{
@@ -61,7 +61,7 @@ var (
 	rxMonth = `[0-1]?[0-9]`
 	rxYear  = `199[0-9]|20[0-3][0-9]`
 
-	rxYmdNoSepPattern = regexp.MustCompile(`(?:\D|^)(\d{8})(?:\D|$)`)
+	rxYmdNoSepPattern = regexp.MustCompile(`(?:[^\pL\pN_]|^)(\d{8})(?:[^\pL\pN_]|$)`)
 	rxYmdPattern      = compileRegexF(`(?i)`+
 		`(?:\D|^)(?:`+
 		`(?P<year>%[1]s)[\-/.](?P<month>%[2]s)[\-/.](?P<day>%[3]s)`+
@@ -78,16 +78,20 @@ var (
 	rxCompleteUrl = compileRegexF(`(?i)\D(%[1]s)[/_-](%[2]s)[/_-](%[3]s)(?:\D|$)`,
 		rxYear, rxMonth, rxDay)
 
+	rxJSONPublished   = compileRegexF(`(?i)"datePublished": ?"((?:%s)-%s-%s)`, rxYear, rxMonth, rxDay)
+	rxJSONModified    = compileRegexF(`(?i)"dateModified": ?"((?:%s)-%s-%s)`, rxYear, rxMonth, rxDay)
+	rxNumericDateutil = regexp.MustCompile(`^([0-9]{1,4})(?:\.[0-9]+)?$`)
+
 	rxTextDatePattern = regexp.MustCompile(`(?i)[.:,_/ -]|^\d+$`)
 
 	rxDiscardPattern = regexp.MustCompile(`` +
-		`^\d{2}:\d{2}(?: |:|$)|` +
-		`^\D*\d{4}\D*$|` +
+		`^\p{Nd}{2}:\p{Nd}{2}(?: |:|$)|` +
+		`^\P{Nd}*\p{Nd}{4}\P{Nd}*$|` +
 		`[$€¥Ұ£¢₽₱฿#₹]|` + // currency symbols and special characters
 		`[A-Z]{3}[^A-Z]|` + // currency codes
-		`(?:^|\D)(?:\+\d{2}|\d{3}|\d{5})\D|` + // tel./IPs/postal codes
+		`(?:^|\P{Nd})(?:\+\p{Nd}{2}|\p{Nd}{3}|\p{Nd}{5})\P{Nd}|` + // tel./IPs/postal codes
 		`ftps?|https?|sftp|` + // protocols
-		`\.(?:com|net|org|info|gov|edu|de|fr|io)(?:\z|[^\pL\pM\d_])|` + // TLDs
+		`\.(?:com|net|org|info|gov|edu|de|fr|io)(?:\z|[^\pL\pM\p{Nd}_])|` + // TLDs
 		`IBAN|[A-Z]{2}[0-9]{2}|` + // bank accounts
 		`®` + // ©
 		``)

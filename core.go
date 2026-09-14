@@ -46,8 +46,12 @@ func init() {
 
 // FromReader extracts a publication or modification date from HTML read from r.
 func FromReader(r io.Reader, opts Options) (Result, error) {
+	content, err := io.ReadAll(r)
+	if err != nil {
+		return resultZero, err
+	}
 	// Parse html document
-	doc, err := dom.Parse(r)
+	doc, err := dom.Parse(strings.NewReader(repairHTML(string(content))))
 	if err != nil {
 		return resultZero, err
 	}
@@ -206,7 +210,7 @@ func findDate(doc *html.Node, opts Options, cloneDocument bool) (string, time.Ti
 	var htmlString string
 	htmlNode := dom.QuerySelector(prunedDoc, "html")
 	if htmlNode != nil {
-		htmlString = dom.InnerHTML(htmlNode)
+		htmlString = dom.OuterHTML(htmlNode)
 	} else {
 		htmlString = dom.InnerHTML(prunedDoc)
 	}

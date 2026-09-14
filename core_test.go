@@ -18,6 +18,9 @@
 package htmldate
 
 import (
+	"bytes"
+	"crypto/sha256"
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
@@ -28,9 +31,334 @@ import (
 	"time"
 
 	"github.com/go-shiori/dom"
+	dps "github.com/markusmobius/go-dateparser"
 	"github.com/markusmobius/go-htmldate/internal/re2go"
 	"github.com/stretchr/testify/assert"
 )
+
+func Test_PythonReferenceDates(t *testing.T) {
+	data, err := os.ReadFile("test-files/python-reference.json")
+	if !assert.NoError(t, err) {
+		return
+	}
+	type referenceEnvironment struct {
+		Zone       string    `json:"zone"`
+		Names      [2]string `json:"names"`
+		Offsets    [2]int    `json:"offsets"`
+		ParserYear int       `json:"parser_year"`
+	}
+	var fixture struct {
+		Python          string               `json:"python"`
+		SourceCommit    string               `json:"source_commit"`
+		CurrentTime     string               `json:"current_time"`
+		Dependencies    map[string]string    `json:"dependencies"`
+		CorpusSHA256LF  map[string]string    `json:"corpus_sha256_lf"`
+		TimezoneContext referenceEnvironment `json:"timezone_context"`
+		Cases           []struct {
+			Kind        string                `json:"kind"`
+			Input       string                `json:"input"`
+			File        string                `json:"file"`
+			SHA256      string                `json:"sha256"`
+			CurrentTime string                `json:"current_time"`
+			Environment *referenceEnvironment `json:"environment"`
+			Options     struct {
+				Original bool   `json:"original"`
+				Fast     bool   `json:"fast"`
+				URL      string `json:"url"`
+				Defer    bool   `json:"defer"`
+				Min      string `json:"min"`
+				Max      string `json:"max"`
+			} `json:"options"`
+			Expected struct {
+				Date  string `json:"date"`
+				Error string `json:"error"`
+			} `json:"expected"`
+		} `json:"cases"`
+	}
+	if !assert.NoError(t, json.Unmarshal(data, &fixture)) {
+		return
+	}
+	assert.Equal(t, "1.10.0", fixture.Dependencies["htmldate"])
+	assert.Equal(t, "1.4.3", fixture.Dependencies["dateparser"])
+	assert.Equal(t, "2.9.0.post0", fixture.Dependencies["python-dateutil"])
+	assert.Equal(t, "3.14.6", fixture.Python)
+	assert.Equal(t, "b8952828329abaeeb3be21387b526f2be614ce67", fixture.SourceCommit)
+	assert.Len(t, fixture.Cases, 9614)
+	previousEnvironment := localDateutilEnvironment
+	t.Cleanup(func() { localDateutilEnvironment = previousEnvironment })
+	baseEnvironment := newDateutilEnvironment(time.UTC)
+	baseEnvironment.parserYear = fixture.TimezoneContext.ParserYear
+	assert.Equal(t, "UTC", fixture.TimezoneContext.Zone)
+	assert.Equal(t, [2]int{0, 0}, fixture.TimezoneContext.Offsets)
+	frozen, err := time.Parse("2006-01-02T15:04:05", fixture.CurrentTime)
+	if !assert.NoError(t, err) {
+		return
+	}
+	for _, kind := range []string{"fast", "regex", "try", "url", "html", "file"} {
+		t.Run(kind, func(t *testing.T) {
+			var checked, failures, pythonExceptions int
+			var previousFile string
+			var contents []byte
+			for index, testCase := range fixture.Cases {
+				if testCase.Kind != kind {
+					continue
+				}
+				checked++
+				localDateutilEnvironment = baseEnvironment
+				if snapshot := testCase.Environment; snapshot != nil {
+					location, err := time.LoadLocation(snapshot.Zone)
+					if !assert.NoError(t, err) {
+						return
+					}
+					localDateutilEnvironment = newDateutilEnvironment(location)
+					localDateutilEnvironment.timezone.StandardName = snapshot.Names[0]
+					localDateutilEnvironment.timezone.DaylightName = snapshot.Names[1]
+					localDateutilEnvironment.timezone.StandardOffset = snapshot.Offsets[0]
+					localDateutilEnvironment.timezone.DaylightOffset = snapshot.Offsets[1]
+					localDateutilEnvironment.parserYear = snapshot.ParserYear
+				}
+				referenceTime := frozen
+				if testCase.CurrentTime != "" {
+					referenceTime, err = time.Parse(time.RFC3339Nano, testCase.CurrentTime)
+					if !assert.NoError(t, err) {
+						return
+					}
+				}
+				minimum, err := time.Parse(time.RFC3339Nano, testCase.Options.Min)
+				if !assert.NoError(t, err) {
+					return
+				}
+				maximum, err := time.Parse(time.RFC3339Nano, testCase.Options.Max)
+				if !assert.NoError(t, err) {
+					return
+				}
+				opts := Options{UseOriginalDate: testCase.Options.Original, SkipExtensiveSearch: testCase.Options.Fast,
+					URL: testCase.Options.URL, DeferUrlExtractor: testCase.Options.Defer, MinDate: minimum, MaxDate: maximum,
+					DateParserConfig: &dps.Configuration{CurrentTime: referenceTime, StrictParsing: true, PreferredDateSource: dps.Past}}
+				var date time.Time
+				switch kind {
+				case "fast":
+					date = fastParse(testCase.Input, opts)
+				case "regex":
+					date = regexParse(testCase.Input, opts)
+				case "try":
+					_, date = tryDateExpr(testCase.Input, opts)
+				case "url":
+					date = extractUrlDate(testCase.Input, opts)
+				case "html", "file":
+					input := testCase.Input
+					if kind == "file" {
+						if testCase.File != previousFile {
+							contents, err = os.ReadFile(testCase.File)
+							if !assert.NoError(t, err) {
+								return
+							}
+							previousFile = testCase.File
+							contents = bytes.ReplaceAll(contents, []byte("\r\n"), []byte("\n"))
+						}
+						if !assert.Equal(t, fixture.CorpusSHA256LF[testCase.File], fmt.Sprintf("%x", sha256.Sum256(contents)), testCase.File) {
+							return
+						}
+						input = string(contents)
+					}
+					result, err := FromReader(strings.NewReader(input), opts)
+					if !assert.NoError(t, err, testCase.File) {
+						return
+					}
+					date = result.DateTime
+				}
+				actual := ""
+				if !date.IsZero() {
+					actual = date.Format("2006-01-02")
+				}
+				if testCase.Expected.Error != "" {
+					pythonExceptions++
+				}
+				if actual != testCase.Expected.Date {
+					failures++
+					if failures <= 30 {
+						t.Errorf("case %d %q %s original=%t fast=%t: Go=%q Python=%q (Python error=%q)", index, testCase.Input, testCase.File, opts.UseOriginalDate, opts.SkipExtensiveSearch, actual, testCase.Expected.Date, testCase.Expected.Error)
+					}
+				}
+			}
+			t.Logf("%d cases, %d date differences, %d Python exceptions with no date", checked, failures, pythonExceptions)
+			assert.Positive(t, checked)
+		})
+	}
+}
+
+func Test_PythonDateutilDefaults(t *testing.T) {
+	opts := Options{
+		MinDate:          time.Date(1995, 1, 1, 0, 0, 0, 0, time.UTC),
+		MaxDate:          time.Date(2026, 9, 13, 23, 59, 59, 999999999, time.UTC),
+		DateParserConfig: &dps.Configuration{CurrentTime: time.Date(2026, 9, 13, 12, 0, 0, 0, time.UTC)},
+	}
+	for input, expected := range map[string]string{
+		"01": "2026-09-01", "13": "2026-09-13", "1998": "1998-09-13",
+		"1998-01": "1998-01-13", "2008/01": "2008-01-13", "2020-1": "2020-01-13",
+		"2020.01": "2020-09-13", "2020.13": "2020-09-13", "2023.06": "2023-09-13",
+		"2017-09-01": "2017-09-01", "201709011234": "2017-09-01",
+	} {
+		assert.Equal(t, expected, fastParse(input, opts).Format("2006-01-02"), input)
+	}
+}
+
+func Test_PythonISOWeekDates(t *testing.T) {
+	opts := Options{
+		MinDate: time.Date(1995, 1, 1, 0, 0, 0, 0, time.UTC),
+		MaxDate: time.Date(2026, 9, 13, 23, 59, 59, 0, time.UTC),
+	}
+	for input, expected := range map[string]string{
+		"2020-W53":                  "2020-12-28",
+		"2020-W53-7":                "2021-01-03",
+		"2020W537":                  "2021-01-03",
+		"2021-W01-1":                "2021-01-04",
+		"2021-W53-1":                "",
+		"2020-W53-7T23:59:59+05:30": "2021-01-03",
+		"2020-W53-7T24:00":          "2021-01-04",
+	} {
+		actual := ""
+		if parsed := fastParse(input, opts); !parsed.IsZero() {
+			actual = parsed.Format("2006-01-02")
+		}
+		assert.Equal(t, expected, actual, input)
+	}
+}
+
+func Test_PythonTimestampBounds(t *testing.T) {
+	for _, testCase := range []struct {
+		input, minimum, maximum, expected string
+	}{
+		{"2020-W53-7T23:30:00-02:00", "2021-01-04T00:00:00Z", "2021-01-04T02:00:00Z", "2021-01-03"},
+		{"2020-W53-7T00:30:00+02:00", "2021-01-03T00:00:00Z", "2021-01-03T23:59:59Z", ""},
+		{"2020-W53-4T23:30:00-02:00", "2021-01-01T00:00:00Z", "2021-01-01T02:00:00Z", ""},
+		{"2020-W53-5T00:30:00+02:00", "2020-12-31T22:00:00Z", "2020-12-31T23:00:00Z", ""},
+		{"2020-W53-7T12:00:00.000001Z", "2021-01-03T12:00:00.000001Z", "2021-01-03T12:00:00.000001Z", "2021-01-03"},
+	} {
+		minimum, err := time.Parse(time.RFC3339Nano, testCase.minimum)
+		if !assert.NoError(t, err) {
+			return
+		}
+		maximum, err := time.Parse(time.RFC3339Nano, testCase.maximum)
+		if !assert.NoError(t, err) {
+			return
+		}
+		actual := ""
+		if parsed := fastParse(testCase.input, Options{MinDate: minimum, MaxDate: maximum}); !parsed.IsZero() {
+			actual = parsed.Format("2006-01-02")
+		}
+		assert.Equal(t, testCase.expected, actual, testCase.input)
+	}
+}
+
+func Test_PythonLocalDateutilContexts(t *testing.T) {
+	for _, zone := range []string{"UTC", "America/New_York"} {
+		location, err := time.LoadLocation(zone)
+		if !assert.NoError(t, err) {
+			return
+		}
+		environment := newDateutilEnvironment(location)
+		environment.timezone.StandardName = "Eastern Standard Time"
+		environment.timezone.DaylightName = "Eastern Daylight Time"
+		environment.timezone.StandardOffset = -18000
+		environment.timezone.DaylightOffset = -14400
+		environment.parserYear = 2026
+		for _, fold := range []bool{false, true} {
+			for _, suffix := range []string{"EST", "EDT", "XYZ", "-0400", ""} {
+				input := strings.TrimSpace("2024 November 3 01:30 " + suffix)
+				for _, hour := range []int{5, 6} {
+					opts := Options{
+						MinDate: time.Date(2024, 11, 3, hour, 15, 0, 0, time.UTC),
+						MaxDate: time.Date(2024, 11, 3, hour, 45, 0, 0, time.UTC),
+					}
+					expected := ""
+					if suffix == "-0400" && hour == 5 || suffix != "-0400" && zone == "America/New_York" && (fold && hour == 6 || !fold && hour == 5) {
+						expected = "2024-11-03"
+					}
+					actual := ""
+					if parsed := dateutilFallbackInEnvironment(input, opts, time.Date(2026, 9, 13, 0, 0, 0, 0, time.UTC), fold, environment); !parsed.IsZero() {
+						actual = parsed.Format("2006-01-02")
+					}
+					assert.Equal(t, expected, actual, "zone=%s fold=%t hour=%d input=%s", zone, fold, hour, input)
+				}
+			}
+		}
+	}
+}
+
+func Test_PythonCompactDateBoundaries(t *testing.T) {
+	opts := Options{
+		MinDate: time.Date(1995, 1, 1, 0, 0, 0, 0, time.UTC),
+		MaxDate: time.Date(2026, 9, 13, 23, 59, 59, 999999999, time.UTC),
+	}
+	for _, input := range []string{"A20190214A", "C20071130C", "K19991225K", "W20230815W", "Z20050321Z", "_20170901_", "abc20170901", "2017090112345x"} {
+		if strings.HasPrefix(input, "20170901") {
+			assert.Equal(t, "2017-09-01", fastParse(input, opts).Format("2006-01-02"))
+		} else {
+			assert.True(t, fastParse(input, opts).IsZero(), input)
+		}
+	}
+	assert.Equal(t, "2017-09-01", fastParse("published (20170901)", opts).Format("2006-01-02"))
+	for input, expected := range map[string]string{
+		"2017123": "2017-12-03", "201701": "", "2017012": "2017-01-02",
+		"\uff12\uff10\uff11\uff17\uff10\uff19\uff10\uff11": "2017-09-01",
+		"\u0662\u0660\u0661\u0667\u0660\u0669\u0660\u0661": "2017-09-01",
+		"2017\u0660\u0669\u0660\u0661":                     "2017-09-01",
+		"\u00b2\u2070\u00b9\u20772017":                     "", "2020\u2003-01-02": "2020-01-02",
+	} {
+		_, tried := tryDateExpr(input, opts)
+		for _, parsed := range []time.Time{fastParse(input, opts), tried} {
+			actual := ""
+			if !parsed.IsZero() {
+				actual = parsed.Format("2006-01-02")
+			}
+			assert.Equal(t, expected, actual, input)
+		}
+	}
+}
+
+func Test_JSONPythonPrecedence(t *testing.T) {
+	cases := []struct {
+		name     string
+		scripts  string
+		original bool
+		date     string
+		source   string
+	}{
+		{"publication_not_creation", `<script type="application/ld+json">{"dateCreated":"2020-01-01T12:00:00Z","datePublished":"2020-01-02T13:00:00Z"}</script>`, true, "2020-01-02", "2020-01-02T13:00:00Z"},
+		{"first_publication_not_earliest", `<script type="application/ld+json">{"datePublished":"2020-02-02T12:00:00Z","other":{"datePublished":"2020-01-01T13:00:00Z"}}</script>`, true, "2020-02-02", "2020-02-02T12:00:00Z"},
+		{"first_modification_not_latest", `<script type="application/ld+json">[{"dateModified":"2020-01-01"},{"dateModified":"2020-02-02"}]</script>`, false, "2020-01-01", "2020-01-01"},
+		{"mixed_script_document_order", `<script type="application/settings+json">{"datePublished":"2020-02-02"}</script><script type="application/ld+json">{"datePublished":"2020-01-01"}</script>`, true, "2020-02-02", "2020-02-02"},
+		{"creation_only", `<script type="application/ld+json">{"dateCreated":"2020-01-01"}</script>`, true, "", ""},
+		{"non_iso_date", `<script type="application/ld+json">{"datePublished":"Tue, Sep 15 2020 10:01:41 EDT"}</script>`, true, "", ""},
+		{"two_spaces", `<script type="application/ld+json">{"datePublished":  "2020-01-01"}</script>`, true, "", ""},
+		{"invalid_first_match", `<script type="application/ld+json">[{"datePublished":"2020-02-31"},{"datePublished":"2020-01-01"}]</script>`, true, "", ""},
+		{"invalid_script_then_valid", `<script type="application/ld+json">{"datePublished":"2020-02-31"}</script><script type="application/ld+json">{"datePublished":"2020-01-01"}</script>`, true, "2020-01-01", "2020-01-01"},
+		{"malformed_json", `<script type="application/ld+json">prefix "datePublished":"2020-01-01" garbage</script>`, true, "2020-01-01", "2020-01-01"},
+		{"same_day_tie", `<script type="application/ld+json">{"dateCreated":"2023-11-08T20:44:30.198Z","datePublished":"2023-11-08T23:25:12.335Z"}</script>`, true, "2023-11-08", "2023-11-08T23:25:12.335Z"},
+	}
+	for _, testCase := range cases {
+		t.Run(testCase.name, func(t *testing.T) {
+			document, err := dom.FastParse(strings.NewReader("<html><head>" + testCase.scripts + "</head><body></body></html>"))
+			if !assert.NoError(t, err) {
+				return
+			}
+			for iteration := 0; iteration < 20; iteration++ {
+				source, date := jsonSearch(document, Options{
+					UseOriginalDate: testCase.original,
+					MinDate:         time.Date(1995, 1, 1, 0, 0, 0, 0, time.UTC),
+					MaxDate:         time.Date(2026, 9, 13, 23, 59, 59, 999999999, time.UTC),
+				})
+				actual := ""
+				if !date.IsZero() {
+					actual = date.Format("2006-01-02")
+				}
+				assert.Equal(t, testCase.date, actual)
+				assert.Equal(t, testCase.source, source)
+			}
+		})
+	}
+}
 
 func Test_FromDocument_PreservesDocument(t *testing.T) {
 	rawHTML := `<html><head></head><body><div id="wm-ipp">2001-01-01</div><div class="date"><svg><text>1999-01-01</text></svg>2017-09-01</div></body></html>`
@@ -61,8 +389,8 @@ func Test_FromDocument_DateBounds(t *testing.T) {
 	assert.Equal(t, 23, today.Hour())
 	assert.Equal(t, 59, today.Minute())
 	assert.Equal(t, 59, today.Second())
-	assert.Equal(t, 999999999, today.Nanosecond())
-	assert.Equal(t, time.UTC, today.Location())
+	assert.Equal(t, 999999000, today.Nanosecond())
+	assert.Equal(t, localDateutilEnvironment.location, today.Location())
 
 	cases := []struct {
 		name     string
@@ -97,19 +425,21 @@ func Test_FromDocument_DateBounds(t *testing.T) {
 	}
 }
 
-func Test_FromDocument_KnownPythonDeviations(t *testing.T) {
+func Test_FromReader_PythonRegressions(t *testing.T) {
 	cases := []struct {
 		name         string
 		path         string
 		originalDate string
 		modifiedDate string
+		originalFast string
+		modifiedFast string
 	}{
-		{"engadget_non_iso_json", "mediacloud/1711803974.html", "2020-09-15", "2020-09-15"},
-		{"baltimore_creation_precedence", "mediacloud/1805697156.html", "2020-12-22", "2020-12-23"},
-		{"elbalad_utc_metadata", "mediacloud/1806793639.html", "2020-12-24", "2020-12-24"},
-		{"nmb_attribute_order", "comparison/nmb-media.de.ebay.html", "2018-06-22", "2018-08-29"},
-		{"handelsblatt_creation_fallback", "comparison/d20cc6511c6f4cb3bad3a1e57435456d.html", "2019-10-18", "2019-10-19"},
-		{"handelsblatt_border_creation_fallback", "comparison/handelsblatt.com.grenzschliessungen.html", "2020-04-27", "2020-07-08"},
+		{"engadget_non_iso_json", "mediacloud/1711803974.html", "2020-05-20", "2020-01-09", "", ""},
+		{"baltimore_creation_precedence", "mediacloud/1805697156.html", "2020-12-23", "2020-12-23", "2020-12-23", "2020-12-23"},
+		{"elbalad_utc_metadata", "mediacloud/1806793639.html", "2020-12-25", "2020-12-25", "2020-12-25", "2020-12-25"},
+		{"nmb_attribute_order", "comparison/nmb-media.de.ebay.html", "2018-08-29", "2018-08-29", "2018-08-29", "2018-08-29"},
+		{"handelsblatt_creation_fallback", "comparison/d20cc6511c6f4cb3bad3a1e57435456d.html", "2019-10-19", "2019-10-19", "2019-10-19", "2019-10-19"},
+		{"handelsblatt_border_creation_fallback", "comparison/handelsblatt.com.grenzschliessungen.html", "2020-07-08", "2020-07-08", "2020-07-08", "2020-07-08"},
 	}
 	modes := []struct {
 		name      string
@@ -123,13 +453,7 @@ func Test_FromDocument_KnownPythonDeviations(t *testing.T) {
 	}
 	for _, testCase := range cases {
 		t.Run(testCase.name, func(t *testing.T) {
-			source, err := os.Open(filepath.Join("test-files", testCase.path))
-			if !assert.NoError(t, err) {
-				return
-			}
-			defer source.Close()
-
-			doc, err := dom.Parse(source)
+			source, err := os.ReadFile(filepath.Join("test-files", testCase.path))
 			if !assert.NoError(t, err) {
 				return
 			}
@@ -139,14 +463,24 @@ func Test_FromDocument_KnownPythonDeviations(t *testing.T) {
 					if mode.original {
 						expected = testCase.originalDate
 					}
-					result, err := FromDocument(doc, Options{
+					if !mode.extensive {
+						expected = testCase.modifiedFast
+						if mode.original {
+							expected = testCase.originalFast
+						}
+					}
+					result, err := FromReader(strings.NewReader(string(source)), Options{
 						UseOriginalDate:     mode.original,
 						SkipExtensiveSearch: !mode.extensive,
 						MinDate:             time.Date(1995, 1, 1, 0, 0, 0, 0, time.UTC),
 						MaxDate:             time.Date(2026, 9, 10, 23, 59, 59, 999999999, time.UTC),
 					})
 					assert.NoError(t, err)
-					assert.Equal(t, expected, result.Format("2006-01-02"))
+					actual := ""
+					if !result.IsZero() {
+						actual = result.Format("2006-01-02")
+					}
+					assert.Equal(t, expected, actual)
 				})
 			}
 		})

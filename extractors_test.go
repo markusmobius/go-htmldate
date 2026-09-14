@@ -20,6 +20,7 @@ package htmldate
 import (
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/go-shiori/dom"
 	"github.com/stretchr/testify/assert"
@@ -102,10 +103,13 @@ func Test_tryDateExpr(t *testing.T) {
 }
 
 func Test_fastParse(t *testing.T) {
+	configuration := *externalDpsConfig
+	configuration.CurrentTime = time.Date(2026, 9, 13, 12, 0, 0, 0, time.UTC)
 	opts := Options{
-		MinDate:   defaultMinDate,
-		MaxDate:   defaultMaxDate(),
-		EnableLog: true,
+		MinDate:          defaultMinDate,
+		MaxDate:          time.Date(2026, 9, 13, 23, 59, 59, 999999000, time.Local),
+		EnableLog:        true,
+		DateParserConfig: &configuration,
 	}
 
 	parse := func(s string) string {
@@ -122,9 +126,9 @@ func Test_fastParse(t *testing.T) {
 	assert.Equal(t, "2004-01-12", parse("12.01.2004"))
 	assert.Equal(t, "2020-01-12", parse("12.01.20"))
 	assert.Equal(t, "2016-03-14", parse("3/14/2016"))
-	assert.Equal(t, "2020-01-01", parse("2020-1"))
-	assert.Equal(t, "2020-01-01", parse("2020.01"))
-	assert.Equal(t, "1998-01-01", parse("1998-01"))
+	assert.Equal(t, "2020-01-13", parse("2020-1"))
+	assert.Equal(t, "2020-09-13", parse("2020.01"))
+	assert.Equal(t, "1998-01-13", parse("1998-01"))
 	assert.Equal(t, "1998-01-01", parse("01-1998"))
 	assert.Equal(t, "", parse("13-1998"))
 	assert.Equal(t, "1998-10-10", parse("10.10.98"))
@@ -132,7 +136,7 @@ func Test_fastParse(t *testing.T) {
 	assert.Equal(t, "2004-02-12", parse("abcd 2004-2-12 efgh"))
 	assert.Equal(t, "2004-02-01", parse("abcd 2004-2 efgh"))
 	assert.Equal(t, "2004-02-01", parse("abcd 2004-2 efgh"))
-	assert.Equal(t, "", parse("2020.13"))
+	assert.Equal(t, "2020-09-13", parse("2020.13"))
 	assert.Equal(t, "", parse("12122004"))
 	assert.Equal(t, "", parse("1212-20-04"))
 	assert.Equal(t, "", parse("33.20.2004"))

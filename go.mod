@@ -6,7 +6,8 @@ toolchain go1.27.1
 
 require (
 	github.com/go-shiori/dom v0.0.0-20230515143342-73569d674e1c
-	github.com/markusmobius/go-dateparser v1.4.5
+	github.com/markusmobius/go-dateparser v1.4.7
+	github.com/markusmobius/go-dateutil/v2 v2.9.1
 	github.com/rs/zerolog v1.35.1
 	github.com/spf13/cobra v1.10.2
 	github.com/stretchr/testify v1.12.1

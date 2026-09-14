@@ -1,0 +1,35 @@
+name: Tests
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        go: ["1.26.x", "stable"]
+    env:
+      GOTOOLCHAIN: local
+      GOWORK: "off"
+      CGO_ENABLED: "0"
+      GOMAXPROCS: "1"
+      TZ: UTC
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go }}
+      - name: Use the toolchain timezone database
+        shell: bash
+        run: echo "ZONEINFO=$(go env GOROOT)/lib/time/zoneinfo.zip" >> "$GITHUB_ENV"
+      - run: go test -mod=readonly -count=1 ./...
+      - run: go vet -mod=readonly ./...
+      - run: go mod tidy -diff
+      - run: go mod verify

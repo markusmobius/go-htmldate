@@ -10,6 +10,7 @@ Its extraction pipeline follows the original Python implementation to make upstr
 - [Status](#status)
 - [Usage as a Go Package](#usage-as-a-go-package)
 - [Usage as a CLI Application](#usage-as-a-cli-application)
+- [Python Verification](#python-verification)
 - [Performance](#performance)
 - [Comparison with Original](#comparison-with-original)
 - [Additional Notes](#additional-notes)
@@ -30,9 +31,11 @@ By default, Go-HtmlDate uses extensive mode and looks for the most recent date. 
 
 ## Status
 
-This package tracks the original `htmldate` [v1.10.0][2] (commit [b895282][3]). The six upstream commits since the previous baseline, `1074ee7` (v1.9.3), have been reviewed and their applicable changes ported. Existing Go-specific behavior, including time and timezone extraction, is preserved; extraction results are not guaranteed to be identical to Python on every page.
+**v1.10.1 review candidate, not yet tagged or released.** This package tracks Python `htmldate` [v1.10.0][2] (commit [b895282][3]) with Python dateparser 1.4.3. It uses published [Go-DateParser v1.4.7](https://github.com/markusmobius/go-dateparser/releases/tag/v1.4.7) and [Go-Dateutil v2.9.1](https://github.com/markusmobius/go-dateutil/releases/tag/v2.9.1), without local replacements or runtime Python. The shared Dateutil library owns date parsing, Unicode helpers and the separate CPython ISO/timestamp compatibility APIs.
 
-An unspecified `MaxDate` now defaults to the end of the current local calendar day, represented in UTC, and is recalculated for each extraction. Previously it was fixed at one year after process startup. Set `MaxDate` explicitly to accept future dates. As in Python, an out-of-bounds full date may fall back to a valid month-only date.
+The candidate follows Python's ISO-before-Dateutil shortcut, character-based digit gates, timestamp bounds, JSON/script order, attribute order and HTML repair. All 9,614 independently generated Python cases agree, including the saved pages that differed in v1.10.0. This is recorded-corpus agreement, not a proof for arbitrary HTML or every platform timezone database.
+
+An unspecified `MinDate` means local midnight on January 1, 1995. `MaxDate` defaults to the end of the current local calendar day at microsecond precision and is recalculated per extraction. Explicit Go bounds are instants in their supplied locations; validation uses their wall years and inclusive Python-compatible floating timestamps. Naive candidates use the local environment, while aware ISO/Dateutil candidates use their parsed offsets. Returned dates retain wall-calendar fields in UTC. An out-of-bounds full date can still fall back to a valid month-only date, following Python's branch order.
 
 When time extraction is enabled:
 
@@ -45,7 +48,7 @@ Time and timezone extraction have unit tests, but the saved-page comparison does
 
 Requires Go 1.26.0 or newer. The preferred toolchain for working in this repository is Go 1.27.1.
 
-To install v1.10.0, run this command inside your Go project:
+The latest tagged version remains v1.10.0 while v1.10.1 is under review. To install that published version, run this command inside your Go project:
 
 ```sh
 go get github.com/markusmobius/go-htmldate@v1.10.0
@@ -89,7 +92,28 @@ Flags:
 
 The CLI uses extensive mode. Use `--ori` to request the publication date. Output formats use Go's reference-time layouts; for example, `--time --format '2006-01-02T15:04:05Z07:00'` includes the extracted time and timezone. The default format remains date-only even when `--time` is enabled.
 
+## Python Verification
+
+[test-files/python-reference.json](test-files/python-reference.json) contains 992 shortcut, 929 regex, 1,876 expression, 929 URL, 848 synthetic HTML and 4,040 saved-page cases. The original 9,533 expected results are unchanged; 81 additional cases cover ISO weeks, compact and Unicode digits, aware bounds, local timezone names and both repeated-hour folds. Four recorded Python exceptions are checked for safe no-date handling, not identical exception text. Time/timezone extraction remains a Go extension tested separately.
+
+The self-contained [Python exporter](scripts/python-reference/export.py) pins CPython 3.14.6 and [all dependency versions](scripts/python-reference/requirements.txt). It verifies LF-normalized hashes of all eight installed HtmlDate modules against the recorded upstream source, freezes the parser year and reference date, checks original corpus bytes, and executes Python rather than deriving expectations from Go. Local-context cases run in fresh processes with explicit timestamp environments and cleared validation caches.
+
+```sh
+GOWORK=off TZ=UTC go test -mod=readonly -count=1 ./...
+GOWORK=off go vet -mod=readonly ./...
+python -m pip install -r scripts/python-reference/requirements.txt
+python scripts/python-reference/export.py --check
+```
+
+Normal Go tests require neither Python nor a neighboring checkout. `--check --kind fast --kind try` rechecks only those existing Python slices without rewriting the fixture. Regeneration without `--check` still rejects any changed historical expectation.
+
+Saved pages are replayed after CRLF-to-LF normalization, with separate SHA-256 hashes for those normalized bytes. The original raw hashes remain in the fixture as provenance; normalization avoids Git's platform-dependent checkout conversion without changing corpus files or expected dates.
+
+`DateParserConfig.CurrentTime` can freeze incomplete-date defaults even in fast mode; otherwise the local calendar date is used. The Dateutil parser-year and timezone-name/offset snapshots are initialized with the process environment. Windows uses its native long standard/daylight names, independently of the naive timestamp location. Native timezone databases and platform timestamp ranges must match for exact local-time comparisons. Go's typed bounds, zero-time sentinel, HTML parser/byte-decoding behavior, and experimental time extraction are not Python's string-bound, arbitrary-format or input-object APIs. No internal worker threads are created; callers control concurrency.
+
 ## Performance
+
+The measurements below describe the earlier v1.10.0 synchronization. No v1.10.1 timing or accuracy benchmark has been collected or relabeled.
 
 Go-HtmlDate uses Go's `regexp` package alongside selected matchers generated by [re2go]. The generated Go files in `internal/re2go` are checked in and compiled as ordinary Go code, without cgo or a runtime regex engine for those matchers. The `.re` files are generation inputs, not runtime dependencies. The indirect `github.com/wasilibs/go-re2` dependency is a separate runtime regex library, not the generator for these matchers.
 
@@ -159,9 +183,11 @@ All 4,000 Go outputs were unchanged on this corpus. Python changed three outputs
 
 After refreshing the dependencies in [go.mod](go.mod), including `go-dateparser v1.4.3`, the full Go suite passed on both Go 1.26.0 and Go 1.27.1. All 4,000 Go saved-page outputs were unchanged from the synchronization run. The current Python reference must also use dateparser 1.4.3: Go-DateParser 1.4.3 ports that version, and Python htmldate 1.10.0 allows it (`dateparser >= 1.1.2`). Direct calls to both external parsers return `2018-04-12` for `2018-04-12 17:20:03.12345678999a`, reflecting upstream's year-first date-order fix. Python dateparser 1.2.1 instead returns `2018-12-04`; the htmldate 1.10.0 source test retains that older expectation. The Go regression follows the measured Python 1.4.3 behavior, not that stale assertion.
 
-Repeating the four-way comparison with Python dateparser 1.4.3 reproduced every score and agreement count in the tables above. Current Go/Python agreement remains 994/1,000 pages in each original-date mode and 998/1,000 in each modified-date mode. This resolves the timestamp reference mismatch, but the remaining corpus disagreements mean complete behavioral parity has not been established.
+Repeating the historical four-way comparison with Python dateparser 1.4.3 reproduced every score and agreement count in the tables above. At v1.10.0, agreement was 994/1,000 pages in each original-date mode and 998/1,000 in each modified-date mode. The v1.10.1 review candidate instead passes the current independent Python fixture described above; these older scores have not been recomputed.
 
 ### Known Python Deviations
+
+**Historical v1.10.0 analysis.** All six discrepancies below are resolved in the v1.10.1 candidate by following Python, including its imperfect date choices. The following tables and explanations describe the old implementation; they are retained as the provenance of the fixes, not current exceptions.
 
 The following differences were verified against Python htmldate 1.10.0 (`b895282`) with Python dateparser 1.4.3, using the same saved HTML, date bounds `1995-01-01` through `2026-09-10`, and no explicit URL argument. None was introduced by the Go-DateParser 1.4.3 upgrade. `Test_FromDocument_KnownPythonDeviations` in [core_test.go](core_test.go) preserves the current Go outputs on these six fixtures in all four extraction modes, using fixed bounds and no network or Python dependency.
 
@@ -235,7 +261,7 @@ Both Python versions produced **21 passed, 2 failed, 5 deselected** with datepar
 | [`3c39954`](https://github.com/adbar/htmldate/commit/3c39954) | Removed the unused discarded-node list, consolidated two-digit year correction, and applied all 42 benchmark label corrections. Segment bounds were already centralized. Python response duck typing, benchmark alternatives, and documentation tooling do not apply. |
 | [`b895282`](https://github.com/adbar/htmldate/commit/b895282) | Final v1.10.0 release checkpoint; version references updated here. |
 
-Go retains its existing structured JSON extraction, candidate-frequency aggregation, public API, CLI, and time/timezone extensions. Python cache implementation details are not copied into Go. Unreleased changes after v1.10.0, including the Python CLI mode inversion, are outside this synchronization.
+Go retains its public API, CLI, candidate-frequency aggregation and time/timezone extensions. The v1.10.1 candidate uses Python's ordered JSON regex search instead of the older structured JSON selection. Python cache implementation details are not copied into Go. Unreleased Python changes after v1.10.0, including the CLI mode inversion, remain outside the reference.
 
 ## Additional Notes
 

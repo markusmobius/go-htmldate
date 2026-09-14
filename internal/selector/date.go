@@ -60,21 +60,20 @@ func FastDate(n *html.Node) bool {
 // or contains(@class, 'footer') or contains(@id, 'footer')
 // or contains(@id, 'lastmod') or contains(@class, 'updated')
 func dateRule(n *html.Node) bool {
-	id := dom.ID(n)
-	class := dom.ClassName(n)
-	itemProp := dom.GetAttribute(n, "itemprop")
-
-	or := strOr
+	id := dom.GetAttribute(n, "id")
+	class := dom.GetAttribute(n, "class")
+	dateAttribute := firstAttribute(n, "id", "class", "itemprop")
+	idClass := firstAttribute(n, "id", "class")
 	contains := strings.Contains
 	translate := strings.ReplaceAll
 
 	switch {
-	case contains(translate(or(id, class, itemProp), "D", "d"), "date"),
-		contains(translate(or(id, class, itemProp), "D", "d"), "datum"),
-		contains(translate(or(id, class), "M", "m"), "meta"),
-		contains(or(id, class), "time"),
-		contains(or(id, class), "publish"),
-		contains(or(id, class), "footer"),
+	case contains(translate(dateAttribute, "D", "d"), "date"),
+		contains(translate(dateAttribute, "D", "d"), "datum"),
+		contains(translate(idClass, "M", "m"), "meta"),
+		contains(idClass, "time"),
+		contains(idClass, "publish"),
+		contains(idClass, "footer"),
 		contains(class, "info"),
 		contains(class, "post_detail"),
 		contains(class, "block-content"),
@@ -98,10 +97,12 @@ func dateRule(n *html.Node) bool {
 	}
 }
 
-func strOr(strs ...string) string {
-	for i := range strs {
-		if strs[i] != "" {
-			return strs[i]
+func firstAttribute(node *html.Node, names ...string) string {
+	for _, attribute := range node.Attr {
+		for _, name := range names {
+			if attribute.Key == name {
+				return attribute.Val
+			}
 		}
 	}
 	return ""

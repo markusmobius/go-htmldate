@@ -36,11 +36,12 @@ type Options struct {
 	// URL is the page URL. If empty, the extractor looks for a canonical link.
 	URL string
 
-	// MinDate is the earliest acceptable date.
+	// MinDate is the earliest acceptable instant. Zero defaults to local midnight
+	// on January 1, 1995. Bounds use Python's microsecond timestamp precision.
 	MinDate time.Time
 
 	// MaxDate is the latest acceptable date. If zero, it defaults to the end of
-	// the current local calendar day, represented in UTC.
+	// the current local calendar day at microsecond precision.
 	MaxDate time.Time
 
 	// EnableLog enables debug logging.
@@ -55,6 +56,7 @@ type Options struct {
 	DeferUrlExtractor bool
 
 	// DateParserConfig configures the external go-dateparser library. It is
-	// used only when SkipExtensiveSearch is false.
+	// used when SkipExtensiveSearch is false; CurrentTime also supplies the
+	// reference calendar date for incomplete Dateutil inputs in fast mode.
 	DateParserConfig *dps.Configuration
 }
