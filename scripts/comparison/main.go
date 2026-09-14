@@ -40,6 +40,10 @@ func main() {
 	jsonOutput := flag.Bool("json", false, "output per-page original and modified dates as JSON lines")
 	minDate := flag.String("min-date", "", "earliest acceptable date (YYYY-MM-DD)")
 	maxDate := flag.String("max-date", "", "latest acceptable date, inclusive (YYYY-MM-DD)")
+	benchmark := flag.String("benchmark", "", "use document for the persistent DOM benchmark runner")
+	passes := flag.Int("passes", 1, "passes per benchmark request (must be 1)")
+	corpusRoot := flag.String("corpus-root", ".", "repository containing the shared saved-page corpus")
+	currentTime := flag.String("current-time", "2026-09-13T12:00:00Z", "fixed benchmark DateParser reference time")
 	flag.Parse()
 	opts := htmldate.Options{
 		UseOriginalDate: true,
@@ -48,6 +52,12 @@ func main() {
 	}
 	if !opts.MaxDate.IsZero() {
 		opts.MaxDate = opts.MaxDate.AddDate(0, 0, 1).Add(-time.Nanosecond)
+	}
+	if *benchmark != "" {
+		if err := runBenchmark(*benchmark, *passes, *corpusRoot, *currentTime, opts); err != nil {
+			log.Fatal().Err(err).Msg("benchmark failed")
+		}
+		return
 	}
 	encoder := json.NewEncoder(os.Stdout)
 

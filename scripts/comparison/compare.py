@@ -191,9 +191,9 @@ def main():
     args.output_dir = args.output_dir.resolve()
     args.output_dir.mkdir(parents=True, exist_ok=True)
     overlay = args.output_dir / "baseline-overlay.json"
-    source = Path("scripts/comparison/main.go")
+    sources = [Path("scripts/comparison/main.go"), Path("scripts/comparison/benchmark.go")]
     overlay.write_text(json.dumps({"Replace": {
-        str((args.go_before / source).resolve()): str(REPO / source),
+        str((args.go_before / source).resolve()): str(REPO / source) for source in sources
     }}), encoding="utf-8")
     paths = {name: args.output_dir / f"{name}.jsonl" for name in ("go-before", "go-after", "python-before", "python-after")}
     run_go(args.go_before, paths["go-before"], args, overlay)
