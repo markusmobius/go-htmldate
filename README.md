@@ -31,9 +31,9 @@ By default, Go-HtmlDate uses extensive mode and looks for the most recent date. 
 
 ## Python Compatibility
 
-Go-HtmlDate v1.10.1 tracks Python `htmldate` [v1.10.0][2] (commit [b895282][3]) with Python dateparser 1.4.3. It uses [Go-DateParser v1.4.7](https://github.com/markusmobius/go-dateparser/releases/tag/v1.4.7) and [Go-Dateutil v2.9.1](https://github.com/markusmobius/go-dateutil/releases/tag/v2.9.1), without local replacements or runtime Python. The shared Dateutil library owns date parsing, Unicode helpers and the separate CPython ISO/timestamp compatibility APIs.
+Go-HtmlDate v1.10.1 follows the Python `htmldate` implementation at commit [b895282][3], with Python dateparser 1.4.3 as its reference. It uses [Go-DateParser v1.4.7](https://github.com/markusmobius/go-dateparser/releases/tag/v1.4.7) and [Go-Dateutil v2.9.1](https://github.com/markusmobius/go-dateutil/releases/tag/v2.9.1), without local replacements or runtime Python. The shared Dateutil library owns date parsing, Unicode helpers and the separate CPython ISO/timestamp compatibility APIs.
 
-The implementation follows Python's ISO-before-Dateutil shortcut, character-based digit gates, timestamp bounds, JSON/script order, attribute order and HTML repair. All 9,614 independently generated Python cases agree, including the saved pages that differed in v1.10.0. Another 24 Python-checked HTML regressions cover local Unix references and date bounds in UTC, Eastern and Kolkata contexts. This evidence is not a proof for arbitrary inputs: a different selected date under an equivalent Python context is a bug, not a supported deviation.
+The implementation follows Python's ISO-before-Dateutil shortcut, character-based digit gates, timestamp bounds, JSON/script order, attribute order and HTML repair. All 9,614 independently generated Python cases agree. Another 24 Python-checked HTML regressions cover local Unix references and date bounds in UTC, Eastern and Kolkata contexts. This evidence is not a proof for arbitrary inputs: a different selected date under an equivalent Python context is a bug, not a supported deviation.
 
 An unspecified `MinDate` means local midnight on January 1, 1995. `MaxDate` defaults to the end of the current local calendar day at microsecond precision and is recalculated per extraction. Explicit Go bounds are instants in their supplied locations; validation uses their wall years and inclusive Python-compatible floating timestamps. Naive candidates use the local environment, while aware ISO/Dateutil candidates use their parsed offsets. Returned dates retain wall-calendar fields in UTC. An out-of-bounds full date can still fall back to a valid month-only date, following Python's branch order.
 
@@ -148,155 +148,33 @@ python3 scripts/comparison/benchmark.py --runs 8 --cpu 2 --output /tmp/htmldate-
 
 Choose an available logical CPU with `--cpu` and a new output path for each run. Individual operations have a 60-second timeout and measurement requests share a six-minute overall deadline. Failed runs retain their completed samples and are not retried automatically.
 
-### Historical v1.10.0 API Comparison
-
-The following measurements from 2026-09-10 describe the earlier v1.10.0 synchronization. They compare APIs within one version, not v1.9.3 against v1.10.1, and retain their original version labels.
-
-Measurements on 2026-09-10 used Go 1.27.1 on a Windows laptop with `GOMAXPROCS=16`, one extraction caller, and the same 1,000 saved pages (150.7 MiB of HTML) used below. Date bounds were fixed at `1995-01-01` through `2026-09-10`; no explicit URL was supplied, and time extraction was disabled. Both APIs reproduced all 4,000 saved Go date outputs before timing.
-
-Each mode used six adjacent `FromDocument`/`FromReader` pairs after warmup, alternating API order and varying mode order to reduce laptop-load bias. File I/O and initial DOM parsing were outside the timed region; `FromReader` still parsed its input on every call. The same source bytes and pre-parsed DOMs remained resident for both APIs. CPU and allocation profiles were collected separately from the timing runs.
-
-| Mode | Existing DOM, ms/page | Parse + Extract, ms/page | Paired Ratio, Median (Range) |
-| :--- | --------------------: | -----------------------: | --------------------------: |
-| Original, fast | 0.341 | 4.876 | 14.08x (12.48-17.44) |
-| Original, extensive | 0.945 | 5.468 | 5.94x (5.55-6.53) |
-| Modified, fast | 0.349 | 4.865 | 12.96x (12.17-15.69) |
-| Modified, extensive | 0.939 | 5.401 | 5.75x (4.90-6.79) |
-
-Times are medians; each ratio is calculated within a pair before summarizing. These compare the two APIs on an already loaded corpus, not an optimization speedup or a throughput guarantee. Allocations were approximately 142-208 KiB per page with an existing DOM and 1,257-1,334 KiB including parsing.
-
-The profiles do not justify adding more generated matchers at present:
-
-- Numeric date regex calls accounted for under 1% of sampled DOM-extraction CPU; the rejection filter accounted for approximately 0.2-1.3%.
-- Existing scanner NUL-padding copies accounted for approximately 9-10% of DOM-extraction allocation bytes, but only 1-1.5% including parsing. Reducing those copies is an allocation experiment, not a demonstrated speedup.
-- Larger costs were outside these matchers: DOM queries accounted for approximately 21-23% of fast DOM-extraction CPU, and `go-dateparser` for 44-45% of extensive DOM-extraction CPU.
-
-CPU percentages refer to sampled process CPU, including garbage collection, not wall-time savings. No runtime changes were made for these measurements. Future matcher optimizations should preserve match semantics and corpus outputs and demonstrate an improvement in paired before/after runs.
-
 ## Comparison with Original
 
-To run the saved-page benchmark against the corrected upstream publication-date labels:
+Checked on **2026-09-14**, Go-HtmlDate **v1.10.1** and the [Python reference][3] produce identical dates on the 1,000-entry comparison corpus in all four modes: **4,000/4,000 matching outputs**. The corpus contains 725 BBAW entries and 275 from the [Data Culture Group][dcg]; repeated entries are retained.
 
-```sh
-go run ./scripts/comparison -min-date 1995-01-01 -max-date 2026-09-10
-```
-
-The comparison uses 1,000 saved documents from two sources:
-
-- 725 documents from the BBAW collection by Adrien Barbaresi, Shiyang Chen, and Lukas Kozmus.
-- 275 documents from the [Data Culture Group][dcg] at Northeastern University, providing additional worldwide news coverage.
-
-The following comparison was run on 2026-09-10 with Go 1.24.1 and Python 3.13.14, using Python dateparser 1.2.1 before the dependency refresh. Both Python versions used the same dependencies, both Go revisions used the same comparison runner, and all four runs used identical saved HTML and explicit date bounds. No URL argument was supplied, matching the upstream benchmark; canonical links in the HTML remain available to both libraries. Time extraction was disabled for cross-language comparison.
-
-All versions are scored against the **same corrected v1.10.0 labels**, including 42 corrections ported to the Go datasets. Remaining `NaN` labels retain the upstream benchmark's treatment as nonmatching references. These figures should not be compared directly with the older, uncorrected benchmark.
+Publication-date scores use the same corrected upstream labels, including the 42 label corrections since v1.9.3. Remaining `NaN` labels count as nonmatching references, following the upstream evaluation.
 
 | Implementation | Mode | Precision | Recall | Accuracy | F-Score |
 | :------------- | :--- | --------: | -----: | -------: | ------: |
-| Python v1.9.3 (`1074ee7`) | Fast | 0.924 | 0.926 | 0.860 | 0.925 |
-| Python v1.9.3 (`1074ee7`) | Extensive | 0.907 | 0.993 | 0.902 | 0.948 |
-| Python v1.10.0 (`b895282`) | Fast | 0.924 | 0.927 | 0.861 | 0.925 |
-| Python v1.10.0 (`b895282`) | Extensive | 0.908 | 0.993 | 0.903 | 0.949 |
-| Go before (`79c39d1`) | Fast | 0.925 | 0.928 | 0.863 | 0.926 |
-| Go before (`79c39d1`) | Extensive | 0.910 | 0.993 | 0.905 | 0.950 |
-| Go after synchronization | Fast | 0.925 | 0.928 | 0.863 | 0.926 |
-| Go after synchronization | Extensive | 0.910 | 0.993 | 0.905 | 0.950 |
+| Python reference (`b895282`) | Fast | 0.924 | 0.927 | 0.861 | 0.925 |
+| Python reference (`b895282`) | Extensive | 0.908 | 0.993 | 0.903 | 0.949 |
+| Go v1.10.1 | Fast | 0.924 | 0.927 | 0.861 | 0.925 |
+| Go v1.10.1 | Extensive | 0.908 | 0.993 | 0.903 | 0.949 |
 
-Exact Python/Go output agreement, out of 1,000 pages per mode:
+This is a correctness comparison on saved HTML, including HTML repair, not a timing measurement. It uses Go 1.27.1, CPython 3.14.6 and Python dateparser 1.4.3, with UTC, a fixed reference time of `2026-09-13T12:00:00Z`, bounds from `1995-01-01` through `2026-09-13`, no explicit URL and time extraction disabled. Python expectations come from the independently verified [reference fixture](test-files/python-reference.json), with the four corpus files absent from that fixture checked directly against the pinned Python implementation. All current Go outputs were checked again.
 
-| Mode | Before (Python v1.9.3 / old Go) | After (Python v1.10.0 / updated Go) |
-| :--- | ----------------------------: | --------------------------------: |
-| Original, fast | 993 | 994 |
-| Original, extensive | 993 | 994 |
-| Modified, fast | 997 | 998 |
-| Modified, extensive | 998 | 998 |
+### Changes Since v1.9.3
 
-All 4,000 Go outputs were unchanged on this corpus. Python changed three outputs on the WordPress blog fixture after fixing its search across JSON blocks; Go already handled that case. All remaining disagreements existed before this synchronization. The corpus does not have modified-date ground truth, so modified-date agreement is not an accuracy score. Timing is not compared here.
+- Updated Go-DateParser from v1.2.4 to v1.4.7 and adopted shared Go-Dateutil v2.9.1 for parsing, Unicode helpers and CPython-compatible ISO/timestamp handling.
+- Matched Python's JSON/script precedence, attribute order and HTML repair, resolving the earlier date-selection differences.
+- Corrected ISO-week and compact-date handling, Unicode digit gates, incomplete-date defaults, timezone-aware bounds and local Unix-reference dates.
+- Removed unnecessary DOM copies while preserving caller-owned documents and surrounding text; the default maximum date now follows the current local day on each call.
 
-After refreshing the dependencies in [go.mod](go.mod), including `go-dateparser v1.4.3`, the full Go suite passed on both Go 1.26.0 and Go 1.27.1. All 4,000 Go saved-page outputs were unchanged from the synchronization run. The current Python reference must also use dateparser 1.4.3: Go-DateParser 1.4.3 ports that version, and Python htmldate 1.10.0 allows it (`dateparser >= 1.1.2`). Direct calls to both external parsers return `2018-04-12` for `2018-04-12 17:20:03.12345678999a`, reflecting upstream's year-first date-order fix. Python dateparser 1.2.1 instead returns `2018-12-04`; the htmldate 1.10.0 source test retains that older expectation. The Go regression follows the measured Python 1.4.3 behavior, not that stale assertion.
-
-Repeating the historical four-way comparison with Python dateparser 1.4.3 reproduced every score and agreement count in the tables above. At v1.10.0, agreement was 994/1,000 pages in each original-date mode and 998/1,000 in each modified-date mode. Go v1.10.1 passes the current independent Python fixture described above; these older scores have not been recomputed.
-
-### Known Python Deviations
-
-**Historical v1.10.0 analysis.** All six discrepancies below are resolved in v1.10.1 by following Python, including its imperfect date choices. The following tables and explanations describe the old implementation; they are retained as the provenance of the fixes, not current exceptions.
-
-The following differences were verified against Python htmldate 1.10.0 (`b895282`) with Python dateparser 1.4.3, using the same saved HTML, date bounds `1995-01-01` through `2026-09-10`, and no explicit URL argument. None was introduced by the Go-DateParser 1.4.3 upgrade. `Test_FromDocument_KnownPythonDeviations` in [core_test.go](core_test.go) preserves the current Go outputs on these six fixtures in all four extraction modes, using fixed bounds and no network or Python dependency.
-
-These are behavioral regression expectations, not a claim that every retained result is the best publication date. In particular, the Baltimore Sun behavior is a known accuracy limitation. No extraction behavior or upstream Python tests were changed to make these regressions pass.
-
-Original/publication dates:
-
-| Saved Page | Go, Both Modes | Python Fast | Python Extensive |
-| :--------- | :------------- | :---------- | :--------------- |
-| [Engadget](test-files/mediacloud/1711803974.html#L1378) | 2020-09-15 | No date | 2020-05-20 |
-| [Baltimore Sun](test-files/mediacloud/1805697156.html#L210) | 2020-12-22 | 2020-12-23 | 2020-12-23 |
-| [Elbalad](test-files/mediacloud/1806793639.html#L1) | 2020-12-24 | 2020-12-25 | 2020-12-25 |
-| [NMB Media](test-files/comparison/nmb-media.de.ebay.html#L260) | 2018-06-22 | 2018-08-29 | 2018-08-29 |
-| [Handelsblatt, Sparkassen president](test-files/comparison/d20cc6511c6f4cb3bad3a1e57435456d.html#L518) | 2019-10-18 | 2019-10-19 | 2019-10-19 |
-| [Handelsblatt, French-German border](test-files/comparison/handelsblatt.com.grenzschliessungen.html#L568) | 2020-04-27 | 2020-07-08 | 2020-07-08 |
-
-Modified-date disagreements occur only on two of those pages:
-
-| Saved Page | Go, Both Modes | Python Fast | Python Extensive |
-| :--------- | :------------- | :---------- | :--------------- |
-| Engadget | 2020-09-15 | No date | 2020-01-09 |
-| Elbalad | 2020-12-24 | 2020-12-25 | 2020-12-25 |
-
-This is 16 differing outputs across 4,000 corpus checks, on six distinct pages. The exact causes are:
-
-1. **Engadget: non-ISO JSON dates.** The article's `datePublished` and `dateModified` are strings such as `Tue, Sep 15 2020 10:01:41 EDT`. Go decodes the JSON and parses these strings. Python's JSON regex requires a numeric year-month-day date and misses both fields. Its extensive publication search instead selects `May 20, 2020` from a photograph's description; its modified search selects `2020-01-09` from an unrelated CES article link. Converting only the JSON timestamps to equivalent ISO strings makes Python return September 15. Go agrees with the article metadata.
-
-2. **Baltimore Sun: creation versus publication precedence.** JSON gives `dateCreated` as December 22 and `datePublished` as December 23. Go gathers both keys and selects the earliest date; Python's publication JSON search considers only `datePublished`. Both initially reject the fractional-second metadata timestamp because their generic discard pattern matches `.814Z`, so JSON decides the result. The visible article timestamp also says December 23. Removing only `dateCreated` makes Go return December 23. Python is right for publication; the regression records Go's existing limitation rather than endorsing it.
-
-3. **Elbalad: HTML repair and timezone representation.** Go retains the early metadata timestamp `2020-12-24T23:59:50+00:00`. Python's doctype-repair regex removes the first 4,042 characters of this single-line HTML, including that metadata, and falls through to JSON's `2020-12-25T01:59:50+02:00`. These represent the same instant. Bypassing only Python's repair makes Python return December 24. December 25 matches the publisher's visible local date, but Go's UTC timestamp is valid; reproducing Python's output here would also reproduce a preprocessing defect unless an explicit local-date policy were introduced.
-
-4. **NMB Media: attribute order changes the extraction path.** The first `time` element has `itemprop="dateModified"` before `class="hidden"`; the second is explicitly `datePublished`. Python's XPath converts `@id|@class|@itemprop` to the first attribute in document order, matches the first element, and returns its August 29 modification date even in publication mode. Go's selector checks `id`, then `class`, then `itemprop`; `hidden` masks the date attribute, so Go reaches the dedicated time-element scan and chooses June 22. Moving `class` before `itemprop`, without changing attribute values, makes Python return June 22. Go's date agrees with the publication markup and visible text, but its fixed attribute precedence is not an exact XPath implementation.
-
-5. **Handelsblatt, Sparkassen president: creation fallback before a navigation date.** Its JSON contains `dateCreated`, but no `datePublished`. Go accepts the creation date; Python ignores it and its generic date-element search returns the navigation bar's `Samstag, 19. Oktober 2019` before reaching the article's publication span. That span explicitly says October 18, matching Go. Allowing Python's JSON search to accept `dateCreated` changes its result to October 18.
-
-6. **Handelsblatt, French-German border: the same creation-key omission.** Python skips JSON's April 27 `dateCreated` and selects the navigation bar's `Mittwoch, 8. Juli 2020`. The article's own `datePublished` span says April 27, matching Go. Accepting `dateCreated` in Python fixes this case too. The publication-date assessment does not imply correct modification dates: both libraries return the navigation dates in modified mode on these two Handelsblatt pages, and the regression tests preserve those existing outputs as well.
-
-### Reproducing the Four-Way Comparison
-
-Use an isolated Python 3.13 environment with the current matching dependency versions:
-
-```sh
-python -m pip install dateparser==1.4.3 python-dateutil==2.9.0.post0 lxml==5.3.0 charset-normalizer==3.4.0 urllib3==2.3.0 regex==2026.9.3 pytz==2026.3.post1 tzlocal==5.4.4 tzdata==2026.3 six==1.17.0 pytest==8.3.5
-git worktree add --detach ../go-htmldate-before 79c39d1
-git clone https://github.com/adbar/htmldate ../htmldate-reference
-git -C ../htmldate-reference worktree add --detach ../htmldate-python-before 1074ee7
-git -C ../htmldate-reference worktree add --detach ../htmldate-python-after b895282
-python scripts/comparison/compare.py --go-before ../go-htmldate-before --python-before ../htmldate-python-before --python-after ../htmldate-python-after --output-dir ../htmldate-comparison-results --dateparser-version 1.4.3 --max-date 2026-09-10
-```
-
-The [comparison script](scripts/comparison/compare.py) checks the installed dateparser version before running, overlays only the updated runner onto the baseline Go checkout, runs each Python version in its own process, and writes per-page JSON results, changed outputs, disagreements, fixture hashes, and a summary to `--output-dir`. The Go executable can be supplied with `--go` when it is not on `PATH`. To reproduce the historical reference, use a separate environment with `dateparser==1.2.1` and explicitly pass `--dateparser-version 1.2.1`.
-
-Both baseline and updated Go passed `go test -count=1 -timeout 30s ./...`. Added regressions cover date bounds, midyear minimum dates, preservation of caller-owned DOMs and text following removed elements, JSON block fallthrough, and two-digit years. Existing time/timezone tests also pass.
-
-In each Python checkout, the offline test command was:
-
-```sh
-python -m pytest tests/unit_tests.py tests/realworld_tests.py -q -k "not test_input and not test_cli and not test_download and not test_readme_examples"
-```
-
-Both Python versions produced **21 passed, 2 failed, 5 deselected** with dateparser 1.4.3 on Windows. The identical failure in `test_exact_date` expects a timezone-aware `min_date` one minute after the input timestamp to reject the date, but both return `1991-01-02`. The second failure is the stale `test_external_date_parser` timestamp expectation described above. With dateparser 1.2.1, both versions produced 22 passed, 1 failed, 5 deselected. The five excluded test functions use live websites. No upstream tests were changed to hide these failures.
-
-### Upstream Commit Audit
-
-| Commit | Disposition |
-| :----- | :---------- |
-| [`b324225`](https://github.com/adbar/htmldate/commit/b324225) | Fixed parser list already matches Go's `CustomFormat` and `AbsoluteTime`; LXML constraint and Python formatting changes do not apply. |
-| [`3abaf97`](https://github.com/adbar/htmldate/commit/3abaf97) | Python CI maintenance only; no Go runtime change. |
-| [`b669801`](https://github.com/adbar/htmldate/commit/b669801) | Python v1.9.4 release metadata and packaging only. |
-| [`64d319d`](https://github.com/adbar/htmldate/commit/64d319d) | Ported deferred, ownership-aware DOM copying; per-call end-of-day maximum; year-only candidate plausibility; shared normalized search; redundant trimming and dead-code removal. JSON block continuation, preserved trailing text, cached class/year lookups, and timestamp conversion already have Go equivalents. Added regression coverage. Python CLI argument parsing, typing, dataclasses, packaging, and LXML-specific error handling do not map directly to Go. |
-| [`3c39954`](https://github.com/adbar/htmldate/commit/3c39954) | Removed the unused discarded-node list, consolidated two-digit year correction, and applied all 42 benchmark label corrections. Segment bounds were already centralized. Python response duck typing, benchmark alternatives, and documentation tooling do not apply. |
-| [`b895282`](https://github.com/adbar/htmldate/commit/b895282) | Final v1.10.0 release checkpoint; version references updated here. |
-
-Go retains its public API, CLI, candidate-frequency aggregation and time/timezone extensions. Go v1.10.1 uses Python's ordered JSON regex search instead of the older structured JSON selection. Python cache implementation details are not copied into Go. Python changes after v1.10.0, including the CLI mode inversion, remain outside the reference.
+The public Go API, CLI and optional time/timezone extraction are retained. The measured extraction speed improvements are shown in the [version comparison](#version-comparison).
 
 ## Additional Notes
 
-The accuracy scores above apply to publication dates only. The upstream corpus has no modified-date ground truth, so Go/Python agreement in modified mode does not establish accuracy. Both implementations can agree on an incorrect result, as the [known deviations](#known-python-deviations) illustrate.
+The accuracy scores above apply to publication dates only. The upstream corpus has no modified-date ground truth, so Go/Python agreement in modified mode does not establish accuracy. Matching Python means reproducing its date choices, including cases where those choices are not the correct publication dates.
 
 Evaluate the library on representative pages for your application, especially when modification dates, times, or timezones matter. Use explicit `MinDate` and `MaxDate` values when reproducible date bounds are required.
 
@@ -328,7 +206,6 @@ Like the original, Go-HtmlDate is distributed under the [Apache License 2.0](LIC
 
 [0]: https://github.com/adbar/htmldate
 [1]: https://github.com/adbar
-[2]: https://github.com/adbar/htmldate/tree/v1.10.0
 [3]: https://github.com/adbar/htmldate/commit/b895282
 [dcg]: https://dataculturegroup.org
 [ref-badge]: https://pkg.go.dev/badge/github.com/markusmobius/go-htmldate.svg
