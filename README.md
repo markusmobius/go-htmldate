@@ -33,9 +33,11 @@ By default, Go-HtmlDate uses extensive mode and looks for the most recent date. 
 
 **v1.10.1 review candidate, not yet tagged or released.** This package tracks Python `htmldate` [v1.10.0][2] (commit [b895282][3]) with Python dateparser 1.4.3. It uses published [Go-DateParser v1.4.7](https://github.com/markusmobius/go-dateparser/releases/tag/v1.4.7) and [Go-Dateutil v2.9.1](https://github.com/markusmobius/go-dateutil/releases/tag/v2.9.1), without local replacements or runtime Python. The shared Dateutil library owns date parsing, Unicode helpers and the separate CPython ISO/timestamp compatibility APIs.
 
-The candidate follows Python's ISO-before-Dateutil shortcut, character-based digit gates, timestamp bounds, JSON/script order, attribute order and HTML repair. All 9,614 independently generated Python cases agree, including the saved pages that differed in v1.10.0. This is recorded-corpus agreement, not a proof for arbitrary HTML or every platform timezone database.
+The candidate follows Python's ISO-before-Dateutil shortcut, character-based digit gates, timestamp bounds, JSON/script order, attribute order and HTML repair. All 9,614 independently generated Python cases agree, including the saved pages that differed in v1.10.0. Another 24 Python-checked HTML regressions cover local Unix references and date bounds in UTC, Eastern and Kolkata contexts. This evidence is not a proof for arbitrary inputs: a different selected date under an equivalent Python context is a bug, not a supported deviation.
 
 An unspecified `MinDate` means local midnight on January 1, 1995. `MaxDate` defaults to the end of the current local calendar day at microsecond precision and is recalculated per extraction. Explicit Go bounds are instants in their supplied locations; validation uses their wall years and inclusive Python-compatible floating timestamps. Naive candidates use the local environment, while aware ISO/Dateutil candidates use their parsed offsets. Returned dates retain wall-calendar fields in UTC. An out-of-bounds full date can still fall back to a valid month-only date, following Python's branch order.
+
+Unix references such as `abbr[data-utime]` are converted to their local calendar date before validation. Text candidates in the same reference selection use local-midnight timestamps, following Python in both directions.
 
 When time extraction is enabled:
 
@@ -109,7 +111,9 @@ Normal Go tests require neither Python nor a neighboring checkout. `--check --ki
 
 Saved pages are replayed after CRLF-to-LF normalization, with separate SHA-256 hashes for those normalized bytes. The original raw hashes remain in the fixture as provenance; normalization avoids Git's platform-dependent checkout conversion without changing corpus files or expected dates.
 
-`DateParserConfig.CurrentTime` can freeze incomplete-date defaults even in fast mode; otherwise the local calendar date is used. The Dateutil parser-year and timezone-name/offset snapshots are initialized with the process environment. Windows uses its native long standard/daylight names, independently of the naive timestamp location. Native timezone databases and platform timestamp ranges must match for exact local-time comparisons. Go's typed bounds, zero-time sentinel, HTML parser/byte-decoding behavior, and experimental time extraction are not Python's string-bound, arbitrary-format or input-object APIs. No internal worker threads are created; callers control concurrency.
+`DateParserConfig.CurrentTime` can freeze incomplete-date defaults even in fast mode; otherwise the local calendar date is used. The Dateutil parser-year and timezone-name/offset snapshots are initialized with the process environment. Configure `TZ` before process startup; changing it afterward is unsupported. Windows uses its native long standard/daylight names, independently of the naive timestamp location. Comparisons with Python must use equivalent timezone names, rules, database versions and supported timestamp ranges; matching a zone name alone does not establish that context.
+
+The API is native Go, not a drop-in Python signature: bounds and results are typed, the zero time means no date, and callers format results using Go layouts. The optional time extraction is a Go extension. Python's string-bound and input-object APIs are not reproduced. HTML parsing and byte decoding use native libraries, so untested inputs still need differential checks. These API differences do not relax the date-selection algorithm. No internal worker threads are created; callers control concurrency.
 
 ## Performance
 

@@ -132,7 +132,11 @@ func validateParsedDateInLocation(date dateutilparser.Result, opts Options, loca
 // compareValues compares the date expression to a reference.
 func compareValues(reference int64, attempt time.Time, opts Options) (int64, bool) {
 	changed := false
-	timestamp := attempt.Unix()
+	seconds, err := cpydatetime.Timestamp(dateutilparser.Result{Time: attempt}, localDateutilEnvironment.location, false)
+	if err != nil {
+		return reference, false
+	}
+	timestamp := int64(seconds)
 
 	if (opts.UseOriginalDate && (reference == 0 || timestamp < reference)) ||
 		(!opts.UseOriginalDate && timestamp > reference) {
@@ -146,7 +150,8 @@ func compareValues(reference int64, attempt time.Time, opts Options) (int64, boo
 // checkExtractedReference tests if the extracted reference date can be returned.
 func checkExtractedReference(reference int64, opts Options) time.Time {
 	if reference > 0 {
-		dt := time.Unix(reference, 0).UTC()
+		local := time.Unix(reference, 0).In(localDateutilEnvironment.location)
+		dt := time.Date(local.Year(), local.Month(), local.Day(), 0, 0, 0, 0, time.UTC)
 		if validateDate(dt, opts) {
 			return dt
 		}

@@ -7,6 +7,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func Test_localDateutilEnvironmentOffsets(t *testing.T) {
+	expected := newDateutilEnvironment(localDateLocation())
+	assert.Equal(t, expected.timezone.StandardOffset, localDateutilEnvironment.timezone.StandardOffset)
+	assert.Equal(t, expected.timezone.DaylightOffset, localDateutilEnvironment.timezone.DaylightOffset)
+}
+
 func Test_parseTimezoneCode(t *testing.T) {
 	// Helper function
 	offset := func(code string) int {
