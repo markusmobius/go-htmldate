@@ -228,7 +228,12 @@ func externalDateParser(s string, opts Options) time.Time {
 		cfg = externalDpsConfig
 	}
 
-	dt, _ := externalParser.Parse(cfg, s)
+	// Preserve locale memory across calls when requested.
+	parser := externalParser
+	if !cfg.TryPreviousLocales {
+		parser = &dps.Parser{ParserTypes: externalParserTypes}
+	}
+	dt, _ := parser.Parse(cfg, s)
 	if !dt.Time.IsZero() {
 		formatted := time.Date(dt.Time.Year(), dt.Time.Month(), dt.Time.Day(), 0, 0, 0, 0, time.UTC)
 		if validateDate(formatted, opts) {

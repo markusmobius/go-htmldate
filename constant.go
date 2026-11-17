@@ -32,12 +32,12 @@ var (
 	timeZero       = time.Time{}
 	defaultMinDate = time.Date(1995, 1, 1, 0, 0, 0, 0, localDateutilEnvironment.location)
 
-	externalParser = &dps.Parser{
-		ParserTypes: []dps.ParserType{
-			dps.CustomFormat,
-			dps.AbsoluteTime,
-		},
+	externalParserTypes = []dps.ParserType{
+		dps.CustomFormat,
+		dps.AbsoluteTime,
 	}
+
+	externalParser = &dps.Parser{ParserTypes: externalParserTypes}
 
 	externalDpsConfig = &dps.Configuration{
 		// DateOrder:           dps.DMY,
