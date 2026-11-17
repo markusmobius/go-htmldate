@@ -333,3 +333,14 @@ func Test_tryExternalDateParser(t *testing.T) {
 
 	assert.Equal(t, "2017-09-01", parse("Fri | September 1 | 2017"))
 }
+
+func Benchmark_externalDateParser_Parallel(b *testing.B) {
+	opts := Options{MinDate: defaultMinDate, MaxDate: defaultMaxDate()}
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			if externalDateParser("Fri, Sept 1, 2017", opts).IsZero() {
+				b.Fatal("no date")
+			}
+		}
+	})
+}
