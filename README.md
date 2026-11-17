@@ -29,6 +29,8 @@ Like the original, Go-HtmlDate has two modes:
 
 By default, Go-HtmlDate uses extensive mode and looks for the most recent date. Set `UseOriginalDate` to `true` to request the publication date, and `SkipExtensiveSearch` to `true` to select fast mode.
 
+The external date parser is the expensive part of extensive mode, and pages such as calendars or listings can hold hundreds of candidates. Set `MaxDateParserCalls` to limit the number of external parser calls per document; once the limit is reached the search continues with the fast parser only. The default, zero, is unlimited.
+
 ## Python Compatibility
 
 Go-HtmlDate v1.10.1 follows the Python `htmldate` implementation at commit [b895282][3], with Python dateparser 1.4.3 as its reference. It uses [Go-DateParser v1.4.7](https://github.com/markusmobius/go-dateparser/releases/tag/v1.4.7) and [Go-Dateutil v2.9.1](https://github.com/markusmobius/go-dateutil/releases/tag/v2.9.1), without local replacements or runtime Python. The shared Dateutil library owns date parsing, Unicode helpers and the separate CPython ISO/timestamp compatibility APIs.

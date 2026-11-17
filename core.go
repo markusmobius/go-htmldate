@@ -79,6 +79,10 @@ func fromDocument(doc *html.Node, opts Options, cloneDocument bool) (Result, err
 		opts.MaxDate = defaultMaxDate()
 	}
 
+	if opts.MaxDateParserCalls > 0 {
+		opts.dateParserCalls = new(int)
+	}
+
 	// If URL is not defined in options, look in elements
 	if opts.URL == "" {
 		links := dom.QuerySelectorAll(doc, `link[rel="canonical"]`)
