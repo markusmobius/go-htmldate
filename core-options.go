@@ -59,4 +59,10 @@ type Options struct {
 	// used when SkipExtensiveSearch is false; CurrentTime also supplies the
 	// reference calendar date for incomplete Dateutil inputs in fast mode.
 	DateParserConfig *dps.Configuration
+
+	// MaxDateParserCalls limits external dateparser calls per document.
+	// Once reached, only the fast parser runs. Zero means unlimited.
+	MaxDateParserCalls int
+
+	dateParserCalls *int
 }

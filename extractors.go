@@ -221,6 +221,13 @@ func dateutilFallbackInEnvironment(s string, opts Options, now time.Time, fold b
 
 // externalDateParser uses go-dateparser package to extensively look for date.
 func externalDateParser(s string, opts Options) time.Time {
+	if opts.dateParserCalls != nil {
+		if *opts.dateParserCalls >= opts.MaxDateParserCalls {
+			return timeZero
+		}
+		*opts.dateParserCalls++
+	}
+
 	var cfg *dps.Configuration
 	if opts.DateParserConfig != nil {
 		cfg = opts.DateParserConfig

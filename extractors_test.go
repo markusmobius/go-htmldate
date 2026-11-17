@@ -333,3 +333,44 @@ func Test_tryExternalDateParser(t *testing.T) {
 
 	assert.Equal(t, "2017-09-01", parse("Fri | September 1 | 2017"))
 }
+
+func Test_tryDateExpr_MaxDateParserCalls(t *testing.T) {
+	calls := 0
+	opts := Options{
+		MinDate:            defaultMinDate,
+		MaxDate:            defaultMaxDate(),
+		MaxDateParserCalls: 1,
+		dateParserCalls:    &calls,
+	}
+
+	try := func(s string) string {
+		_, dt := tryDateExpr(s, opts)
+		if !dt.IsZero() {
+			return dt.Format("2006-01-02")
+		}
+		return ""
+	}
+
+	assert.Equal(t, "2017-09-01", try("Fri, Sept 1, 2017"))
+	assert.Equal(t, "", try("Fri, Sept 1, 2017"))
+	assert.Equal(t, 1, calls)
+
+	assert.Equal(t, "2017-09-01", try("1.9.2017"))
+}
+
+func Test_FromDocument_MaxDateParserCalls(t *testing.T) {
+	rawHtml := `<html><body><p>Fri, Sept 1, 2017</p><p>Sat, Sept 2, 2017</p></body></html>`
+	doc, _ := dom.FastParse(strings.NewReader(rawHtml))
+
+	extract := func(opts Options) string {
+		res, err := FromDocument(doc, opts)
+		assert.NoError(t, err)
+		return res.Format("2006-01-02")
+	}
+
+	assert.Equal(t, "2017-09-02", extract(Options{}))
+
+	limited := Options{MaxDateParserCalls: 1}
+	assert.Equal(t, "2017-09-01", extract(limited))
+	assert.Equal(t, "2017-09-01", extract(limited))
+}
